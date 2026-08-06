@@ -63,7 +63,10 @@ foreach ($file in $ship) {
 Copy-Item (Join-Path $root 'icons') -Destination $staging -Recurse
 
 # --- package ---------------------------------------------------------------
-$xpi = Join-Path $dist 'smartreply-ai.xpi'
+# Versioned filename: each build gets its own artifact, so a previously built file being held open
+# by another process cannot fail the build, and a release asset can never be mistaken for another
+# version's.
+$xpi = Join-Path $dist "smartreply-ai-$version.xpi"
 if (Test-Path $xpi) { Remove-Item $xpi -Force }
 
 # Built entry by entry instead of with Compress-Archive, which writes nested paths as
@@ -109,5 +112,5 @@ Write-Host "  version $version"
 Write-Host ""
 Write-Host "To publish this version so installed copies update themselves:" -ForegroundColor Yellow
 Write-Host "  1. gh release create v$version `"$xpi`" --title `"v$version`" --notes `"...`""
-Write-Host "  2. set the same version and the release URL in updates.json, then commit and push it"
+Write-Host "  2. point updates.json at v$version and this asset name, then commit and push"
 Write-Host "     (Thunderbird reads updates.json straight from the main branch)"

@@ -28,12 +28,18 @@ body {
   line-height: 1.5;
 }
 
+/* A bounded height is what makes the layout work at all. Left unbounded, the container grew with
+   its content and the whole panel scrolled, which pushed the footer — and with it the Generate
+   button — past the height Thunderbird is willing to give a popup. With a fixed height only
+   .content scrolls, and the footer stays put. 580px sits just under the ceiling Thunderbird
+   imposes on action popups. */
 .container {
   width: 600px;
-  min-height: 500px;
+  height: 580px;
   display: flex;
   flex-direction: column;
   background-color: white;
+  overflow: hidden;
 }
 
 .header {
@@ -561,6 +567,9 @@ textarea:focus {
 }
 
 /* Footer */
+/* Pinned to the bottom of the panel. Thunderbird caps how tall an action popup can be, and with
+   every option expanded the primary button ended up below the fold: the one control the panel
+   exists for was the only one you had to go looking for. */
 .footer {
   display: flex;
   justify-content: space-between;
@@ -568,6 +577,9 @@ textarea:focus {
   padding: 12px 16px;
   border-top: 1px solid var(--border-color);
   background-color: var(--secondary-color);
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 .action-buttons {
