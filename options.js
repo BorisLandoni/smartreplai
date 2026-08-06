@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   // Get DOM elements
+  const deepseekApiKeyInput = document.getElementById('deepseek-api-key');
+  const deepseekModelSelect = document.getElementById('deepseek-model');
   const geminiApiKeyInput = document.getElementById('gemini-api-key');
   const openaiApiKeyInput = document.getElementById('openai-api-key');
   const mistralApiKeyInput = document.getElementById('mistral-api-key');
@@ -14,11 +16,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const statusMsg = document.getElementById('status-msg');
   
   // Get test connection buttons and status elements
+  const testDeepseekBtn = document.getElementById('test-deepseek-btn');
   const testGeminiBtn = document.getElementById('test-gemini-btn');
   const testOpenaiBtn = document.getElementById('test-openai-btn');
   const testMistralBtn = document.getElementById('test-mistral-btn');
   const testOllamaBtn = document.getElementById('test-ollama-btn');
   
+  const deepseekStatus = document.getElementById('deepseek-status');
   const geminiStatus = document.getElementById('gemini-status');
   const openaiStatus = document.getElementById('openai-status');
   const mistralStatus = document.getElementById('mistral-status');
@@ -61,16 +65,39 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
     
-    // Show/hide Ollama custom model input based on selection
-    if (selectedModel === 'ollama') {
-      document.getElementById('ollama-settings').style.display = 'block';
-    } else {
-      document.getElementById('ollama-settings').style.display = 'none';
+    // Show a provider's block whenever that provider is in use — as primary OR as a fallback.
+    // Keying this on the primary alone made the fallback impossible to configure: the validation
+    // below still demands an Ollama host, while the field to type it into is hidden.
+    toggleSection('ollama-settings', isProviderInUse('ollama'));
+    toggleSection('deepseek-settings', isProviderInUse('deepseek'));
+  }
+
+  function isProviderInUse(provider) {
+    if (modelSelect.value === provider) {
+      return true;
+    }
+
+    return [fallbackModel1Select, fallbackModel2Select, fallbackModel3Select]
+      .some(select => select && select.value === provider);
+  }
+
+  function toggleSection(elementId, visible) {
+    const section = document.getElementById(elementId);
+
+    if (section) {
+      section.style.display = visible ? 'block' : 'none';
     }
   }
   
   // Add event listener for model selection change
   modelSelect.addEventListener('change', updateUIForSelectedModel);
+
+  // Picking a provider as fallback has to reveal its settings too, same as picking it as primary.
+  [fallbackModel1Select, fallbackModel2Select, fallbackModel3Select].forEach(select => {
+    if (select) {
+      select.addEventListener('change', updateUIForSelectedModel);
+    }
+  });
   
   // Show/hide Ollama custom model input based on selection
   ollamaModelSelect.addEventListener('change', () => {
@@ -89,6 +116,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load saved settings
   try {
     const settings = await browser.storage.local.get([
+      'deepseekApiKey',
+      'deepseekModel',
       'geminiApiKey',
       'openaiApiKey',
       'mistralApiKey',
@@ -102,9 +131,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       'fallbackModels'
     ]);
     
-    console.log('All settings in storage:', settings);
-    
+    // Deliberately not logging the settings object: it carries every API key in clear text.
+
     // Set input values from storage
+    if (settings.deepseekApiKey) deepseekApiKeyInput.value = settings.deepseekApiKey;
+    if (settings.deepseekModel) deepseekModelSelect.value = settings.deepseekModel;
     if (settings.geminiApiKey) geminiApiKeyInput.value = settings.geminiApiKey;
     if (settings.openaiApiKey) openaiApiKeyInput.value = settings.openaiApiKey;
     if (settings.mistralApiKey) mistralApiKeyInput.value = settings.mistralApiKey;
@@ -208,6 +239,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   
   // Test Mistral connection button click handler
+  testDeepseekBtn.addEventListener('click', async () => {
+    try {
+      deepseekStatus.textContent = 'Testing DeepSeek connection...';
+      deepseekStatus.className = 'status-message status-info';
+
+      const apiKey = deepseekApiKeyInput.value.trim();
+      if (!apiKey) {
+        showStatus(deepseekStatus, 'DeepSeek API key is required', 'error');
+        return;
+      }
+
+      const result = await browser.runtime.sendMessage({
+        action: 'testConnection',
+        model: 'deepseek',
+        apiKey,
+        modelName: deepseekModelSelect.value
+      });
+
+      showStatus(deepseekStatus, result.connected ? 'DeepSeek API connection successful!' : result.message,
+                 result.connected ? 'success' : 'error');
+    } catch (error) {
+      console.error('Error testing DeepSeek connection:', error);
+      showStatus(deepseekStatus, `Error: ${error.message}`, 'error');
+    }
+  });
+
   testMistralBtn.addEventListener('click', async () => {
     try {
       mistralStatus.textContent = 'Testing Mistral connection...';
@@ -337,6 +394,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   saveBtn.addEventListener('click', async () => {
     try {
       // Get values from inputs
+      const deepseekApiKey = deepseekApiKeyInput.value.trim();
+      const deepseekModel = deepseekModelSelect.value;
       const geminiApiKey = geminiApiKeyInput.value.trim();
       const openaiApiKey = openaiApiKeyInput.value.trim();
       const mistralApiKey = mistralApiKeyInput.value.trim();
@@ -356,6 +415,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       ];
       
       // Validate required fields based on selected model
+      if (selectedModel === 'deepseek' && !deepseekApiKey) {
+        showMainStatus('DeepSeek API key is required for the selected model', 'error');
+        return;
+      }
+
       if (selectedModel === 'gemini' && !geminiApiKey) {
         showMainStatus('Gemini API key is required for the selected model', 'error');
         return;
@@ -411,6 +475,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
           }
           
+          if (fallbackModel === 'deepseek' && !deepseekApiKey) {
+            showMainStatus('DeepSeek API key is required for fallback to DeepSeek', 'error');
+            return;
+          }
+
           if (fallbackModel === 'mistral' && !mistralApiKey) {
             showMainStatus('Mistral API key is required for fallback to Mistral', 'error');
             return;
@@ -430,6 +499,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       // Save settings to storage
       await browser.storage.local.set({
+        deepseekApiKey,
+        deepseekModel,
         geminiApiKey,
         openaiApiKey,
         mistralApiKey,
@@ -609,11 +680,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.head.appendChild(style);
 });
 
-// Add debugging function to help troubleshoot storage issues
+// Debugging helper: lists which settings exist without ever printing their values, since storage
+// holds the API keys in clear text and this used to dump all of them to the console on every load.
 async function debugStorage() {
   try {
     const allSettings = await browser.storage.local.get(null);
-    console.log('All settings in storage:', allSettings);
+    console.log('Settings present in storage:', Object.keys(allSettings));
   } catch (error) {
     console.error('Error debugging storage:', error);
   }

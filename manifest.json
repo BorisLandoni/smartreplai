@@ -20,6 +20,7 @@
     "messagesModify",
     "storage",
     "compose",
+    "https://api.deepseek.com/*",
     "https://api.openai.com/*",
     "https://generativelanguage.googleapis.com/*",
     "https://api.mistral.ai/*",
@@ -55,5 +56,5 @@
     "96": "icons/sparkle-stars-icon.svg",
     "128": "icons/sparkle-stars-icon.svg"
   },
-  "content_security_policy": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.openai.com https://generativelanguage.googleapis.com https://api.mistral.ai http://localhost:*;"
+  "content_security_policy": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.deepseek.com https://api.openai.com https://generativelanguage.googleapis.com https://api.mistral.ai http://localhost:*;"
 }

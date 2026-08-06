@@ -1,6 +1,7 @@
 // Background script for the Thunderbird extension
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  console.log("Background script received message:", message);
+  // Only the action: the payload carries API keys (testConnection) and email text (insertResponse).
+  console.log("Background script received message:", message && message.action);
   
   if (message.action === 'getCurrentMessage') {
     return getCurrentMessage();
@@ -29,7 +30,9 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     try {
       let result;
       
-      if (message.model === 'gemini') {
+      if (message.model === 'deepseek') {
+        result = await testDeepSeekConnection(message.apiKey, message.modelName);
+      } else if (message.model === 'gemini') {
         result = await testGeminiConnection(message.apiKey);
       } else if (message.model === 'openai') {
         result = await testOpenAIConnection(message.apiKey, 'o3-mini');
@@ -68,6 +71,11 @@ async function checkModelConnection(model, apiKey) {
     let result;
     
     switch (model) {
+      case 'deepseek': {
+        const { deepseekModel } = await browser.storage.local.get('deepseekModel');
+        result = await testDeepSeekConnection(apiKey, deepseekModel);
+        break;
+      }
       case 'gemini':
         result = await testGeminiConnection(apiKey);
         break;
@@ -211,6 +219,67 @@ async function testOpenAIConnection(apiKey, model) {
 }
 
 // Function to test Mistral API connection
+// Function to test DeepSeek API connection
+async function testDeepSeekConnection(apiKey, modelName) {
+  try {
+    console.log('Testing DeepSeek connection...');
+
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        // 'deepseek-chat' and 'deepseek-reasoner' were retired on 2026-07-24.
+        model: modelName || 'deepseek-v4-flash',
+        messages: [
+          {
+            role: 'user',
+            content: 'Hello, please respond with "Connection successful" if you can receive this message.'
+          }
+        ],
+        // Without this the model burns reasoning tokens just to answer a ping.
+        thinking: { type: 'disabled' },
+        max_tokens: 10
+      })
+    });
+
+    if (!response.ok) {
+      let detail = response.statusText;
+
+      try {
+        const errorData = await response.json();
+        detail = errorData.error?.message || detail;
+      } catch (parseError) {
+        // Body was not JSON; status text is the best we have.
+      }
+
+      if (response.status === 402) {
+        detail = `insufficient balance, top up at platform.deepseek.com (${detail})`;
+      }
+
+      throw new Error(`DeepSeek API error: ${detail}`);
+    }
+
+    const data = await response.json();
+    const answered = Array.isArray(data.choices) && data.choices.length > 0;
+
+    return {
+      connected: answered,
+      message: answered
+        ? 'DeepSeek API connection successful'
+        : 'DeepSeek accepted the key but returned no answer: unexpected response'
+    };
+  } catch (error) {
+    console.error('Error testing DeepSeek connection:', error);
+    return {
+      connected: false,
+      message: `DeepSeek API connection failed: ${error.message}`
+    };
+  }
+}
+
 async function testMistralConnection(apiKey) {
   try {
     console.log('Testing Mistral connection...');
@@ -395,13 +464,16 @@ async function getCurrentMessage() {
     
     // Get current message displayed in the tab
     const tabId = tabs[0].id;
-    const messageList = await browser.messageDisplay.getDisplayedMessages(tabId);
-    
-    if (!messageList || !messageList.length) {
+    const displayed = await browser.messageDisplay.getDisplayedMessages(tabId);
+
+    // TB 96+ returns a MessageList object ({id, messages}); older builds returned a bare array.
+    const messageList = Array.isArray(displayed) ? displayed : (displayed && displayed.messages) || [];
+
+    if (!messageList.length) {
       console.error("No message currently displayed");
       return null;
     }
-    
+
     const message = messageList[0];
     
     // Get full message details
@@ -432,7 +504,8 @@ async function getCurrentMessage() {
 async function insertResponse(messageId, response, replyAll = false) {
   try {
     console.log("Starting to insert response into reply...");
-    console.log("Response to insert:", response.substring(0, 100) + "...");
+    // Logging the length only: the response itself is email content and does not belong in a log.
+    console.log("Response to insert:", response.length, "characters");
     console.log("Reply All:", replyAll);
     
     // Start a reply to the message with the appropriate reply type
@@ -446,7 +519,8 @@ async function insertResponse(messageId, response, replyAll = false) {
     try {
       // First, try to get the compose details to determine if we're in HTML or plain text mode
       const details = await browser.compose.getComposeDetails(replyTab.id);
-      console.log("Compose details retrieved:", details);
+      // Shape only: `details` contains the full body of the message being composed.
+      console.log("Compose details retrieved:", { isPlainText: details.isPlainText });
       
       // Determine if we're in HTML mode
       const isHtml = details.isPlainText === false || (details.body && !details.plainTextBody);
@@ -745,17 +819,65 @@ function clearExistingContent(content, isHtml = true) {
 
 // Helper function to extract plain text from message parts
 function getPlainTextFromParts(parts) {
-  let plainText = '';
-  
+  const bodies = collectMessageBodies(parts);
+
+  // HTML-only messages (most newsletters, and many mailers used by customers and suppliers)
+  // carry no text/plain part at all: without this fallback the model receives an empty body.
+  if (!bodies.plain.trim() && bodies.html.trim()) {
+    return htmlToPlainText(bodies.html);
+  }
+
+  return bodies.plain;
+}
+
+// Helper function to walk the MIME tree once, collecting both text flavours
+function collectMessageBodies(parts, acc = { plain: '', html: '' }) {
   for (const part of parts) {
-    if (part.contentType && part.contentType.includes('text/plain') && part.body) {
-      plainText += part.body;
+    if (part.contentType && part.body) {
+      if (part.contentType.includes('text/plain')) {
+        acc.plain += part.body;
+      } else if (part.contentType.includes('text/html')) {
+        acc.html += part.body;
+      }
     }
-    
+
     if (part.parts && part.parts.length) {
-      plainText += getPlainTextFromParts(part.parts);
+      collectMessageBodies(part.parts, acc);
     }
   }
-  
-  return plainText;
+
+  return acc;
+}
+
+// A single message body is never legitimately this large; the cap stops a pathological mail from
+// stalling the background page before we hand it to the parser.
+const MAX_HTML_BODY_CHARS = 500000;
+
+// Helper function to reduce an HTML body to readable plain text.
+//
+// Parsed rather than stripped with regexes, for three reasons that all bit the earlier version:
+// DOMParser decodes every entity exactly once (so an Italian mail full of &egrave; and &euro;
+// survives intact), it cannot re-create live markup out of text that was escaped in the source,
+// and it degrades linearly instead of blowing up on unbalanced comments or tags.
+// parseFromString neither executes scripts nor fetches remote content.
+function htmlToPlainText(html) {
+  const source = html.length > MAX_HTML_BODY_CHARS ? html.slice(0, MAX_HTML_BODY_CHARS) : html;
+
+  try {
+    const doc = new DOMParser().parseFromString(source, 'text/html');
+
+    doc.querySelectorAll('style, script, head, noscript').forEach(node => node.remove());
+
+    // textContent alone would run every block together; keep the line structure the markup implies.
+    doc.querySelectorAll('br').forEach(node => node.replaceWith('\n'));
+    doc.querySelectorAll('p, div, tr, li, h1, h2, h3, h4, h5, h6').forEach(node => node.append('\n'));
+
+    return (doc.body ? doc.body.textContent : '')
+      .replace(/[ \t ]{2,}/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  } catch (error) {
+    console.error('Could not parse HTML body, falling back to tag stripping:', error);
+    return source.replace(/<[^>]*>/g, ' ').replace(/\s{2,}/g, ' ').trim();
+  }
 }

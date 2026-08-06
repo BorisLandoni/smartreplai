@@ -320,6 +320,7 @@
           <div class="setting-group">
             <label for="model-select">Select AI Model:</label>
             <select id="model-select" class="select-input">
+              <option value="deepseek">DeepSeek</option>
               <option value="gemini">Gemini Pro</option>
               <option value="openai">OpenAI O3-mini</option>
               <option value="gpt4o">OpenAI GPT-4o</option>
@@ -328,7 +329,19 @@
             </select>
             <p class="setting-description">Choose which AI model to use for generating responses</p>
           </div>
-          
+
+          <div id="deepseek-settings" class="setting-group">
+            <label for="deepseek-model">DeepSeek Model:</label>
+            <select id="deepseek-model" class="select-input">
+              <option value="deepseek-v4-flash">V4 Flash (fast and cheap, recommended)</option>
+              <option value="deepseek-v4-pro">V4 Pro (higher quality, ~3x the cost)</option>
+            </select>
+            <p class="setting-description">
+              V4 Flash costs roughly $0.16 per 1000 generated replies. Reasoning mode is always
+              disabled for replies: it would multiply cost and latency for no gain here.
+            </p>
+          </div>
+
           <div class="setting-group">
             <label for="reasoning-effort">Reasoning Effort (for O3-mini only):</label>
             <select id="reasoning-effort" class="select-input" data-show-for-model="openai">
@@ -350,6 +363,24 @@
         </div>
         <div class="card-body">
           <div class="api-keys-container">
+            <div class="setting-group">
+              <label for="deepseek-api-key">DeepSeek API Key:</label>
+              <div class="api-key-input">
+                <input type="password" id="deepseek-api-key" class="text-input" placeholder="Enter your DeepSeek API key">
+                <button class="toggle-visibility-btn" data-for="deepseek-api-key">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              <p class="setting-description">
+                <a href="https://platform.deepseek.com/api_keys" target="_blank">Get a DeepSeek API key</a>
+                &mdash; prepaid, so keep an eye on the balance: an empty one fails with "insufficient balance".
+              </p>
+              <button id="test-deepseek-btn" class="action-button small-button">
+                <i class="fas fa-plug"></i> Test DeepSeek Connection
+              </button>
+              <div id="deepseek-status" class="status-message"></div>
+            </div>
+
             <div class="setting-group">
               <label for="gemini-api-key">Gemini API Key:</label>
               <div class="api-key-input">
@@ -403,6 +434,7 @@
               <div id="mistral-status" class="status-message"></div>
             </div>
             
+            <div id="ollama-settings">
             <div class="setting-group">
               <label for="ollama-host">Ollama Host URL:</label>
               <input type="text" id="ollama-host" class="text-input" placeholder="http://localhost:11434">
@@ -441,6 +473,7 @@
               </button>
               <div id="ollama-status" class="status-message"></div>
             </div>
+            </div>
           </div>
         </div>
       </section>
@@ -471,6 +504,7 @@
               <label for="fallback-model-1">First Fallback:</label>
               <select id="fallback-model-1" class="select-input fallback-model-select">
                 <option value="none">None</option>
+                <option value="deepseek">DeepSeek</option>
                 <option value="gemini">Gemini Pro</option>
                 <option value="openai">OpenAI O3-mini</option>
                 <option value="gpt4o">OpenAI GPT-4o</option>
@@ -482,6 +516,7 @@
               <label for="fallback-model-2">Second Fallback:</label>
               <select id="fallback-model-2" class="select-input fallback-model-select">
                 <option value="none">None</option>
+                <option value="deepseek">DeepSeek</option>
                 <option value="gemini">Gemini Pro</option>
                 <option value="openai">OpenAI O3-mini</option>
                 <option value="gpt4o">OpenAI GPT-4o</option>
@@ -493,6 +528,7 @@
               <label for="fallback-model-3">Third Fallback:</label>
               <select id="fallback-model-3" class="select-input fallback-model-select">
                 <option value="none">None</option>
+                <option value="deepseek">DeepSeek</option>
                 <option value="gemini">Gemini Pro</option>
                 <option value="openai">OpenAI O3-mini</option>
                 <option value="gpt4o">OpenAI GPT-4o</option>
