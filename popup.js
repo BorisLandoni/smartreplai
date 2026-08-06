@@ -194,6 +194,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     ko: 'no, non va bene: non confermo'
   };
 
+  // Locked while a generation is running, so the note cannot be changed out from under a request
+  // that is already in flight: the inconsistency stops being representable rather than being
+  // guarded against.
+  function setQuickRepliesEnabled(enabled) {
+    contextInput.disabled = !enabled;
+    document.querySelectorAll('.quick-reply-btn').forEach(button => {
+      button.disabled = !enabled;
+    });
+  }
+
   document.querySelectorAll('.quick-reply-btn').forEach(button => {
     button.addEventListener('click', () => {
       const text = QUICK_REPLIES[button.dataset.quick];
@@ -210,10 +220,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       showStatus(t('err_no_email_selected'), 'error');
       return;
     }
-    
+
+    // Read before anything is awaited. The note used to be read further down, after a storage
+    // round trip, so pressing OK and then immediately Non OK could generate a refusal from one
+    // click and a confirmation from the other — with the meaning reversed and nothing on screen
+    // to say so. On work email that is a wrong answer to a supplier, not a glitch.
+    const context = contextInput.value.trim();
+
     try {
       generateBtn.disabled = true;
-      
+      setQuickRepliesEnabled(false);
+
       // Get user settings
       const settings = await browser.storage.local.get([
         'selectedModel',
@@ -226,10 +243,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Get content controls
       const contentControls = getContentControls();
       
-      // Create prompt for AI
+      // Create prompt for AI. `context` was captured before the await above, on purpose.
       const style = responseStyle.value;
       const length = document.getElementById('response-length').value;
-      const context = contextInput.value.trim();
       const prompt = createPrompt(currentMessage, style, length, context, userSignature, contentControls);
       
       // Show loading indicator in response area
@@ -279,6 +295,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         showStatus(`${t('err_generating_response')}: ${error.message || t('err_unknown')}`, 'error');
       } finally {
         generateBtn.disabled = false;
+        setQuickRepliesEnabled(true);
       }
     } catch (error) {
       generateBtn.disabled = false;
@@ -342,25 +359,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
     
+    // Captured before the first await, same reason as in the generate handler above.
+    const context = contextInput.value.trim();
+
     try {
       generateVariantsBtn.disabled = true;
-      
+      setQuickRepliesEnabled(false);
+
       // Get user settings
       const settings = await browser.storage.local.get([
         'selectedModel',
         'userSignature'
       ]);
-      
+
       const selectedModel = settings.selectedModel || DEFAULT_MODEL;
       const userSignature = settings.userSignature || '';
-      
+
       // Get content controls
       const contentControls = getContentControls();
-      
+
       // Create prompt for AI with instruction to generate a variant
       const style = responseStyle.value;
       const length = document.getElementById('response-length').value;
-      const context = contextInput.value.trim();
       const basePrompt = createPrompt(currentMessage, style, length, context, userSignature, contentControls);
       
       // Add instruction to create a different variant
@@ -404,9 +424,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         showStatus(`${t('err_generating_variant')}: ${error.message || t('err_unknown')}`, 'error');
       } finally {
         generateVariantsBtn.disabled = false;
+        setQuickRepliesEnabled(true);
       }
     } catch (error) {
       generateVariantsBtn.disabled = false;
+      setQuickRepliesEnabled(true);
       showStatus(`${t('err_generic')}: ${error.message || t('err_unknown')}`, 'error');
     }
   });

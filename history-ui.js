@@ -1,3 +1,15 @@
+// Subject and sender come from email written by other people, and land in innerHTML below.
+// Escaped where they are interpolated rather than at the source, so a new call site cannot
+// quietly skip it.
+function escapeHtml(text) {
+  return String(text == null ? '' : text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // history-ui.js - UI interactions for response history and templates
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -373,10 +385,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         historyItem.innerHTML = `
           <div class="history-item-header">
-            <div class="history-item-subject">${item.metadata.subject || t('history_no_subject')}</div>
+            <div class="history-item-subject">${escapeHtml(item.metadata.subject || t('history_no_subject'))}</div>
             <div class="history-item-date">${formattedDate}</div>
           </div>
-          <div class="history-item-recipient">${item.metadata.recipient || t('history_no_recipient')}</div>
+          <div class="history-item-recipient">${escapeHtml(item.metadata.recipient || t('history_no_recipient'))}</div>
           <div class="history-item-preview">${previewText}</div>
           <div class="history-item-footer">
             <div class="history-item-category">
@@ -470,7 +482,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     historyDetail.innerHTML = `
       <div class="detail-header">
-        <h2>${item.metadata.subject || t('history_no_subject')}</h2>
+        <h2>${escapeHtml(item.metadata.subject || t('history_no_subject'))}</h2>
         <div class="detail-actions">
           <button class="action-btn template-btn" title="${t('history_title_save_as_template')}">
             <img src="icons/template.svg" alt="Template" width="14" height="14"> ${t('history_btn_template')}
@@ -610,7 +622,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         templateItem.innerHTML = `
           <div class="template-item-header">
-            <div class="template-item-name">${template.name}</div>
+            <div class="template-item-name">${escapeHtml(template.name)}</div>
             <div class="template-item-category">${categoryLabel(template.category)}</div>
           </div>
           <div class="template-item-preview">${previewText}</div>
@@ -694,7 +706,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     templateDetail.innerHTML = `
       <div class="template-detail-header">
-        <h2 class="template-detail-name">${template.name}</h2>
+        <h2 class="template-detail-name">${escapeHtml(template.name)}</h2>
         <span class="template-detail-category">${categoryLabel(template.category)}</span>
       </div>
       <div class="template-detail-content">${template.content}</div>
@@ -723,7 +735,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     
     deleteBtn.addEventListener('click', async () => {
-      if (confirm(`${t('history_confirm_delete_template')} "${template.name}"?`)) {
+      if (confirm(`${t('history_confirm_delete_template')} "${escapeHtml(template.name)}"?`)) {
         await templateManager.deleteTemplate(template.id);
         loadTemplates(templateFilters);
       }

@@ -1357,5 +1357,8 @@
   },
   "options_triage_forgotten": {
     "message": "Correzioni cancellate."
+  },
+  "options_saved_without_triage": {
+    "message": "Salvato, tranne le impostazioni del triage: non sono riuscito a leggerle, quindi ho lasciato intatte quelle memorizzate. Riapri questa pagina per modificarle."
   }
 }

@@ -244,8 +244,12 @@ async function ensureTriageTags() {
   }
 }
 
+// Exact keys, never the "ai-" prefix. Matching the prefix meant any tag another add-on happened to
+// register with that start made a message permanently invisible here: it got none of the four
+// labels, never appeared in the report, and the sweep skipped it forever because the sweep only
+// looks at messages without a tag. That is the literal shape of "a customer's mail disappears".
 function hasTriageTag(header) {
-  return (header.tags || []).some(tag => tag.toLowerCase().startsWith(TRIAGE_TAG_PREFIX));
+  return (header.tags || []).some(tag => TRIAGE_KEYS.has(tag));
 }
 
 // Whether update() replaces or merges the tag list is not documented, so the final set is computed
@@ -260,7 +264,9 @@ async function applyTriageTag(header, tagKey) {
     return;
   }
 
-  const kept = (current.tags || []).filter(tag => !tag.toLowerCase().startsWith(TRIAGE_TAG_PREFIX));
+  // Same rule as above: only our own four keys are ever removed. A tag belonging to someone else
+  // must survive being relabelled here.
+  const kept = (current.tags || []).filter(tag => !TRIAGE_KEYS.has(tag));
   await browser.messages.update(current.id, { tags: kept.concat(tagKey) });
 }
 
@@ -357,6 +363,18 @@ async function getBulkExemptions() {
   return Array.isArray(triageBulkExemptions) ? triageBulkExemptions : [];
 }
 
+// Whether the bulk-mail gate is what produced this message's label, asked of the headers rather
+// than remembered: no extra state to keep in sync, and the answer cannot drift from reality.
+async function wasTaggedByBulkGate(header) {
+  try {
+    const full = await browser.messages.getFull(header.id);
+    return isBulkMail(full.headers);
+  } catch (error) {
+    // Unreadable headers: assume the model decided, which is the choice that changes nothing.
+    return false;
+  }
+}
+
 async function exemptFromBulkGate(header) {
   const domain = domainOf(addressOf(header.author || ''));
   // Public providers are excluded: exempting gmail.com would disable the gate for everyone.
@@ -433,11 +451,13 @@ async function handleTagChange(header, newTags, oldTags) {
   if (!fromTag || fromTag === toTag) return;
   if (!MODEL_DECIDED.has(fromTag) || !MODEL_DECIDED.has(toTag)) return;
 
-  // Rescuing a message out of "3 Info" is usually a verdict on the bulk-mail gate, not on the
-  // model: that gate answers from the headers and the message never reached the model at all. Left
-  // at that, the same sender would be caught again next week and corrected again forever. So the
-  // sender's domain is exempted from the gate, and its mail goes to the model from now on.
-  if (fromTag === 'ai-info') {
+  // Rescuing a message out of "3 Info" is a verdict on the bulk-mail gate ONLY when that gate is
+  // what labelled it: the gate answers from the headers, so the message never reached the model and
+  // correcting it would otherwise be futile — same sender caught again next week, corrected again,
+  // forever. But "3 Info" can now also come from the model, and exempting a domain on the strength
+  // of one such correction would push every future newsletter from it to the model instead.
+  // The headers themselves say which case this is, so they are the thing to ask.
+  if (fromTag === 'ai-info' && await wasTaggedByBulkGate(header)) {
     await exemptFromBulkGate(header);
   }
 

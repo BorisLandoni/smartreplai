@@ -1357,5 +1357,8 @@
   },
   "options_triage_forgotten": {
     "message": "Corrections cleared."
+  },
+  "options_saved_without_triage": {
+    "message": "Saved, except the triage settings: those could not be read, so the stored ones were left untouched. Reopen this page to change them."
   }
 }

@@ -125,6 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Saving writes the whole form back, so a form that never got filled in would erase everything
   // it was supposed to preserve. Nothing is written until the load is known to have succeeded.
   let settingsLoaded = false;
+  let triageConfigLoaded = false;
 
   // Load saved settings
   try {
@@ -159,8 +160,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         triageCcInput.checked = triage.ccOnlyNeverUrgent !== false;
         triageUrgentInput.value = triage.urgentDefinition || '';
         triageBudgetInput.value = triage.dailyCallBudget || 200;
+        triageConfigLoaded = true;
       }
     } catch (error) {
+      // Its own flag, because the catch above deliberately lets the rest of the page load. Without
+      // it the form looked filled in, settingsLoaded was still true, and Save then wrote a blank
+      // triageConfig over a hand-written definition of "urgent" — and turned the triage off, since
+      // it reacts to the change immediately.
       console.error('Could not load the triage settings:', error);
     }
 
@@ -538,13 +544,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       const deepseekModel = deepseekModelSelect.value;
 
       const parsedBudget = parseInt(triageBudgetInput.value, 10);
-      const triageConfig = {
+
+      // Written only if the form was actually filled from storage. Otherwise the whole key is left
+      // out of the set below, so what is already stored survives untouched.
+      const triageConfig = triageConfigLoaded ? {
         enabled: triageEnabledInput.checked,
         ccOnlyNeverUrgent: triageCcInput.checked,
         urgentDefinition: triageUrgentInput.value.trim(),
         // A blank or nonsensical budget must not disable the brake altogether.
         dailyCallBudget: Number.isFinite(parsedBudget) && parsedBudget > 0 ? parsedBudget : 200
-      };
+      } : null;
       const geminiApiKey = geminiApiKeyInput.value.trim();
       const openaiApiKey = openaiApiKeyInput.value.trim();
       const mistralApiKey = mistralApiKeyInput.value.trim();
@@ -648,7 +657,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       // Save settings to storage
       await browser.storage.local.set({
-        triageConfig,
+        ...(triageConfig ? { triageConfig } : {}),
         deepseekApiKey,
         deepseekModel,
         geminiApiKey,
@@ -664,7 +673,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         fallbackModels
       });
       
-      showMainStatus(t('options_settings_saved'), 'success');
+      // Saying so out loud: a partial save that reports plain success is how the user finds out
+      // days later that a setting never took.
+      if (triageConfig) {
+        showMainStatus(t('options_settings_saved'), 'success');
+      } else {
+        showMainStatus(t('options_saved_without_triage'), 'warning');
+      }
     } catch (error) {
       console.error('Error saving settings:', error);
       showMainStatus(t('err_saving_settings') + error.message, 'error');
