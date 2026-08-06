@@ -4,7 +4,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize managers
   const historyManager = new ResponseHistoryManager();
   const templateManager = new TemplateManager();
-  
+
+  // Turns a stored value (category, style, length, tag) into a localized label.
+  // The stored value itself is never translated - only what we show on screen.
+  // Unknown values fall back to the raw stored value.
+  function localizedLabel(prefix, value) {
+    if (!value) return '';
+    const key = prefix + String(value).replace(/-/g, '_');
+    const translated = t(key);
+    return (translated && translated !== key) ? translated : value;
+  }
+
+  function categoryLabel(category) {
+    return localizedLabel('history_cat_', category || 'general');
+  }
+
+  function styleLabel(style) {
+    return localizedLabel('history_style_', style);
+  }
+
+  function lengthLabel(length) {
+    return localizedLabel('history_len_', length);
+  }
+
+  function tagLabel(tag) {
+    const asTag = localizedLabel('history_tag_', tag);
+    return (asTag !== tag) ? asTag : localizedLabel('history_style_', tag);
+  }
+
   // UI Elements - Tabs
   const historyTab = document.getElementById('history-tab');
   const templatesTab = document.getElementById('templates-tab');
@@ -202,7 +229,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // Clear history
   clearHistoryBtn.addEventListener('click', async () => {
-    if (confirm('Are you sure you want to clear all response history? This action cannot be undone.')) {
+    if (confirm(t('history_confirm_clear'))) {
       await historyManager.clearHistory();
       loadHistory();
       showEmptyHistoryDetail();
@@ -255,12 +282,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const content = templateContentInput.value.trim();
     
     if (!name) {
-      alert('Please enter a template name');
+      alert(t('history_alert_name_required'));
       return;
     }
-    
+
     if (!content) {
-      alert('Please enter template content');
+      alert(t('history_alert_content_required'));
       return;
     }
     
@@ -310,7 +337,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         historyList.innerHTML = `
           <div class="empty-state">
             <img src="icons/inbox.svg" alt="Empty" width="32" height="32">
-            <p>No response history found</p>
+            <p>${t('history_empty_no_history')}</p>
           </div>
         `;
         showEmptyHistoryDetail();
@@ -335,25 +362,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         const previewText = item.response.substring(0, 100) + (item.response.length > 100 ? '...' : '');
         
         // Get style and length info
-        const style = item.metadata.style ? `<span class="tag style-tag">${item.metadata.style}</span>` : '';
-        const length = item.metadata.length ? `<span class="tag length-tag">${item.metadata.length}</span>` : '';
-        
+        const style = item.metadata.style ? `<span class="tag style-tag">${styleLabel(item.metadata.style)}</span>` : '';
+        const length = item.metadata.length ? `<span class="tag length-tag">${lengthLabel(item.metadata.length)}</span>` : '';
+
         // Get tags
         let tagHtml = '';
         if (item.metadata.tags && item.metadata.tags.length > 0) {
-          tagHtml = item.metadata.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+          tagHtml = item.metadata.tags.map(tag => `<span class="tag">${tagLabel(tag)}</span>`).join('');
         }
-        
+
         historyItem.innerHTML = `
           <div class="history-item-header">
-            <div class="history-item-subject">${item.metadata.subject || 'No Subject'}</div>
+            <div class="history-item-subject">${item.metadata.subject || t('history_no_subject')}</div>
             <div class="history-item-date">${formattedDate}</div>
           </div>
-          <div class="history-item-recipient">${item.metadata.recipient || 'No Recipient'}</div>
+          <div class="history-item-recipient">${item.metadata.recipient || t('history_no_recipient')}</div>
           <div class="history-item-preview">${previewText}</div>
           <div class="history-item-footer">
             <div class="history-item-category">
-              <span class="category-badge">${item.metadata.category || 'general'}</span>
+              <span class="category-badge">${categoryLabel(item.metadata.category)}</span>
               ${style}
               ${length}
             </div>
@@ -389,7 +416,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       historyList.innerHTML = `
         <div class="empty-state error">
           <img src="icons/error.svg" alt="Error" width="32" height="32">
-          <p>Error loading history: ${error.message}</p>
+          <p>${t('history_error_loading_history')}: ${error.message}</p>
         </div>
       `;
     }
@@ -398,7 +425,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Update pagination UI
   function updatePaginationUI() {
     // Update page info text
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    pageInfo.textContent = `${t('history_page')} ${currentPage} ${t('history_page_of')} ${totalPages}`;
     
     // Enable/disable pagination buttons
     prevPageBtn.disabled = currentPage <= 1;
@@ -426,55 +453,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
     
     // Get style and length info
-    const style = item.metadata.style ? `<span class="tag style-tag">${item.metadata.style}</span>` : '';
-    const length = item.metadata.length ? `<span class="tag length-tag">${item.metadata.length}</span>` : '';
-    
+    const style = item.metadata.style ? `<span class="tag style-tag">${styleLabel(item.metadata.style)}</span>` : '';
+    const length = item.metadata.length ? `<span class="tag length-tag">${lengthLabel(item.metadata.length)}</span>` : '';
+
     // Get tags
     let tagHtml = '';
     if (item.metadata.tags && item.metadata.tags.length > 0) {
-      tagHtml = item.metadata.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+      tagHtml = item.metadata.tags.map(tag => `<span class="tag">${tagLabel(tag)}</span>`).join('');
     }
-    
+
     // Get model info
-    const model = item.metadata.model ? `<div class="detail-field"><span class="field-label">Model:</span> ${item.metadata.model}</div>` : '';
-    
+    const model = item.metadata.model ? `<div class="detail-field"><span class="field-label">${t('history_field_model')}</span> ${item.metadata.model}</div>` : '';
+
     // Get variant info
-    const variant = item.metadata.variant ? `<div class="detail-field"><span class="field-label">Variant:</span> ${item.metadata.variant}</div>` : '';
-    
+    const variant = item.metadata.variant ? `<div class="detail-field"><span class="field-label">${t('history_field_variant')}</span> ${item.metadata.variant}</div>` : '';
+
     historyDetail.innerHTML = `
       <div class="detail-header">
-        <h2>${item.metadata.subject || 'No Subject'}</h2>
+        <h2>${item.metadata.subject || t('history_no_subject')}</h2>
         <div class="detail-actions">
-          <button class="action-btn template-btn" title="Save as template for future use">
-            <img src="icons/template.svg" alt="Template" width="14" height="14"> Template
+          <button class="action-btn template-btn" title="${t('history_title_save_as_template')}">
+            <img src="icons/template.svg" alt="Template" width="14" height="14"> ${t('history_btn_template')}
           </button>
-          <button class="action-btn delete-btn" title="Delete this response">
-            <img src="icons/trash.svg" alt="Delete" width="14" height="14"> Delete
+          <button class="action-btn delete-btn" title="${t('history_title_delete_response')}">
+            <img src="icons/trash.svg" alt="Delete" width="14" height="14"> ${t('history_btn_delete')}
           </button>
         </div>
       </div>
-      
+
       <div class="detail-metadata">
-        <div class="detail-field"><span class="field-label">Date:</span> ${formattedDate}</div>
-        <div class="detail-field"><span class="field-label">Recipient:</span> ${item.metadata.recipient || 'Not specified'}</div>
+        <div class="detail-field"><span class="field-label">${t('history_field_date')}</span> ${formattedDate}</div>
+        <div class="detail-field"><span class="field-label">${t('history_field_recipient')}</span> ${item.metadata.recipient || t('history_not_specified')}</div>
         <div class="detail-field">
-          <span class="field-label">Category:</span> 
-          <span class="category-badge">${item.metadata.category || 'general'}</span>
+          <span class="field-label">${t('history_field_category')}</span>
+          <span class="category-badge">${categoryLabel(item.metadata.category)}</span>
         </div>
         ${model}
         ${variant}
         <div class="detail-field">
-          <span class="field-label">Style & Length:</span>
+          <span class="field-label">${t('history_field_style_length')}</span>
           ${style} ${length}
         </div>
         <div class="detail-field">
-          <span class="field-label">Tags:</span>
-          <div class="detail-tags">${tagHtml || 'No tags'}</div>
+          <span class="field-label">${t('history_field_tags')}</span>
+          <div class="detail-tags">${tagHtml || t('history_no_tags')}</div>
         </div>
       </div>
-      
+
       <div class="detail-content">
-        <h3>Response Content</h3>
+        <h3>${t('history_response_content')}</h3>
         <div class="response-content">${item.response.replace(/\n/g, '<br>')}</div>
       </div>
     `;
@@ -489,7 +516,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (deleteBtn) {
       deleteBtn.addEventListener('click', async () => {
-        if (confirm('Are you sure you want to delete this response?')) {
+        if (confirm(t('history_confirm_delete_response'))) {
           await historyManager.deleteResponse(item.id);
           loadHistory(activeFilters);
           showEmptyHistoryDetail();
@@ -503,7 +530,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     historyDetail.innerHTML = `
       <div class="empty-state">
         <img src="icons/envelope-open-text.svg" alt="Empty" width="32" height="32">
-        <p>Select a response to view details</p>
+        <p>${t('history_empty_select_response')}</p>
       </div>
     `;
   }
@@ -511,7 +538,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Save response as template
   function saveResponseAsTemplate(item) {
     // Pre-fill template modal
-    templateNameInput.value = item.metadata.subject || 'Response Template';
+    templateNameInput.value = item.metadata.subject || t('history_default_template_name');
     templateCategorySelect.value = item.metadata.category || 'general';
     templateContentInput.value = item.response;
     currentTemplate = null; // Create new template
@@ -547,7 +574,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         templatesList.innerHTML = `
           <div class="empty-state">
             <img src="icons/file.svg" alt="Empty" width="32" height="32">
-            <p>No templates found</p>
+            <p>${t('history_empty_no_templates')}</p>
           </div>
         `;
         showEmptyTemplateDetail();
@@ -577,14 +604,14 @@ document.addEventListener('DOMContentLoaded', async () => {
           const displayVariables = variables.slice(0, 3);
           variablesHtml = displayVariables.map(v => `<span class="template-item-variable">${v}</span>`).join('');
           if (variables.length > 3) {
-            variablesHtml += `<span class="template-item-variable">+${variables.length - 3} more</span>`;
+            variablesHtml += `<span class="template-item-variable">+${variables.length - 3} ${t('history_more_variables')}</span>`;
           }
         }
-        
+
         templateItem.innerHTML = `
           <div class="template-item-header">
             <div class="template-item-name">${template.name}</div>
-            <div class="template-item-category">${template.category}</div>
+            <div class="template-item-category">${categoryLabel(template.category)}</div>
           </div>
           <div class="template-item-preview">${previewText}</div>
           <div class="template-item-footer">
@@ -623,7 +650,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       templatesList.innerHTML = `
         <div class="empty-state error">
           <img src="icons/error.svg" alt="Error" width="32" height="32">
-          <p>Error loading templates: ${error.message}</p>
+          <p>${t('history_error_loading_templates')}: ${error.message}</p>
         </div>
       `;
     }
@@ -632,7 +659,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Update template pagination UI
   function updateTemplatePaginationUI() {
     // Update page info text
-    templatePageInfo.textContent = `Page ${templateCurrentPage} of ${templateTotalPages}`;
+    templatePageInfo.textContent = `${t('history_page')} ${templateCurrentPage} ${t('history_page_of')} ${templateTotalPages}`;
     
     // Enable/disable pagination buttons
     templatePrevPageBtn.disabled = templateCurrentPage <= 1;
@@ -662,27 +689,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (variables.length > 0) {
       variablesHtml = variables.map(v => `<span class="template-variable">${v}</span>`).join('');
     } else {
-      variablesHtml = '<p class="no-variables">No variables found in this template.</p>';
+      variablesHtml = `<p class="no-variables">${t('history_no_variables_found')}</p>`;
     }
-    
+
     templateDetail.innerHTML = `
       <div class="template-detail-header">
         <h2 class="template-detail-name">${template.name}</h2>
-        <span class="template-detail-category">${template.category}</span>
+        <span class="template-detail-category">${categoryLabel(template.category)}</span>
       </div>
       <div class="template-detail-content">${template.content}</div>
       <div class="template-detail-variables">
-        <h3>Template Variables</h3>
+        <h3>${t('history_label_template_variables')}</h3>
         <div class="template-variables">
           ${variablesHtml}
         </div>
       </div>
       <div class="template-detail-actions">
         <button class="filter-btn primary edit-template-btn" data-id="${template.id}">
-          <img src="icons/edit.svg" alt="Edit" width="14" height="14"> Edit
+          <img src="icons/edit.svg" alt="Edit" width="14" height="14"> ${t('history_btn_edit')}
         </button>
         <button class="filter-btn danger delete-template-btn" data-id="${template.id}">
-          <img src="icons/trash.svg" alt="Delete" width="14" height="14"> Delete
+          <img src="icons/trash.svg" alt="Delete" width="14" height="14"> ${t('history_btn_delete')}
         </button>
       </div>
     `;
@@ -696,7 +723,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     
     deleteBtn.addEventListener('click', async () => {
-      if (confirm(`Are you sure you want to delete the template "${template.name}"?`)) {
+      if (confirm(`${t('history_confirm_delete_template')} "${template.name}"?`)) {
         await templateManager.deleteTemplate(template.id);
         loadTemplates(templateFilters);
       }
@@ -708,7 +735,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     templateDetail.innerHTML = `
       <div class="empty-state">
         <img src="icons/file-alt.svg" alt="Select" width="32" height="32">
-        <p>Select a template to view or create a new one</p>
+        <p>${t('history_empty_select_template')}</p>
       </div>
     `;
   }
@@ -723,7 +750,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Clear variables
     templateVariablesDiv.innerHTML = `
-      <p class="no-variables">No variables detected. Add variables using the format {{variable_name}} in your template.</p>
+      <p class="no-variables">${t('history_no_variables_detected')}</p>
     `;
     
     // Open modal
@@ -746,7 +773,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       ).join('');
     } else {
       templateVariablesDiv.innerHTML = `
-        <p class="no-variables">No variables detected. Add variables using the format {{variable_name}} in your template.</p>
+        <p class="no-variables">${t('history_no_variables_detected')}</p>
       `;
     }
   }

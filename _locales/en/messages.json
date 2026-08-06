@@ -1,0 +1,1268 @@
+{
+  "popup_history_btn_title": {
+    "message": "Response History"
+  },
+  "popup_settings_btn_title": {
+    "message": "Settings"
+  },
+  "popup_tab_response": {
+    "message": "Email Response"
+  },
+  "popup_tab_sentiment": {
+    "message": "Sentiment Analysis"
+  },
+  "popup_tab_summary": {
+    "message": "Summarization"
+  },
+  "popup_tab_translate": {
+    "message": "Translation"
+  },
+  "popup_reply_intent_heading": {
+    "message": "What do you want to reply?"
+  },
+  "popup_optional": {
+    "message": "(Optional)"
+  },
+  "popup_context_placeholder": {
+    "message": "Jot down the gist, however roughly: \"ok, va bene\" — \"no, se ne riparla la settimana prossima\" — \"chiedi il preventivo aggiornato\". Write it in Italian even if the email is in English: only the meaning is taken, the reply comes out in the language of the message."
+  },
+  "popup_quick_ok": {
+    "message": "OK"
+  },
+  "popup_quick_ko": {
+    "message": "Non OK"
+  },
+  "popup_options_heading": {
+    "message": "Response Options"
+  },
+  "popup_label_style": {
+    "message": "Style:"
+  },
+  "popup_style_professional_title": {
+    "message": "Professional and formal"
+  },
+  "popup_style_friendly_title": {
+    "message": "Friendly and conversational"
+  },
+  "popup_style_concise_title": {
+    "message": "Brief and to-the-point"
+  },
+  "popup_style_detailed_title": {
+    "message": "Detailed and comprehensive"
+  },
+  "popup_style_professional": {
+    "message": "Professional"
+  },
+  "popup_style_friendly": {
+    "message": "Friendly"
+  },
+  "popup_style_concise": {
+    "message": "Concise"
+  },
+  "popup_style_detailed": {
+    "message": "Detailed"
+  },
+  "popup_label_length": {
+    "message": "Length:"
+  },
+  "popup_length_short_title": {
+    "message": "Brief, to-the-point (1-2 paragraphs)"
+  },
+  "popup_length_medium_title": {
+    "message": "Standard length (2-3 paragraphs)"
+  },
+  "popup_length_long_title": {
+    "message": "Detailed, comprehensive (4+ paragraphs)"
+  },
+  "popup_length_medium": {
+    "message": "Medium"
+  },
+  "popup_length_short": {
+    "message": "Short"
+  },
+  "popup_length_long": {
+    "message": "Long"
+  },
+  "popup_combo_default": {
+    "message": "You selected: Professional, Medium combination"
+  },
+  "popup_label_content_controls": {
+    "message": "Content Controls:"
+  },
+  "popup_check_action_items": {
+    "message": "Action Items"
+  },
+  "popup_check_action_items_title": {
+    "message": "Highlight next steps or actions needed"
+  },
+  "popup_check_address_questions": {
+    "message": "Address Questions"
+  },
+  "popup_check_address_questions_title": {
+    "message": "Identify and answer questions from the original email"
+  },
+  "popup_check_bullet_points": {
+    "message": "Bullet Points"
+  },
+  "popup_check_bullet_points_title": {
+    "message": "Format response with bullet points where appropriate"
+  },
+  "popup_check_sentiment": {
+    "message": "Sentiment Analysis"
+  },
+  "popup_check_sentiment_title": {
+    "message": "Analyze and respond to the emotional tone of the original email"
+  },
+  "popup_check_followup": {
+    "message": "Follow-up Schedule"
+  },
+  "popup_check_followup_title": {
+    "message": "Include appropriate follow-up timing suggestions based on email content"
+  },
+  "popup_label_tone_adjustments": {
+    "message": "Tone Adjustments:"
+  },
+  "popup_label_formality": {
+    "message": "Formality:"
+  },
+  "popup_formality_min": {
+    "message": "Casual"
+  },
+  "popup_formality_max": {
+    "message": "Formal"
+  },
+  "popup_label_enthusiasm": {
+    "message": "Enthusiasm:"
+  },
+  "popup_enthusiasm_min": {
+    "message": "Reserved"
+  },
+  "popup_enthusiasm_max": {
+    "message": "Enthusiastic"
+  },
+  "popup_generated_response_heading": {
+    "message": "Generated Response"
+  },
+  "popup_variant_1": {
+    "message": "Variant 1"
+  },
+  "popup_generate_variants_btn": {
+    "message": "Generate Variants"
+  },
+  "popup_empty_response": {
+    "message": "Click \"Generate Response\" to create an email reply"
+  },
+  "popup_generate_btn": {
+    "message": "Generate Response"
+  },
+  "popup_copy_btn": {
+    "message": "Copy"
+  },
+  "popup_insert_btn": {
+    "message": "Reply"
+  },
+  "popup_insert_all_btn": {
+    "message": "Reply All"
+  },
+  "popup_sentiment_heading": {
+    "message": "Email Sentiment Analysis"
+  },
+  "popup_sentiment_description": {
+    "message": "Analyze the emotional tone and key sentiments in the email to better understand the sender's intent and emotional state."
+  },
+  "popup_label_analysis_depth": {
+    "message": "Analysis Depth:"
+  },
+  "popup_depth_basic": {
+    "message": "Basic Analysis"
+  },
+  "popup_depth_detailed": {
+    "message": "Detailed Analysis"
+  },
+  "popup_depth_comprehensive": {
+    "message": "Comprehensive Analysis"
+  },
+  "popup_sentiment_focus_label": {
+    "message": "Focus Areas:"
+  },
+  "popup_check_emotions": {
+    "message": "Emotional Tone"
+  },
+  "popup_check_urgency": {
+    "message": "Urgency Level"
+  },
+  "popup_check_formality_level": {
+    "message": "Formality Level"
+  },
+  "popup_check_subtext": {
+    "message": "Implied Subtext"
+  },
+  "popup_empty_sentiment": {
+    "message": "Click \"Analyze Sentiment\" to visualize the email's emotional tone"
+  },
+  "popup_analyze_sentiment_btn": {
+    "message": "Analyze Sentiment"
+  },
+  "popup_export_sentiment_btn": {
+    "message": "Export Analysis"
+  },
+  "popup_summary_heading": {
+    "message": "Email Summarization"
+  },
+  "popup_summary_description": {
+    "message": "Generate concise summaries of long email threads or complex messages to quickly understand the key points."
+  },
+  "popup_label_summary_type": {
+    "message": "Summary Type:"
+  },
+  "popup_summary_type_bullet": {
+    "message": "Bullet Points"
+  },
+  "popup_summary_type_paragraph": {
+    "message": "Paragraph"
+  },
+  "popup_summary_type_structured": {
+    "message": "Structured (Topics & Details)"
+  },
+  "popup_label_summary_length": {
+    "message": "Summary Length:"
+  },
+  "popup_summary_length_very_short": {
+    "message": "Very Short (1-2 sentences)"
+  },
+  "popup_summary_length_short": {
+    "message": "Short (3-4 sentences)"
+  },
+  "popup_summary_length_medium": {
+    "message": "Medium (1 paragraph)"
+  },
+  "popup_summary_length_detailed": {
+    "message": "Detailed (2-3 paragraphs)"
+  },
+  "popup_summary_focus_label": {
+    "message": "Focus Areas:"
+  },
+  "popup_check_key_points": {
+    "message": "Key Points"
+  },
+  "popup_check_questions": {
+    "message": "Questions"
+  },
+  "popup_check_deadlines": {
+    "message": "Deadlines"
+  },
+  "popup_empty_summary": {
+    "message": "Click \"Generate Summary\" to create a concise summary of the email"
+  },
+  "popup_generate_summary_btn": {
+    "message": "Generate Summary"
+  },
+  "popup_insert_in_reply_btn": {
+    "message": "Insert in Reply"
+  },
+  "popup_translate_heading": {
+    "message": "Email Translation"
+  },
+  "popup_translate_description": {
+    "message": "Translate email content to and from different languages with advanced language detection."
+  },
+  "popup_label_source_language": {
+    "message": "Source Language:"
+  },
+  "popup_label_target_language": {
+    "message": "Target Language:"
+  },
+  "popup_lang_auto": {
+    "message": "Auto-detect"
+  },
+  "popup_lang_en": {
+    "message": "English"
+  },
+  "popup_lang_es": {
+    "message": "Spanish"
+  },
+  "popup_lang_fr": {
+    "message": "French"
+  },
+  "popup_lang_de": {
+    "message": "German"
+  },
+  "popup_lang_it": {
+    "message": "Italian"
+  },
+  "popup_lang_pt": {
+    "message": "Portuguese"
+  },
+  "popup_lang_ru": {
+    "message": "Russian"
+  },
+  "popup_lang_zh": {
+    "message": "Chinese"
+  },
+  "popup_lang_ja": {
+    "message": "Japanese"
+  },
+  "popup_lang_ko": {
+    "message": "Korean"
+  },
+  "popup_lang_ar": {
+    "message": "Arabic"
+  },
+  "popup_lang_hi": {
+    "message": "Hindi"
+  },
+  "popup_label_translation_options": {
+    "message": "Translation Options:"
+  },
+  "popup_check_preserve_formatting": {
+    "message": "Preserve Formatting"
+  },
+  "popup_check_formal_language": {
+    "message": "Formal Language"
+  },
+  "popup_check_include_original": {
+    "message": "Include Original Text"
+  },
+  "popup_check_cultural_adaptation": {
+    "message": "Cultural Adaptation"
+  },
+  "popup_empty_translation": {
+    "message": "Click \"Translate Email\" to translate the content"
+  },
+  "popup_translate_btn": {
+    "message": "Translate Email"
+  },
+  "popup_generating_response": {
+    "message": "Generating response..."
+  },
+  "popup_response_generated": {
+    "message": "Response generated successfully!"
+  },
+  "popup_variant": {
+    "message": "Variant"
+  },
+  "popup_generating_variant": {
+    "message": "Generating variant..."
+  },
+  "popup_variant_generated": {
+    "message": "Response variant generated successfully!"
+  },
+  "popup_response_copied": {
+    "message": "Response copied to clipboard!"
+  },
+  "popup_inserting_reply": {
+    "message": "Inserting response into reply..."
+  },
+  "popup_inserting_reply_all": {
+    "message": "Inserting response into reply all..."
+  },
+  "popup_inserted_reply": {
+    "message": "Response inserted into reply!"
+  },
+  "popup_inserted_reply_all": {
+    "message": "Response inserted into reply all!"
+  },
+  "popup_loaded_saved_response": {
+    "message": "Loaded previously generated response"
+  },
+  "popup_response_from_history": {
+    "message": "Response loaded from history"
+  },
+  "popup_analyzing_sentiment": {
+    "message": "Analyzing sentiment..."
+  },
+  "popup_generating_detailed_analysis": {
+    "message": "Generating detailed analysis..."
+  },
+  "popup_sentiment_completed": {
+    "message": "Sentiment analysis completed!"
+  },
+  "popup_sentiment_copied": {
+    "message": "Sentiment analysis copied to clipboard!"
+  },
+  "popup_overall_sentiment": {
+    "message": "Overall Sentiment"
+  },
+  "popup_sentiment_negative": {
+    "message": "Negative"
+  },
+  "popup_sentiment_neutral": {
+    "message": "Neutral"
+  },
+  "popup_sentiment_positive": {
+    "message": "Positive"
+  },
+  "popup_primary_emotion": {
+    "message": "Primary Emotion"
+  },
+  "popup_communication_style": {
+    "message": "Communication Style"
+  },
+  "popup_formality": {
+    "message": "Formality"
+  },
+  "popup_urgency": {
+    "message": "Urgency"
+  },
+  "popup_clarity": {
+    "message": "Clarity"
+  },
+  "popup_key_phrases": {
+    "message": "Key Phrases"
+  },
+  "popup_implied_subtext": {
+    "message": "Implied Subtext"
+  },
+  "popup_possible_intentions": {
+    "message": "Possible Intentions"
+  },
+  "popup_export_report_title": {
+    "message": "SENTIMENT ANALYSIS REPORT"
+  },
+  "popup_export_overall_sentiment": {
+    "message": "OVERALL SENTIMENT"
+  },
+  "popup_export_score": {
+    "message": "Score"
+  },
+  "popup_export_emotions": {
+    "message": "EMOTIONS"
+  },
+  "popup_export_primary": {
+    "message": "Primary"
+  },
+  "popup_export_secondary": {
+    "message": "Secondary"
+  },
+  "popup_export_intensity": {
+    "message": "Intensity"
+  },
+  "popup_export_communication_style": {
+    "message": "COMMUNICATION STYLE"
+  },
+  "popup_export_key_phrases": {
+    "message": "KEY PHRASES"
+  },
+  "popup_export_implied_subtext": {
+    "message": "IMPLIED SUBTEXT"
+  },
+  "popup_export_possible_intentions": {
+    "message": "POSSIBLE INTENTIONS"
+  },
+  "popup_export_summary": {
+    "message": "SUMMARY"
+  },
+  "popup_export_generated_on": {
+    "message": "Generated on"
+  },
+  "popup_export_at": {
+    "message": "at"
+  },
+  "popup_generating_summary": {
+    "message": "Generating summary..."
+  },
+  "popup_summary_generated": {
+    "message": "Summary generated successfully!"
+  },
+  "popup_summary_copied": {
+    "message": "Summary copied to clipboard!"
+  },
+  "popup_inserting_summary": {
+    "message": "Inserting summary into reply..."
+  },
+  "popup_summary_insert_label": {
+    "message": "Summary of original email:"
+  },
+  "popup_summary_inserted": {
+    "message": "Summary inserted successfully!"
+  },
+  "popup_translating_email": {
+    "message": "Translating email..."
+  },
+  "popup_translation_completed": {
+    "message": "Translation completed successfully!"
+  },
+  "popup_translation_copied": {
+    "message": "Translation copied to clipboard!"
+  },
+  "popup_inserting_translation": {
+    "message": "Inserting translation into reply..."
+  },
+  "popup_translation_inserted": {
+    "message": "Translation inserted successfully!"
+  },
+  "popup_original_label": {
+    "message": "Original"
+  },
+  "popup_translation_label": {
+    "message": "Translation"
+  },
+  "popup_combo_selected": {
+    "message": "You selected:"
+  },
+  "err_generic": {
+    "message": "Error"
+  },
+  "err_unknown": {
+    "message": "Unknown error"
+  },
+  "err_no_email_selected": {
+    "message": "No email selected. Please select an email and try again."
+  },
+  "err_loading_email_info": {
+    "message": "Error loading email information. Please try again."
+  },
+  "err_generating_response": {
+    "message": "Error generating response"
+  },
+  "err_generate_response_first": {
+    "message": "Generate a response first before creating variants."
+  },
+  "err_generating_variant": {
+    "message": "Error generating variant"
+  },
+  "err_no_response_yet": {
+    "message": "No response generated yet."
+  },
+  "err_copy_clipboard": {
+    "message": "Error copying to clipboard"
+  },
+  "err_inserting_response": {
+    "message": "Error inserting response"
+  },
+  "err_saving_popup_state": {
+    "message": "Error saving popup state"
+  },
+  "err_loading_popup_state": {
+    "message": "Error loading popup state"
+  },
+  "err_saving_response": {
+    "message": "Error saving response for email"
+  },
+  "err_loading_saved_response": {
+    "message": "Error loading saved response for email"
+  },
+  "err_primary_model_failed": {
+    "message": "Primary model failed"
+  },
+  "err_all_fallbacks_failed": {
+    "message": "All fallback models also failed."
+  },
+  "err_unknown_model": {
+    "message": "Unknown model"
+  },
+  "err_deepseek_key_missing": {
+    "message": "DeepSeek API key is not set"
+  },
+  "err_gemini_key_missing": {
+    "message": "Gemini API key is not set"
+  },
+  "err_openai_key_missing": {
+    "message": "OpenAI API key is not set"
+  },
+  "err_openai_key_missing_gpt4o": {
+    "message": "OpenAI API key is not set for GPT-4o"
+  },
+  "err_mistral_key_missing": {
+    "message": "Mistral API key is not set"
+  },
+  "err_ollama_host_missing": {
+    "message": "Ollama host is not set"
+  },
+  "err_ollama_model_missing": {
+    "message": "Ollama model is not set"
+  },
+  "err_deepseek_api": {
+    "message": "DeepSeek API error"
+  },
+  "err_deepseek_empty_response": {
+    "message": "DeepSeek returned an empty response. Please try again."
+  },
+  "err_deepseek_invalid_key": {
+    "message": "invalid API key"
+  },
+  "err_deepseek_insufficient_balance": {
+    "message": "insufficient balance, top up at platform.deepseek.com"
+  },
+  "err_deepseek_rate_limited": {
+    "message": "too many concurrent requests, try again shortly"
+  },
+  "err_openai_api": {
+    "message": "OpenAI API error"
+  },
+  "err_gemini_api": {
+    "message": "Gemini API error"
+  },
+  "err_gemini_no_response": {
+    "message": "No response from Gemini API"
+  },
+  "err_mistral_api": {
+    "message": "Mistral API error"
+  },
+  "err_mistral_no_response": {
+    "message": "No response generated from Mistral API"
+  },
+  "err_ollama_api": {
+    "message": "Ollama API error"
+  },
+  "err_ollama_no_response": {
+    "message": "No response from Ollama API"
+  },
+  "err_ollama_chat_api": {
+    "message": "Ollama chat API error"
+  },
+  "err_ollama_chat_no_response": {
+    "message": "No response from Ollama chat API"
+  },
+  "err_deepseek_key_not_found": {
+    "message": "DeepSeek API key not found. Please set it in the settings."
+  },
+  "err_gemini_key_not_found": {
+    "message": "Gemini API key not found. Please set it in the settings."
+  },
+  "err_openai_key_not_found": {
+    "message": "OpenAI API key not found. Please set it in the settings."
+  },
+  "err_mistral_key_not_found": {
+    "message": "Mistral API key not found. Please set it in the settings."
+  },
+  "err_ollama_host_not_found": {
+    "message": "Ollama host not configured. Please set it in the settings."
+  },
+  "err_analyzing_sentiment": {
+    "message": "Error analyzing sentiment"
+  },
+  "err_no_sentiment_to_export": {
+    "message": "No sentiment analysis to export."
+  },
+  "err_copy_sentiment_failed": {
+    "message": "Failed to copy sentiment analysis to clipboard."
+  },
+  "err_exporting_sentiment": {
+    "message": "Error exporting sentiment analysis"
+  },
+  "err_parse_sentiment": {
+    "message": "Failed to parse sentiment analysis response. The AI response format was unexpected."
+  },
+  "err_generating_summary": {
+    "message": "Error generating summary"
+  },
+  "err_no_summary_to_copy": {
+    "message": "No summary to copy."
+  },
+  "err_copy_summary_failed": {
+    "message": "Failed to copy summary to clipboard."
+  },
+  "err_no_summary_to_insert": {
+    "message": "No summary to insert."
+  },
+  "err_inserting_summary": {
+    "message": "Error inserting summary"
+  },
+  "err_translating_email": {
+    "message": "Error translating email"
+  },
+  "err_no_translation_to_copy": {
+    "message": "No translation to copy."
+  },
+  "err_copy_translation_failed": {
+    "message": "Failed to copy translation to clipboard."
+  },
+  "err_no_translation_to_insert": {
+    "message": "No translation to insert."
+  },
+  "err_inserting_translation": {
+    "message": "Error inserting translation"
+  },
+  "options_page_title": {
+    "message": "SmartReply AI - Settings"
+  },
+  "options_header_title": {
+    "message": "SmartReply AI - Settings"
+  },
+  "options_model_section_title": {
+    "message": "AI Model Selection"
+  },
+  "options_model_select_label": {
+    "message": "Select AI Model:"
+  },
+  "options_provider_deepseek": {
+    "message": "DeepSeek"
+  },
+  "options_provider_gemini": {
+    "message": "Gemini Pro"
+  },
+  "options_provider_openai": {
+    "message": "OpenAI O3-mini"
+  },
+  "options_provider_gpt4o": {
+    "message": "OpenAI GPT-4o"
+  },
+  "options_provider_mistral": {
+    "message": "Mistral AI"
+  },
+  "options_provider_ollama": {
+    "message": "Ollama (Local LLM)"
+  },
+  "options_model_select_desc": {
+    "message": "Choose which AI model to use for generating responses"
+  },
+  "options_deepseek_model_label": {
+    "message": "DeepSeek Model:"
+  },
+  "options_deepseek_v4_flash": {
+    "message": "V4 Flash (fast and cheap, recommended)"
+  },
+  "options_deepseek_v4_pro": {
+    "message": "V4 Pro (higher quality, ~3x the cost)"
+  },
+  "options_deepseek_model_desc": {
+    "message": "V4 Flash costs roughly $0.16 per 1000 generated replies. Reasoning mode is always disabled for replies: it would multiply cost and latency for no gain here."
+  },
+  "options_reasoning_effort_label": {
+    "message": "Reasoning Effort (for O3-mini only):"
+  },
+  "options_reasoning_low": {
+    "message": "Low"
+  },
+  "options_reasoning_medium": {
+    "message": "Medium"
+  },
+  "options_reasoning_high": {
+    "message": "High"
+  },
+  "options_reasoning_effort_desc": {
+    "message": "Control the reasoning effort for OpenAI O3-mini model (higher = more thorough but slower)"
+  },
+  "options_api_keys_section_title": {
+    "message": "API Keys"
+  },
+  "options_deepseek_key_label": {
+    "message": "DeepSeek API Key:"
+  },
+  "options_deepseek_key_placeholder": {
+    "message": "Enter your DeepSeek API key"
+  },
+  "options_deepseek_key_link": {
+    "message": "Get a DeepSeek API key"
+  },
+  "options_deepseek_key_desc": {
+    "message": "prepaid, so keep an eye on the balance: an empty one fails with \"insufficient balance\"."
+  },
+  "options_test_deepseek_btn": {
+    "message": "Test DeepSeek Connection"
+  },
+  "options_gemini_key_label": {
+    "message": "Gemini API Key:"
+  },
+  "options_gemini_key_placeholder": {
+    "message": "Enter your Gemini API key"
+  },
+  "options_gemini_key_link": {
+    "message": "Get a Gemini API key"
+  },
+  "options_test_gemini_btn": {
+    "message": "Test Gemini Connection"
+  },
+  "options_openai_key_label": {
+    "message": "OpenAI API Key (for O3-mini and GPT-4o):"
+  },
+  "options_openai_key_placeholder": {
+    "message": "Enter your OpenAI API key"
+  },
+  "options_openai_key_link": {
+    "message": "Get an OpenAI API key"
+  },
+  "options_openai_key_desc": {
+    "message": "Works for both O3-mini and GPT-4o models"
+  },
+  "options_test_openai_btn": {
+    "message": "Test OpenAI Connection"
+  },
+  "options_mistral_key_label": {
+    "message": "Mistral API Key:"
+  },
+  "options_mistral_key_placeholder": {
+    "message": "Enter your Mistral API key"
+  },
+  "options_mistral_key_link": {
+    "message": "Get a Mistral API key"
+  },
+  "options_mistral_key_desc": {
+    "message": "Used for Mistral Small model"
+  },
+  "options_test_mistral_btn": {
+    "message": "Test Mistral Connection"
+  },
+  "options_ollama_host_label": {
+    "message": "Ollama Host URL:"
+  },
+  "options_ollama_host_desc": {
+    "message": "URL for your Ollama instance (e.g., http://localhost:11434)"
+  },
+  "options_ollama_model_label": {
+    "message": "Ollama Model:"
+  },
+  "options_ollama_custom_option": {
+    "message": "Custom Model"
+  },
+  "options_ollama_model_desc": {
+    "message": "Select which Ollama model to use"
+  },
+  "options_ollama_custom_label": {
+    "message": "Custom Ollama Model Name:"
+  },
+  "options_ollama_custom_placeholder": {
+    "message": "Enter model name (e.g., llama3:instruct)"
+  },
+  "options_ollama_custom_desc": {
+    "message": "Enter the name of your custom Ollama model"
+  },
+  "options_test_ollama_btn": {
+    "message": "Test Ollama Connection"
+  },
+  "options_fallback_section_title": {
+    "message": "Model Fallback Mechanism"
+  },
+  "options_enable_fallback_label": {
+    "message": "Enable Model Fallback"
+  },
+  "options_enable_fallback_desc": {
+    "message": "If enabled, the system will automatically try alternative models if the primary model fails"
+  },
+  "options_fallback_order_title": {
+    "message": "Fallback Order:"
+  },
+  "options_fallback_order_desc": {
+    "message": "Models will be tried in the order listed below if the primary model fails"
+  },
+  "options_fallback_1_label": {
+    "message": "First Fallback:"
+  },
+  "options_fallback_2_label": {
+    "message": "Second Fallback:"
+  },
+  "options_fallback_3_label": {
+    "message": "Third Fallback:"
+  },
+  "options_fallback_none": {
+    "message": "None"
+  },
+  "options_signature_section_title": {
+    "message": "Email Signature"
+  },
+  "options_signature_label": {
+    "message": "Your Email Signature:"
+  },
+  "options_signature_placeholder": {
+    "message": "Enter your email signature"
+  },
+  "options_signature_desc": {
+    "message": "This signature will be automatically added to all generated responses"
+  },
+  "options_save_btn": {
+    "message": "Save Settings"
+  },
+  "options_footer": {
+    "message": "SmartReply AI Extension © 2025"
+  },
+  "options_testing_deepseek": {
+    "message": "Testing DeepSeek connection..."
+  },
+  "options_deepseek_test_ok": {
+    "message": "DeepSeek API connection successful!"
+  },
+  "options_testing_gemini": {
+    "message": "Testing Gemini connection..."
+  },
+  "options_gemini_test_ok": {
+    "message": "Gemini API connection successful!"
+  },
+  "options_testing_openai": {
+    "message": "Testing OpenAI connection..."
+  },
+  "options_openai_test_ok_both": {
+    "message": "OpenAI API connection successful for both O3-mini and GPT-4o!"
+  },
+  "options_openai_test_o3_only": {
+    "message": "O3-mini connection successful, but GPT-4o failed: "
+  },
+  "options_openai_test_gpt4o_only": {
+    "message": "GPT-4o connection successful, but O3-mini failed: "
+  },
+  "options_testing_mistral": {
+    "message": "Testing Mistral connection..."
+  },
+  "options_mistral_test_ok": {
+    "message": "Mistral API connection successful!"
+  },
+  "options_testing_ollama": {
+    "message": "Testing Ollama connection..."
+  },
+  "options_ollama_test_ok": {
+    "message": "Ollama connection successful!"
+  },
+  "options_ollama_available_models": {
+    "message": "Available models:"
+  },
+  "options_ollama_model_available": {
+    "message": "Selected model is available."
+  },
+  "options_settings_saved": {
+    "message": "Settings saved successfully!"
+  },
+  "err_generic_prefix": {
+    "message": "Error: "
+  },
+  "err_loading_settings": {
+    "message": "Error loading settings: "
+  },
+  "err_saving_settings": {
+    "message": "Error saving settings: "
+  },
+  "err_deepseek_key_required": {
+    "message": "DeepSeek API key is required"
+  },
+  "err_gemini_key_required": {
+    "message": "Gemini API key is required"
+  },
+  "err_openai_key_required": {
+    "message": "OpenAI API key is required"
+  },
+  "err_mistral_key_required": {
+    "message": "Mistral API key is required"
+  },
+  "err_ollama_host_required": {
+    "message": "Ollama host URL is required"
+  },
+  "err_ollama_custom_model_required": {
+    "message": "Custom Ollama model name is required"
+  },
+  "err_openai_test_failed": {
+    "message": "OpenAI API connection failed: "
+  },
+  "err_deepseek_key_required_primary": {
+    "message": "DeepSeek API key is required for the selected model"
+  },
+  "err_gemini_key_required_primary": {
+    "message": "Gemini API key is required for the selected model"
+  },
+  "err_openai_key_required_primary": {
+    "message": "OpenAI API key is required for the selected model"
+  },
+  "err_openai_key_required_gpt4o": {
+    "message": "OpenAI API key is required for GPT-4o model"
+  },
+  "err_mistral_key_required_primary": {
+    "message": "Mistral API key is required for the selected model"
+  },
+  "err_ollama_host_required_primary": {
+    "message": "Ollama host URL is required for the selected model"
+  },
+  "err_fallback_duplicate_primary": {
+    "message": "Fallback models cannot include the primary model"
+  },
+  "err_gemini_key_required_fallback": {
+    "message": "Gemini API key is required for fallback to Gemini"
+  },
+  "err_openai_key_required_fallback": {
+    "message": "OpenAI API key is required for fallback to OpenAI"
+  },
+  "err_openai_key_required_fallback_gpt4o": {
+    "message": "OpenAI API key is required for fallback to GPT-4o"
+  },
+  "err_deepseek_key_required_fallback": {
+    "message": "DeepSeek API key is required for fallback to DeepSeek"
+  },
+  "err_mistral_key_required_fallback": {
+    "message": "Mistral API key is required for fallback to Mistral"
+  },
+  "err_ollama_host_required_fallback": {
+    "message": "Ollama host URL is required for fallback to Ollama"
+  },
+  "err_ollama_custom_model_required_fallback": {
+    "message": "Custom Ollama model name is required for fallback to Ollama"
+  },
+  "history_page_title": {
+    "message": "SmartReply AI - History & Templates"
+  },
+  "history_tab_history": {
+    "message": "Response History"
+  },
+  "history_tab_templates": {
+    "message": "Templates"
+  },
+  "history_search_placeholder": {
+    "message": "Search responses..."
+  },
+  "history_filter_all_categories": {
+    "message": "All Categories"
+  },
+  "history_cat_business": {
+    "message": "Business"
+  },
+  "history_cat_personal": {
+    "message": "Personal"
+  },
+  "history_cat_follow_up": {
+    "message": "Follow-up"
+  },
+  "history_cat_thank_you": {
+    "message": "Thank You"
+  },
+  "history_cat_introduction": {
+    "message": "Introduction"
+  },
+  "history_cat_request": {
+    "message": "Request"
+  },
+  "history_cat_scheduling": {
+    "message": "Scheduling"
+  },
+  "history_cat_inquiry": {
+    "message": "Inquiry"
+  },
+  "history_cat_informational": {
+    "message": "Informational"
+  },
+  "history_cat_problem_solving": {
+    "message": "Problem Solving"
+  },
+  "history_cat_general": {
+    "message": "General"
+  },
+  "history_filter_all_styles": {
+    "message": "All Styles"
+  },
+  "history_style_professional": {
+    "message": "Professional"
+  },
+  "history_style_friendly": {
+    "message": "Friendly"
+  },
+  "history_style_concise": {
+    "message": "Concise"
+  },
+  "history_style_detailed": {
+    "message": "Detailed"
+  },
+  "history_filter_all_lengths": {
+    "message": "All Lengths"
+  },
+  "history_len_short": {
+    "message": "Short"
+  },
+  "history_len_medium": {
+    "message": "Medium"
+  },
+  "history_len_long": {
+    "message": "Long"
+  },
+  "history_btn_filters": {
+    "message": "Filters"
+  },
+  "history_btn_clear": {
+    "message": "Clear"
+  },
+  "history_section_tags": {
+    "message": "Tags"
+  },
+  "history_tag_urgent": {
+    "message": "Urgent"
+  },
+  "history_tag_action_required": {
+    "message": "Action Required"
+  },
+  "history_tag_question": {
+    "message": "Question"
+  },
+  "history_tag_meeting": {
+    "message": "Meeting"
+  },
+  "history_tag_feedback": {
+    "message": "Feedback"
+  },
+  "history_tag_deadline": {
+    "message": "Deadline"
+  },
+  "history_tag_collaboration": {
+    "message": "Collaboration"
+  },
+  "history_tag_report": {
+    "message": "Report"
+  },
+  "history_tag_approval": {
+    "message": "Approval"
+  },
+  "history_tag_fyi": {
+    "message": "FYI"
+  },
+  "history_section_date_range": {
+    "message": "Date Range"
+  },
+  "history_label_from": {
+    "message": "From:"
+  },
+  "history_label_to": {
+    "message": "To:"
+  },
+  "history_section_model": {
+    "message": "AI Model"
+  },
+  "history_filter_all_models": {
+    "message": "All Models"
+  },
+  "history_btn_apply_filters": {
+    "message": "Apply Filters"
+  },
+  "history_btn_reset": {
+    "message": "Reset"
+  },
+  "history_empty_no_history": {
+    "message": "No response history found"
+  },
+  "history_page_info_default": {
+    "message": "Page 1 of 1"
+  },
+  "history_empty_select_response": {
+    "message": "Select a response to view details"
+  },
+  "history_tpl_search_placeholder": {
+    "message": "Search templates..."
+  },
+  "history_btn_new_template": {
+    "message": "New Template"
+  },
+  "history_empty_no_templates": {
+    "message": "No templates found"
+  },
+  "history_empty_select_template": {
+    "message": "Select a template to view or create a new one"
+  },
+  "history_modal_new_template": {
+    "message": "Create New Template"
+  },
+  "history_label_template_name": {
+    "message": "Template Name"
+  },
+  "history_ph_template_name": {
+    "message": "Enter a name for this template"
+  },
+  "history_label_category": {
+    "message": "Category"
+  },
+  "history_label_template_content": {
+    "message": "Template Content"
+  },
+  "history_tpl_help_vars_before": {
+    "message": "Use variables in the format"
+  },
+  "history_tpl_help_vars_after": {
+    "message": "for dynamic content."
+  },
+  "history_tpl_help_example": {
+    "message": "Example:"
+  },
+  "history_ph_template_content": {
+    "message": "Enter your template content here..."
+  },
+  "history_label_template_variables": {
+    "message": "Template Variables"
+  },
+  "history_no_variables_detected": {
+    "message": "No variables detected. Add variables using the format {{variable_name}} in your template."
+  },
+  "history_btn_save_template": {
+    "message": "Save Template"
+  },
+  "history_btn_cancel": {
+    "message": "Cancel"
+  },
+  "history_confirm_clear": {
+    "message": "Are you sure you want to clear all response history? This action cannot be undone."
+  },
+  "history_alert_name_required": {
+    "message": "Please enter a template name"
+  },
+  "history_alert_content_required": {
+    "message": "Please enter template content"
+  },
+  "history_no_subject": {
+    "message": "No Subject"
+  },
+  "history_no_recipient": {
+    "message": "No Recipient"
+  },
+  "history_page": {
+    "message": "Page"
+  },
+  "history_page_of": {
+    "message": "of"
+  },
+  "history_error_loading_history": {
+    "message": "Error loading history"
+  },
+  "history_error_loading_templates": {
+    "message": "Error loading templates"
+  },
+  "history_field_date": {
+    "message": "Date:"
+  },
+  "history_field_recipient": {
+    "message": "Recipient:"
+  },
+  "history_field_category": {
+    "message": "Category:"
+  },
+  "history_field_model": {
+    "message": "Model:"
+  },
+  "history_field_variant": {
+    "message": "Variant:"
+  },
+  "history_field_style_length": {
+    "message": "Style & Length:"
+  },
+  "history_field_tags": {
+    "message": "Tags:"
+  },
+  "history_not_specified": {
+    "message": "Not specified"
+  },
+  "history_no_tags": {
+    "message": "No tags"
+  },
+  "history_btn_template": {
+    "message": "Template"
+  },
+  "history_title_save_as_template": {
+    "message": "Save as template for future use"
+  },
+  "history_btn_delete": {
+    "message": "Delete"
+  },
+  "history_title_delete_response": {
+    "message": "Delete this response"
+  },
+  "history_response_content": {
+    "message": "Response Content"
+  },
+  "history_confirm_delete_response": {
+    "message": "Are you sure you want to delete this response?"
+  },
+  "history_default_template_name": {
+    "message": "Response Template"
+  },
+  "history_more_variables": {
+    "message": "more"
+  },
+  "history_no_variables_found": {
+    "message": "No variables found in this template."
+  },
+  "history_btn_edit": {
+    "message": "Edit"
+  },
+  "history_confirm_delete_template": {
+    "message": "Are you sure you want to delete the template \"${template.name}\"?"
+  }
+}

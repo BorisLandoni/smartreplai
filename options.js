@@ -167,44 +167,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   } catch (error) {
     console.error('Error loading settings:', error);
-    showMainStatus('Error loading settings: ' + error.message, 'error');
+    showMainStatus(t('err_loading_settings') + error.message, 'error');
   }
   
   // Test Gemini connection button click handler
   testGeminiBtn.addEventListener('click', async () => {
     try {
-      geminiStatus.textContent = 'Testing Gemini connection...';
+      geminiStatus.textContent = t('options_testing_gemini');
       geminiStatus.className = 'status-message status-info';
-      
+
       const apiKey = geminiApiKeyInput.value.trim();
       if (!apiKey) {
-        showStatus(geminiStatus, 'Gemini API key is required', 'error');
+        showStatus(geminiStatus, t('err_gemini_key_required'), 'error');
         return;
       }
-      
+
       const result = await browser.runtime.sendMessage({
         action: 'testConnection',
         model: 'gemini',
         apiKey
       });
-      
-      showStatus(geminiStatus, result.connected ? 'Gemini API connection successful!' : result.message, 
+
+      showStatus(geminiStatus, result.connected ? t('options_gemini_test_ok') : result.message,
                  result.connected ? 'success' : 'error');
     } catch (error) {
       console.error('Error testing Gemini connection:', error);
-      showStatus(geminiStatus, `Error: ${error.message}`, 'error');
+      showStatus(geminiStatus, `${t('err_generic_prefix')}${error.message}`, 'error');
     }
   });
   
   // Test OpenAI connection button click handler
   testOpenaiBtn.addEventListener('click', async () => {
     try {
-      openaiStatus.textContent = 'Testing OpenAI connection...';
+      openaiStatus.textContent = t('options_testing_openai');
       openaiStatus.className = 'status-message status-info';
-      
+
       const apiKey = openaiApiKeyInput.value.trim();
       if (!apiKey) {
-        showStatus(openaiStatus, 'OpenAI API key is required', 'error');
+        showStatus(openaiStatus, t('err_openai_key_required'), 'error');
         return;
       }
       
@@ -224,29 +224,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       // Show combined result
       if (o3Result.connected && gpt4oResult.connected) {
-        showStatus(openaiStatus, 'OpenAI API connection successful for both O3-mini and GPT-4o!', 'success');
+        showStatus(openaiStatus, t('options_openai_test_ok_both'), 'success');
       } else if (o3Result.connected) {
-        showStatus(openaiStatus, 'O3-mini connection successful, but GPT-4o failed: ' + gpt4oResult.message, 'warning');
+        showStatus(openaiStatus, t('options_openai_test_o3_only') + gpt4oResult.message, 'warning');
       } else if (gpt4oResult.connected) {
-        showStatus(openaiStatus, 'GPT-4o connection successful, but O3-mini failed: ' + o3Result.message, 'warning');
+        showStatus(openaiStatus, t('options_openai_test_gpt4o_only') + o3Result.message, 'warning');
       } else {
-        showStatus(openaiStatus, `OpenAI API connection failed: ${o3Result.message}`, 'error');
+        showStatus(openaiStatus, `${t('err_openai_test_failed')}${o3Result.message}`, 'error');
       }
     } catch (error) {
       console.error('Error testing OpenAI connection:', error);
-      showStatus(openaiStatus, `Error: ${error.message}`, 'error');
+      showStatus(openaiStatus, `${t('err_generic_prefix')}${error.message}`, 'error');
     }
   });
   
   // Test Mistral connection button click handler
   testDeepseekBtn.addEventListener('click', async () => {
     try {
-      deepseekStatus.textContent = 'Testing DeepSeek connection...';
+      deepseekStatus.textContent = t('options_testing_deepseek');
       deepseekStatus.className = 'status-message status-info';
 
       const apiKey = deepseekApiKeyInput.value.trim();
       if (!apiKey) {
-        showStatus(deepseekStatus, 'DeepSeek API key is required', 'error');
+        showStatus(deepseekStatus, t('err_deepseek_key_required'), 'error');
         return;
       }
 
@@ -257,56 +257,56 @@ document.addEventListener('DOMContentLoaded', async () => {
         modelName: deepseekModelSelect.value
       });
 
-      showStatus(deepseekStatus, result.connected ? 'DeepSeek API connection successful!' : result.message,
+      showStatus(deepseekStatus, result.connected ? t('options_deepseek_test_ok') : result.message,
                  result.connected ? 'success' : 'error');
     } catch (error) {
       console.error('Error testing DeepSeek connection:', error);
-      showStatus(deepseekStatus, `Error: ${error.message}`, 'error');
+      showStatus(deepseekStatus, `${t('err_generic_prefix')}${error.message}`, 'error');
     }
   });
 
   testMistralBtn.addEventListener('click', async () => {
     try {
-      mistralStatus.textContent = 'Testing Mistral connection...';
+      mistralStatus.textContent = t('options_testing_mistral');
       mistralStatus.className = 'status-message status-info';
-      
+
       const apiKey = mistralApiKeyInput.value.trim();
       if (!apiKey) {
-        showStatus(mistralStatus, 'Mistral API key is required', 'error');
+        showStatus(mistralStatus, t('err_mistral_key_required'), 'error');
         return;
       }
-      
+
       const result = await browser.runtime.sendMessage({
         action: 'testConnection',
         model: 'mistral',
         apiKey
       });
-      
-      showStatus(mistralStatus, result.connected ? 'Mistral API connection successful!' : result.message, 
+
+      showStatus(mistralStatus, result.connected ? t('options_mistral_test_ok') : result.message,
                  result.connected ? 'success' : 'error');
     } catch (error) {
       console.error('Error testing Mistral connection:', error);
-      showStatus(mistralStatus, `Error: ${error.message}`, 'error');
+      showStatus(mistralStatus, `${t('err_generic_prefix')}${error.message}`, 'error');
     }
   });
   
   // Test Ollama connection button click handler
   testOllamaBtn.addEventListener('click', async () => {
     try {
-      ollamaStatus.textContent = 'Testing Ollama connection...';
+      ollamaStatus.textContent = t('options_testing_ollama');
       ollamaStatus.className = 'status-message status-info';
-      
+
       const host = ollamaHostInput.value.trim();
       if (!host) {
-        showStatus(ollamaStatus, 'Ollama host URL is required', 'error');
+        showStatus(ollamaStatus, t('err_ollama_host_required'), 'error');
         return;
       }
-      
+
       let modelName = ollamaModelSelect.value;
       if (modelName === 'custom') {
         modelName = ollamaCustomModelInput.value.trim();
         if (!modelName) {
-          showStatus(ollamaStatus, 'Custom Ollama model name is required', 'error');
+          showStatus(ollamaStatus, t('err_ollama_custom_model_required'), 'error');
           return;
         }
       }
@@ -327,12 +327,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           // Create a message with the available models
           const modelsMessage = `
             <div>
-              <p>Ollama connection successful!</p>
-              <p>Available models:</p>
+              <p>${t('options_ollama_test_ok')}</p>
+              <p>${t('options_ollama_available_models')}</p>
               <ul class="models-list">
                 ${result.availableModels.map(model => `<li>${model}</li>`).join('')}
               </ul>
-              <p>${result.modelExists ? 'Selected model is available.' : result.modelMessage}</p>
+              <p>${result.modelExists ? t('options_ollama_model_available') : result.modelMessage}</p>
             </div>
           `;
           
@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (error) {
       console.error('Error testing Ollama connection:', error);
-      showStatus(ollamaStatus, `Error: ${error.message}`, 'error');
+      showStatus(ollamaStatus, `${t('err_generic_prefix')}${error.message}`, 'error');
     }
   });
   
@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // If custom option doesn't exist, create it
       const option = document.createElement('option');
       option.value = 'custom';
-      option.textContent = 'Custom Model';
+      option.textContent = t('options_ollama_custom_option');
       ollamaModelSelect.appendChild(option);
     }
     
@@ -416,37 +416,37 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       // Validate required fields based on selected model
       if (selectedModel === 'deepseek' && !deepseekApiKey) {
-        showMainStatus('DeepSeek API key is required for the selected model', 'error');
+        showMainStatus(t('err_deepseek_key_required_primary'), 'error');
         return;
       }
 
       if (selectedModel === 'gemini' && !geminiApiKey) {
-        showMainStatus('Gemini API key is required for the selected model', 'error');
+        showMainStatus(t('err_gemini_key_required_primary'), 'error');
         return;
       }
-      
+
       if (selectedModel === 'openai' && !openaiApiKey) {
-        showMainStatus('OpenAI API key is required for the selected model', 'error');
+        showMainStatus(t('err_openai_key_required_primary'), 'error');
         return;
       }
-      
+
       if (selectedModel === 'gpt4o' && !openaiApiKey) {
-        showMainStatus('OpenAI API key is required for GPT-4o model', 'error');
+        showMainStatus(t('err_openai_key_required_gpt4o'), 'error');
         return;
       }
-      
+
       if (selectedModel === 'mistral' && !mistralApiKey) {
-        showMainStatus('Mistral API key is required for the selected model', 'error');
+        showMainStatus(t('err_mistral_key_required_primary'), 'error');
         return;
       }
-      
+
       if (selectedModel === 'ollama' && !ollamaHost) {
-        showMainStatus('Ollama host URL is required for the selected model', 'error');
+        showMainStatus(t('err_ollama_host_required_primary'), 'error');
         return;
       }
-      
+
       if (selectedModel === 'ollama' && ollamaModel === 'custom' && !ollamaCustomModel) {
-        showMainStatus('Custom Ollama model name is required', 'error');
+        showMainStatus(t('err_ollama_custom_model_required'), 'error');
         return;
       }
       
@@ -454,44 +454,44 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (enableFallback) {
         // Check if any fallback model is the same as the primary model
         if (fallbackModels.some(model => model === selectedModel && model !== 'none')) {
-          showMainStatus('Fallback models cannot include the primary model', 'error');
+          showMainStatus(t('err_fallback_duplicate_primary'), 'error');
           return;
         }
-        
+
         // Check if fallback models have required API keys
         for (const fallbackModel of fallbackModels) {
           if (fallbackModel === 'gemini' && !geminiApiKey) {
-            showMainStatus('Gemini API key is required for fallback to Gemini', 'error');
+            showMainStatus(t('err_gemini_key_required_fallback'), 'error');
             return;
           }
-          
+
           if (fallbackModel === 'openai' && !openaiApiKey) {
-            showMainStatus('OpenAI API key is required for fallback to OpenAI', 'error');
+            showMainStatus(t('err_openai_key_required_fallback'), 'error');
             return;
           }
-          
+
           if (fallbackModel === 'gpt4o' && !openaiApiKey) {
-            showMainStatus('OpenAI API key is required for fallback to GPT-4o', 'error');
+            showMainStatus(t('err_openai_key_required_fallback_gpt4o'), 'error');
             return;
           }
-          
+
           if (fallbackModel === 'deepseek' && !deepseekApiKey) {
-            showMainStatus('DeepSeek API key is required for fallback to DeepSeek', 'error');
+            showMainStatus(t('err_deepseek_key_required_fallback'), 'error');
             return;
           }
 
           if (fallbackModel === 'mistral' && !mistralApiKey) {
-            showMainStatus('Mistral API key is required for fallback to Mistral', 'error');
+            showMainStatus(t('err_mistral_key_required_fallback'), 'error');
             return;
           }
-          
+
           if (fallbackModel === 'ollama' && !ollamaHost) {
-            showMainStatus('Ollama host URL is required for fallback to Ollama', 'error');
+            showMainStatus(t('err_ollama_host_required_fallback'), 'error');
             return;
           }
-          
+
           if (fallbackModel === 'ollama' && ollamaModel === 'custom' && !ollamaCustomModel) {
-            showMainStatus('Custom Ollama model name is required for fallback to Ollama', 'error');
+            showMainStatus(t('err_ollama_custom_model_required_fallback'), 'error');
             return;
           }
         }
@@ -514,10 +514,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         fallbackModels
       });
       
-      showMainStatus('Settings saved successfully!', 'success');
+      showMainStatus(t('options_settings_saved'), 'success');
     } catch (error) {
       console.error('Error saving settings:', error);
-      showMainStatus('Error saving settings: ' + error.message, 'error');
+      showMainStatus(t('err_saving_settings') + error.message, 'error');
     }
   });
   

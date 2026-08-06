@@ -1,0 +1,1268 @@
+{
+  "popup_history_btn_title": {
+    "message": "Cronologia risposte"
+  },
+  "popup_settings_btn_title": {
+    "message": "Impostazioni"
+  },
+  "popup_tab_response": {
+    "message": "Risposta email"
+  },
+  "popup_tab_sentiment": {
+    "message": "Analisi del tono"
+  },
+  "popup_tab_summary": {
+    "message": "Riassunto"
+  },
+  "popup_tab_translate": {
+    "message": "Traduzione"
+  },
+  "popup_reply_intent_heading": {
+    "message": "Cosa vuoi rispondere?"
+  },
+  "popup_optional": {
+    "message": "(facoltativo)"
+  },
+  "popup_context_placeholder": {
+    "message": "Butta giù il senso, anche alla buona: \"ok, va bene\" — \"no, se ne riparla la settimana prossima\" — \"chiedi il preventivo aggiornato\". Scrivilo pure in italiano anche se l'email è in inglese: conta solo il significato, la risposta esce nella lingua del messaggio."
+  },
+  "popup_quick_ok": {
+    "message": "OK"
+  },
+  "popup_quick_ko": {
+    "message": "Non OK"
+  },
+  "popup_options_heading": {
+    "message": "Opzioni di risposta"
+  },
+  "popup_label_style": {
+    "message": "Stile:"
+  },
+  "popup_style_professional_title": {
+    "message": "Professionale e formale"
+  },
+  "popup_style_friendly_title": {
+    "message": "Amichevole e colloquiale"
+  },
+  "popup_style_concise_title": {
+    "message": "Breve e diretto"
+  },
+  "popup_style_detailed_title": {
+    "message": "Dettagliato ed esaustivo"
+  },
+  "popup_style_professional": {
+    "message": "Professionale"
+  },
+  "popup_style_friendly": {
+    "message": "Amichevole"
+  },
+  "popup_style_concise": {
+    "message": "Conciso"
+  },
+  "popup_style_detailed": {
+    "message": "Dettagliato"
+  },
+  "popup_label_length": {
+    "message": "Lunghezza:"
+  },
+  "popup_length_short_title": {
+    "message": "Breve e diretta (1-2 paragrafi)"
+  },
+  "popup_length_medium_title": {
+    "message": "Lunghezza standard (2-3 paragrafi)"
+  },
+  "popup_length_long_title": {
+    "message": "Dettagliata ed esaustiva (4+ paragrafi)"
+  },
+  "popup_length_medium": {
+    "message": "Media"
+  },
+  "popup_length_short": {
+    "message": "Breve"
+  },
+  "popup_length_long": {
+    "message": "Lunga"
+  },
+  "popup_combo_default": {
+    "message": "Combinazione selezionata: Professionale, Media"
+  },
+  "popup_label_content_controls": {
+    "message": "Contenuti da includere:"
+  },
+  "popup_check_action_items": {
+    "message": "Azioni da fare"
+  },
+  "popup_check_action_items_title": {
+    "message": "Evidenzia i prossimi passi e le azioni necessarie"
+  },
+  "popup_check_address_questions": {
+    "message": "Rispondi alle domande"
+  },
+  "popup_check_address_questions_title": {
+    "message": "Individua le domande contenute nell'email e risponde a ciascuna"
+  },
+  "popup_check_bullet_points": {
+    "message": "Elenchi puntati"
+  },
+  "popup_check_bullet_points_title": {
+    "message": "Struttura la risposta con elenchi puntati dove è utile"
+  },
+  "popup_check_sentiment": {
+    "message": "Analisi del tono"
+  },
+  "popup_check_sentiment_title": {
+    "message": "Analizza il tono emotivo dell'email originale e ne tiene conto nella risposta"
+  },
+  "popup_check_followup": {
+    "message": "Tempi di follow-up"
+  },
+  "popup_check_followup_title": {
+    "message": "Suggerisce quando ricontattare, in base al contenuto dell'email"
+  },
+  "popup_label_tone_adjustments": {
+    "message": "Regolazione del tono:"
+  },
+  "popup_label_formality": {
+    "message": "Formalità:"
+  },
+  "popup_formality_min": {
+    "message": "Informale"
+  },
+  "popup_formality_max": {
+    "message": "Formale"
+  },
+  "popup_label_enthusiasm": {
+    "message": "Entusiasmo:"
+  },
+  "popup_enthusiasm_min": {
+    "message": "Sobrio"
+  },
+  "popup_enthusiasm_max": {
+    "message": "Entusiasta"
+  },
+  "popup_generated_response_heading": {
+    "message": "Risposta generata"
+  },
+  "popup_variant_1": {
+    "message": "Variante 1"
+  },
+  "popup_generate_variants_btn": {
+    "message": "Genera varianti"
+  },
+  "popup_empty_response": {
+    "message": "Premi «Genera risposta» per creare la risposta all'email"
+  },
+  "popup_generate_btn": {
+    "message": "Genera risposta"
+  },
+  "popup_copy_btn": {
+    "message": "Copia"
+  },
+  "popup_insert_btn": {
+    "message": "Rispondi"
+  },
+  "popup_insert_all_btn": {
+    "message": "Rispondi a tutti"
+  },
+  "popup_sentiment_heading": {
+    "message": "Analisi del tono dell'email"
+  },
+  "popup_sentiment_description": {
+    "message": "Analizza il tono emotivo e gli stati d'animo prevalenti nell'email, per capire meglio le intenzioni di chi scrive."
+  },
+  "popup_label_analysis_depth": {
+    "message": "Livello di analisi:"
+  },
+  "popup_depth_basic": {
+    "message": "Analisi di base"
+  },
+  "popup_depth_detailed": {
+    "message": "Analisi dettagliata"
+  },
+  "popup_depth_comprehensive": {
+    "message": "Analisi approfondita"
+  },
+  "popup_sentiment_focus_label": {
+    "message": "Aspetti da analizzare:"
+  },
+  "popup_check_emotions": {
+    "message": "Tono emotivo"
+  },
+  "popup_check_urgency": {
+    "message": "Livello di urgenza"
+  },
+  "popup_check_formality_level": {
+    "message": "Livello di formalità"
+  },
+  "popup_check_subtext": {
+    "message": "Sottintesi"
+  },
+  "popup_empty_sentiment": {
+    "message": "Premi «Analizza il tono» per visualizzare il tono emotivo dell'email"
+  },
+  "popup_analyze_sentiment_btn": {
+    "message": "Analizza il tono"
+  },
+  "popup_export_sentiment_btn": {
+    "message": "Esporta l'analisi"
+  },
+  "popup_summary_heading": {
+    "message": "Riassunto dell'email"
+  },
+  "popup_summary_description": {
+    "message": "Genera riassunti sintetici di conversazioni lunghe o messaggi complessi, per cogliere subito i punti chiave."
+  },
+  "popup_label_summary_type": {
+    "message": "Tipo di riassunto:"
+  },
+  "popup_summary_type_bullet": {
+    "message": "Elenco puntato"
+  },
+  "popup_summary_type_paragraph": {
+    "message": "Paragrafo"
+  },
+  "popup_summary_type_structured": {
+    "message": "Strutturato (argomenti e dettagli)"
+  },
+  "popup_label_summary_length": {
+    "message": "Lunghezza del riassunto:"
+  },
+  "popup_summary_length_very_short": {
+    "message": "Molto breve (1-2 frasi)"
+  },
+  "popup_summary_length_short": {
+    "message": "Breve (3-4 frasi)"
+  },
+  "popup_summary_length_medium": {
+    "message": "Medio (1 paragrafo)"
+  },
+  "popup_summary_length_detailed": {
+    "message": "Dettagliato (2-3 paragrafi)"
+  },
+  "popup_summary_focus_label": {
+    "message": "Cosa estrarre:"
+  },
+  "popup_check_key_points": {
+    "message": "Punti chiave"
+  },
+  "popup_check_questions": {
+    "message": "Domande"
+  },
+  "popup_check_deadlines": {
+    "message": "Scadenze"
+  },
+  "popup_empty_summary": {
+    "message": "Premi «Genera riassunto» per ottenere una sintesi dell'email"
+  },
+  "popup_generate_summary_btn": {
+    "message": "Genera riassunto"
+  },
+  "popup_insert_in_reply_btn": {
+    "message": "Inserisci nella risposta"
+  },
+  "popup_translate_heading": {
+    "message": "Traduzione dell'email"
+  },
+  "popup_translate_description": {
+    "message": "Traduci il contenuto dell'email da e verso altre lingue, con rilevamento automatico della lingua."
+  },
+  "popup_label_source_language": {
+    "message": "Lingua di partenza:"
+  },
+  "popup_label_target_language": {
+    "message": "Lingua di arrivo:"
+  },
+  "popup_lang_auto": {
+    "message": "Rilevamento automatico"
+  },
+  "popup_lang_en": {
+    "message": "Inglese"
+  },
+  "popup_lang_es": {
+    "message": "Spagnolo"
+  },
+  "popup_lang_fr": {
+    "message": "Francese"
+  },
+  "popup_lang_de": {
+    "message": "Tedesco"
+  },
+  "popup_lang_it": {
+    "message": "Italiano"
+  },
+  "popup_lang_pt": {
+    "message": "Portoghese"
+  },
+  "popup_lang_ru": {
+    "message": "Russo"
+  },
+  "popup_lang_zh": {
+    "message": "Cinese"
+  },
+  "popup_lang_ja": {
+    "message": "Giapponese"
+  },
+  "popup_lang_ko": {
+    "message": "Coreano"
+  },
+  "popup_lang_ar": {
+    "message": "Arabo"
+  },
+  "popup_lang_hi": {
+    "message": "Hindi"
+  },
+  "popup_label_translation_options": {
+    "message": "Opzioni di traduzione:"
+  },
+  "popup_check_preserve_formatting": {
+    "message": "Mantieni la formattazione"
+  },
+  "popup_check_formal_language": {
+    "message": "Linguaggio formale"
+  },
+  "popup_check_include_original": {
+    "message": "Includi il testo originale"
+  },
+  "popup_check_cultural_adaptation": {
+    "message": "Adattamento culturale"
+  },
+  "popup_empty_translation": {
+    "message": "Premi «Traduci email» per tradurre il contenuto"
+  },
+  "popup_translate_btn": {
+    "message": "Traduci email"
+  },
+  "popup_generating_response": {
+    "message": "Generazione della risposta in corso..."
+  },
+  "popup_response_generated": {
+    "message": "Risposta generata."
+  },
+  "popup_variant": {
+    "message": "Variante"
+  },
+  "popup_generating_variant": {
+    "message": "Generazione della variante in corso..."
+  },
+  "popup_variant_generated": {
+    "message": "Variante generata."
+  },
+  "popup_response_copied": {
+    "message": "Risposta copiata negli appunti."
+  },
+  "popup_inserting_reply": {
+    "message": "Inserimento nella risposta in corso..."
+  },
+  "popup_inserting_reply_all": {
+    "message": "Inserimento nella risposta a tutti in corso..."
+  },
+  "popup_inserted_reply": {
+    "message": "Testo inserito nella risposta."
+  },
+  "popup_inserted_reply_all": {
+    "message": "Testo inserito nella risposta a tutti."
+  },
+  "popup_loaded_saved_response": {
+    "message": "Caricata la risposta generata in precedenza"
+  },
+  "popup_response_from_history": {
+    "message": "Risposta caricata dalla cronologia"
+  },
+  "popup_analyzing_sentiment": {
+    "message": "Analisi del sentiment in corso..."
+  },
+  "popup_generating_detailed_analysis": {
+    "message": "Generazione dell'analisi dettagliata in corso..."
+  },
+  "popup_sentiment_completed": {
+    "message": "Analisi del sentiment completata."
+  },
+  "popup_sentiment_copied": {
+    "message": "Analisi del sentiment copiata negli appunti."
+  },
+  "popup_overall_sentiment": {
+    "message": "Sentiment complessivo"
+  },
+  "popup_sentiment_negative": {
+    "message": "Negativo"
+  },
+  "popup_sentiment_neutral": {
+    "message": "Neutro"
+  },
+  "popup_sentiment_positive": {
+    "message": "Positivo"
+  },
+  "popup_primary_emotion": {
+    "message": "Emozione principale"
+  },
+  "popup_communication_style": {
+    "message": "Stile di comunicazione"
+  },
+  "popup_formality": {
+    "message": "Formalità"
+  },
+  "popup_urgency": {
+    "message": "Urgenza"
+  },
+  "popup_clarity": {
+    "message": "Chiarezza"
+  },
+  "popup_key_phrases": {
+    "message": "Frasi chiave"
+  },
+  "popup_implied_subtext": {
+    "message": "Sottotesto implicito"
+  },
+  "popup_possible_intentions": {
+    "message": "Possibili intenzioni"
+  },
+  "popup_export_report_title": {
+    "message": "REPORT DI ANALISI DEL SENTIMENT"
+  },
+  "popup_export_overall_sentiment": {
+    "message": "SENTIMENT COMPLESSIVO"
+  },
+  "popup_export_score": {
+    "message": "Punteggio"
+  },
+  "popup_export_emotions": {
+    "message": "EMOZIONI"
+  },
+  "popup_export_primary": {
+    "message": "Principale"
+  },
+  "popup_export_secondary": {
+    "message": "Secondarie"
+  },
+  "popup_export_intensity": {
+    "message": "Intensità"
+  },
+  "popup_export_communication_style": {
+    "message": "STILE DI COMUNICAZIONE"
+  },
+  "popup_export_key_phrases": {
+    "message": "FRASI CHIAVE"
+  },
+  "popup_export_implied_subtext": {
+    "message": "SOTTOTESTO IMPLICITO"
+  },
+  "popup_export_possible_intentions": {
+    "message": "POSSIBILI INTENZIONI"
+  },
+  "popup_export_summary": {
+    "message": "RIEPILOGO"
+  },
+  "popup_export_generated_on": {
+    "message": "Generato il"
+  },
+  "popup_export_at": {
+    "message": "alle"
+  },
+  "popup_generating_summary": {
+    "message": "Generazione del riepilogo in corso..."
+  },
+  "popup_summary_generated": {
+    "message": "Riepilogo generato."
+  },
+  "popup_summary_copied": {
+    "message": "Riepilogo copiato negli appunti."
+  },
+  "popup_inserting_summary": {
+    "message": "Inserimento del riepilogo nella risposta in corso..."
+  },
+  "popup_summary_insert_label": {
+    "message": "Riepilogo dell'email originale:"
+  },
+  "popup_summary_inserted": {
+    "message": "Riepilogo inserito."
+  },
+  "popup_translating_email": {
+    "message": "Traduzione dell'email in corso..."
+  },
+  "popup_translation_completed": {
+    "message": "Traduzione completata."
+  },
+  "popup_translation_copied": {
+    "message": "Traduzione copiata negli appunti."
+  },
+  "popup_inserting_translation": {
+    "message": "Inserimento della traduzione nella risposta in corso..."
+  },
+  "popup_translation_inserted": {
+    "message": "Traduzione inserita."
+  },
+  "popup_original_label": {
+    "message": "Originale"
+  },
+  "popup_translation_label": {
+    "message": "Traduzione"
+  },
+  "popup_combo_selected": {
+    "message": "Hai selezionato:"
+  },
+  "err_generic": {
+    "message": "Errore"
+  },
+  "err_unknown": {
+    "message": "errore sconosciuto"
+  },
+  "err_no_email_selected": {
+    "message": "Nessuna email selezionata. Selezionane una e riprova."
+  },
+  "err_loading_email_info": {
+    "message": "Impossibile caricare i dati dell'email. Riprova."
+  },
+  "err_generating_response": {
+    "message": "Errore nella generazione della risposta"
+  },
+  "err_generate_response_first": {
+    "message": "Genera prima una risposta, poi crea le varianti."
+  },
+  "err_generating_variant": {
+    "message": "Errore nella generazione della variante"
+  },
+  "err_no_response_yet": {
+    "message": "Nessuna risposta generata."
+  },
+  "err_copy_clipboard": {
+    "message": "Errore nella copia negli appunti"
+  },
+  "err_inserting_response": {
+    "message": "Errore nell'inserimento della risposta"
+  },
+  "err_saving_popup_state": {
+    "message": "Errore nel salvataggio delle impostazioni del pannello"
+  },
+  "err_loading_popup_state": {
+    "message": "Errore nel caricamento delle impostazioni del pannello"
+  },
+  "err_saving_response": {
+    "message": "Errore nel salvataggio della risposta per questa email"
+  },
+  "err_loading_saved_response": {
+    "message": "Errore nel caricamento della risposta salvata per questa email"
+  },
+  "err_primary_model_failed": {
+    "message": "Il modello principale non ha risposto"
+  },
+  "err_all_fallbacks_failed": {
+    "message": "Anche tutti i modelli di riserva hanno fallito."
+  },
+  "err_unknown_model": {
+    "message": "Modello sconosciuto"
+  },
+  "err_deepseek_key_missing": {
+    "message": "Chiave API DeepSeek non impostata"
+  },
+  "err_gemini_key_missing": {
+    "message": "Chiave API Gemini non impostata"
+  },
+  "err_openai_key_missing": {
+    "message": "Chiave API OpenAI non impostata"
+  },
+  "err_openai_key_missing_gpt4o": {
+    "message": "Chiave API OpenAI non impostata per GPT-4o"
+  },
+  "err_mistral_key_missing": {
+    "message": "Chiave API Mistral non impostata"
+  },
+  "err_ollama_host_missing": {
+    "message": "Host Ollama non impostato"
+  },
+  "err_ollama_model_missing": {
+    "message": "Modello Ollama non impostato"
+  },
+  "err_deepseek_api": {
+    "message": "Errore API DeepSeek"
+  },
+  "err_deepseek_empty_response": {
+    "message": "DeepSeek ha restituito una risposta vuota. Riprova."
+  },
+  "err_deepseek_invalid_key": {
+    "message": "chiave API non valida"
+  },
+  "err_deepseek_insufficient_balance": {
+    "message": "credito esaurito, ricarica su platform.deepseek.com"
+  },
+  "err_deepseek_rate_limited": {
+    "message": "troppe richieste in parallelo, riprova tra poco"
+  },
+  "err_openai_api": {
+    "message": "Errore API OpenAI"
+  },
+  "err_gemini_api": {
+    "message": "Errore API Gemini"
+  },
+  "err_gemini_no_response": {
+    "message": "Nessuna risposta dall'API Gemini"
+  },
+  "err_mistral_api": {
+    "message": "Errore API Mistral"
+  },
+  "err_mistral_no_response": {
+    "message": "Nessuna risposta generata dall'API Mistral"
+  },
+  "err_ollama_api": {
+    "message": "Errore API Ollama"
+  },
+  "err_ollama_no_response": {
+    "message": "Nessuna risposta dall'API Ollama"
+  },
+  "err_ollama_chat_api": {
+    "message": "Errore API chat di Ollama"
+  },
+  "err_ollama_chat_no_response": {
+    "message": "Nessuna risposta dall'API chat di Ollama"
+  },
+  "err_deepseek_key_not_found": {
+    "message": "Chiave API DeepSeek non trovata. Impostala nelle opzioni."
+  },
+  "err_gemini_key_not_found": {
+    "message": "Chiave API Gemini non trovata. Impostala nelle opzioni."
+  },
+  "err_openai_key_not_found": {
+    "message": "Chiave API OpenAI non trovata. Impostala nelle opzioni."
+  },
+  "err_mistral_key_not_found": {
+    "message": "Chiave API Mistral non trovata. Impostala nelle opzioni."
+  },
+  "err_ollama_host_not_found": {
+    "message": "Host Ollama non configurato. Impostalo nelle opzioni."
+  },
+  "err_analyzing_sentiment": {
+    "message": "Errore nell'analisi del sentiment"
+  },
+  "err_no_sentiment_to_export": {
+    "message": "Nessuna analisi del sentiment da esportare."
+  },
+  "err_copy_sentiment_failed": {
+    "message": "Impossibile copiare l'analisi del sentiment negli appunti."
+  },
+  "err_exporting_sentiment": {
+    "message": "Errore nell'esportazione dell'analisi del sentiment"
+  },
+  "err_parse_sentiment": {
+    "message": "Impossibile interpretare l'analisi del sentiment: il formato della risposta del modello non è quello atteso."
+  },
+  "err_generating_summary": {
+    "message": "Errore nella generazione del riepilogo"
+  },
+  "err_no_summary_to_copy": {
+    "message": "Nessun riepilogo da copiare."
+  },
+  "err_copy_summary_failed": {
+    "message": "Impossibile copiare il riepilogo negli appunti."
+  },
+  "err_no_summary_to_insert": {
+    "message": "Nessun riepilogo da inserire."
+  },
+  "err_inserting_summary": {
+    "message": "Errore nell'inserimento del riepilogo"
+  },
+  "err_translating_email": {
+    "message": "Errore nella traduzione dell'email"
+  },
+  "err_no_translation_to_copy": {
+    "message": "Nessuna traduzione da copiare."
+  },
+  "err_copy_translation_failed": {
+    "message": "Impossibile copiare la traduzione negli appunti."
+  },
+  "err_no_translation_to_insert": {
+    "message": "Nessuna traduzione da inserire."
+  },
+  "err_inserting_translation": {
+    "message": "Errore nell'inserimento della traduzione"
+  },
+  "options_page_title": {
+    "message": "SmartReply AI - Impostazioni"
+  },
+  "options_header_title": {
+    "message": "SmartReply AI - Impostazioni"
+  },
+  "options_model_section_title": {
+    "message": "Scelta del modello AI"
+  },
+  "options_model_select_label": {
+    "message": "Modello AI da usare:"
+  },
+  "options_provider_deepseek": {
+    "message": "DeepSeek"
+  },
+  "options_provider_gemini": {
+    "message": "Gemini Pro"
+  },
+  "options_provider_openai": {
+    "message": "OpenAI O3-mini"
+  },
+  "options_provider_gpt4o": {
+    "message": "OpenAI GPT-4o"
+  },
+  "options_provider_mistral": {
+    "message": "Mistral AI"
+  },
+  "options_provider_ollama": {
+    "message": "Ollama (LLM in locale)"
+  },
+  "options_model_select_desc": {
+    "message": "Scegli quale modello AI usare per generare le risposte"
+  },
+  "options_deepseek_model_label": {
+    "message": "Modello DeepSeek:"
+  },
+  "options_deepseek_v4_flash": {
+    "message": "V4 Flash (veloce ed economico, consigliato)"
+  },
+  "options_deepseek_v4_pro": {
+    "message": "V4 Pro (qualità migliore, costo circa 3 volte superiore)"
+  },
+  "options_deepseek_model_desc": {
+    "message": "V4 Flash costa circa 0,16 $ ogni 1000 risposte generate. La modalità di ragionamento è sempre disattivata per le risposte: qui farebbe lievitare costi e tempi senza alcun vantaggio."
+  },
+  "options_reasoning_effort_label": {
+    "message": "Livello di ragionamento (solo per O3-mini):"
+  },
+  "options_reasoning_low": {
+    "message": "Basso"
+  },
+  "options_reasoning_medium": {
+    "message": "Medio"
+  },
+  "options_reasoning_high": {
+    "message": "Alto"
+  },
+  "options_reasoning_effort_desc": {
+    "message": "Regola quanto a fondo ragiona il modello OpenAI O3-mini (più alto = più accurato ma più lento)"
+  },
+  "options_api_keys_section_title": {
+    "message": "Chiavi API"
+  },
+  "options_deepseek_key_label": {
+    "message": "Chiave API DeepSeek:"
+  },
+  "options_deepseek_key_placeholder": {
+    "message": "Inserisci la tua chiave API DeepSeek"
+  },
+  "options_deepseek_key_link": {
+    "message": "Ottieni una chiave API DeepSeek"
+  },
+  "options_deepseek_key_desc": {
+    "message": "è prepagata, quindi tieni d'occhio il credito: se si esaurisce la richiesta fallisce con \"insufficient balance\"."
+  },
+  "options_test_deepseek_btn": {
+    "message": "Prova la connessione a DeepSeek"
+  },
+  "options_gemini_key_label": {
+    "message": "Chiave API Gemini:"
+  },
+  "options_gemini_key_placeholder": {
+    "message": "Inserisci la tua chiave API Gemini"
+  },
+  "options_gemini_key_link": {
+    "message": "Ottieni una chiave API Gemini"
+  },
+  "options_test_gemini_btn": {
+    "message": "Prova la connessione a Gemini"
+  },
+  "options_openai_key_label": {
+    "message": "Chiave API OpenAI (per O3-mini e GPT-4o):"
+  },
+  "options_openai_key_placeholder": {
+    "message": "Inserisci la tua chiave API OpenAI"
+  },
+  "options_openai_key_link": {
+    "message": "Ottieni una chiave API OpenAI"
+  },
+  "options_openai_key_desc": {
+    "message": "Vale sia per O3-mini sia per GPT-4o"
+  },
+  "options_test_openai_btn": {
+    "message": "Prova la connessione a OpenAI"
+  },
+  "options_mistral_key_label": {
+    "message": "Chiave API Mistral:"
+  },
+  "options_mistral_key_placeholder": {
+    "message": "Inserisci la tua chiave API Mistral"
+  },
+  "options_mistral_key_link": {
+    "message": "Ottieni una chiave API Mistral"
+  },
+  "options_mistral_key_desc": {
+    "message": "Usata per il modello Mistral Small"
+  },
+  "options_test_mistral_btn": {
+    "message": "Prova la connessione a Mistral"
+  },
+  "options_ollama_host_label": {
+    "message": "URL dell'host Ollama:"
+  },
+  "options_ollama_host_desc": {
+    "message": "URL della tua istanza Ollama (es. http://localhost:11434)"
+  },
+  "options_ollama_model_label": {
+    "message": "Modello Ollama:"
+  },
+  "options_ollama_custom_option": {
+    "message": "Modello personalizzato"
+  },
+  "options_ollama_model_desc": {
+    "message": "Scegli quale modello Ollama usare"
+  },
+  "options_ollama_custom_label": {
+    "message": "Nome del modello Ollama personalizzato:"
+  },
+  "options_ollama_custom_placeholder": {
+    "message": "Inserisci il nome del modello (es. llama3:instruct)"
+  },
+  "options_ollama_custom_desc": {
+    "message": "Inserisci il nome del tuo modello Ollama personalizzato"
+  },
+  "options_test_ollama_btn": {
+    "message": "Prova la connessione a Ollama"
+  },
+  "options_fallback_section_title": {
+    "message": "Modelli di riserva"
+  },
+  "options_enable_fallback_label": {
+    "message": "Attiva i modelli di riserva"
+  },
+  "options_enable_fallback_desc": {
+    "message": "Se attivo, quando il modello principale non risponde il sistema prova automaticamente gli altri modelli"
+  },
+  "options_fallback_order_title": {
+    "message": "Ordine dei modelli di riserva:"
+  },
+  "options_fallback_order_desc": {
+    "message": "Se il modello principale non risponde, i modelli vengono provati nell'ordine indicato qui sotto"
+  },
+  "options_fallback_1_label": {
+    "message": "Prima riserva:"
+  },
+  "options_fallback_2_label": {
+    "message": "Seconda riserva:"
+  },
+  "options_fallback_3_label": {
+    "message": "Terza riserva:"
+  },
+  "options_fallback_none": {
+    "message": "Nessuno"
+  },
+  "options_signature_section_title": {
+    "message": "Firma email"
+  },
+  "options_signature_label": {
+    "message": "La tua firma:"
+  },
+  "options_signature_placeholder": {
+    "message": "Inserisci la tua firma email"
+  },
+  "options_signature_desc": {
+    "message": "Questa firma viene aggiunta automaticamente a tutte le risposte generate"
+  },
+  "options_save_btn": {
+    "message": "Salva le impostazioni"
+  },
+  "options_footer": {
+    "message": "Estensione SmartReply AI © 2025"
+  },
+  "options_testing_deepseek": {
+    "message": "Test della connessione a DeepSeek in corso..."
+  },
+  "options_deepseek_test_ok": {
+    "message": "Connessione a DeepSeek riuscita."
+  },
+  "options_testing_gemini": {
+    "message": "Test della connessione a Gemini in corso..."
+  },
+  "options_gemini_test_ok": {
+    "message": "Connessione a Gemini riuscita."
+  },
+  "options_testing_openai": {
+    "message": "Test della connessione a OpenAI in corso..."
+  },
+  "options_openai_test_ok_both": {
+    "message": "Connessione a OpenAI riuscita, sia con O3-mini sia con GPT-4o."
+  },
+  "options_openai_test_o3_only": {
+    "message": "Connessione a O3-mini riuscita, ma GPT-4o non risponde: "
+  },
+  "options_openai_test_gpt4o_only": {
+    "message": "Connessione a GPT-4o riuscita, ma O3-mini non risponde: "
+  },
+  "options_testing_mistral": {
+    "message": "Test della connessione a Mistral in corso..."
+  },
+  "options_mistral_test_ok": {
+    "message": "Connessione a Mistral riuscita."
+  },
+  "options_testing_ollama": {
+    "message": "Test della connessione a Ollama in corso..."
+  },
+  "options_ollama_test_ok": {
+    "message": "Connessione a Ollama riuscita."
+  },
+  "options_ollama_available_models": {
+    "message": "Modelli disponibili:"
+  },
+  "options_ollama_model_available": {
+    "message": "Il modello selezionato è disponibile."
+  },
+  "options_settings_saved": {
+    "message": "Impostazioni salvate."
+  },
+  "err_generic_prefix": {
+    "message": "Errore: "
+  },
+  "err_loading_settings": {
+    "message": "Impossibile caricare le impostazioni: "
+  },
+  "err_saving_settings": {
+    "message": "Impossibile salvare le impostazioni: "
+  },
+  "err_deepseek_key_required": {
+    "message": "Serve la chiave API di DeepSeek"
+  },
+  "err_gemini_key_required": {
+    "message": "Serve la chiave API di Gemini"
+  },
+  "err_openai_key_required": {
+    "message": "Serve la chiave API di OpenAI"
+  },
+  "err_mistral_key_required": {
+    "message": "Serve la chiave API di Mistral"
+  },
+  "err_ollama_host_required": {
+    "message": "Serve l'URL dell'host Ollama"
+  },
+  "err_ollama_custom_model_required": {
+    "message": "Serve il nome del modello Ollama personalizzato"
+  },
+  "err_openai_test_failed": {
+    "message": "Connessione a OpenAI non riuscita: "
+  },
+  "err_deepseek_key_required_primary": {
+    "message": "Serve la chiave API di DeepSeek per il modello selezionato"
+  },
+  "err_gemini_key_required_primary": {
+    "message": "Serve la chiave API di Gemini per il modello selezionato"
+  },
+  "err_openai_key_required_primary": {
+    "message": "Serve la chiave API di OpenAI per il modello selezionato"
+  },
+  "err_openai_key_required_gpt4o": {
+    "message": "Serve la chiave API di OpenAI per il modello GPT-4o"
+  },
+  "err_mistral_key_required_primary": {
+    "message": "Serve la chiave API di Mistral per il modello selezionato"
+  },
+  "err_ollama_host_required_primary": {
+    "message": "Serve l'URL dell'host Ollama per il modello selezionato"
+  },
+  "err_fallback_duplicate_primary": {
+    "message": "I modelli di riserva non possono coincidere con il modello principale"
+  },
+  "err_gemini_key_required_fallback": {
+    "message": "Serve la chiave API di Gemini per usarlo come modello di riserva"
+  },
+  "err_openai_key_required_fallback": {
+    "message": "Serve la chiave API di OpenAI per usarlo come modello di riserva"
+  },
+  "err_openai_key_required_fallback_gpt4o": {
+    "message": "Serve la chiave API di OpenAI per usare GPT-4o come modello di riserva"
+  },
+  "err_deepseek_key_required_fallback": {
+    "message": "Serve la chiave API di DeepSeek per usarlo come modello di riserva"
+  },
+  "err_mistral_key_required_fallback": {
+    "message": "Serve la chiave API di Mistral per usarlo come modello di riserva"
+  },
+  "err_ollama_host_required_fallback": {
+    "message": "Serve l'URL dell'host Ollama per usarlo come modello di riserva"
+  },
+  "err_ollama_custom_model_required_fallback": {
+    "message": "Serve il nome del modello Ollama personalizzato per usarlo come modello di riserva"
+  },
+  "history_page_title": {
+    "message": "SmartReply AI - Cronologia e modelli"
+  },
+  "history_tab_history": {
+    "message": "Cronologia risposte"
+  },
+  "history_tab_templates": {
+    "message": "Modelli"
+  },
+  "history_search_placeholder": {
+    "message": "Cerca nelle risposte..."
+  },
+  "history_filter_all_categories": {
+    "message": "Tutte le categorie"
+  },
+  "history_cat_business": {
+    "message": "Lavoro"
+  },
+  "history_cat_personal": {
+    "message": "Personale"
+  },
+  "history_cat_follow_up": {
+    "message": "Follow-up"
+  },
+  "history_cat_thank_you": {
+    "message": "Ringraziamento"
+  },
+  "history_cat_introduction": {
+    "message": "Presentazione"
+  },
+  "history_cat_request": {
+    "message": "Richiesta"
+  },
+  "history_cat_scheduling": {
+    "message": "Appuntamenti"
+  },
+  "history_cat_inquiry": {
+    "message": "Richiesta informazioni"
+  },
+  "history_cat_informational": {
+    "message": "Informativa"
+  },
+  "history_cat_problem_solving": {
+    "message": "Risoluzione problemi"
+  },
+  "history_cat_general": {
+    "message": "Generale"
+  },
+  "history_filter_all_styles": {
+    "message": "Tutti gli stili"
+  },
+  "history_style_professional": {
+    "message": "Professionale"
+  },
+  "history_style_friendly": {
+    "message": "Cordiale"
+  },
+  "history_style_concise": {
+    "message": "Conciso"
+  },
+  "history_style_detailed": {
+    "message": "Dettagliato"
+  },
+  "history_filter_all_lengths": {
+    "message": "Tutte le lunghezze"
+  },
+  "history_len_short": {
+    "message": "Breve"
+  },
+  "history_len_medium": {
+    "message": "Media"
+  },
+  "history_len_long": {
+    "message": "Lunga"
+  },
+  "history_btn_filters": {
+    "message": "Filtri"
+  },
+  "history_btn_clear": {
+    "message": "Svuota"
+  },
+  "history_section_tags": {
+    "message": "Tag"
+  },
+  "history_tag_urgent": {
+    "message": "Urgente"
+  },
+  "history_tag_action_required": {
+    "message": "Azione richiesta"
+  },
+  "history_tag_question": {
+    "message": "Domanda"
+  },
+  "history_tag_meeting": {
+    "message": "Riunione"
+  },
+  "history_tag_feedback": {
+    "message": "Feedback"
+  },
+  "history_tag_deadline": {
+    "message": "Scadenza"
+  },
+  "history_tag_collaboration": {
+    "message": "Collaborazione"
+  },
+  "history_tag_report": {
+    "message": "Report"
+  },
+  "history_tag_approval": {
+    "message": "Approvazione"
+  },
+  "history_tag_fyi": {
+    "message": "Per conoscenza"
+  },
+  "history_section_date_range": {
+    "message": "Intervallo di date"
+  },
+  "history_label_from": {
+    "message": "Dal:"
+  },
+  "history_label_to": {
+    "message": "Al:"
+  },
+  "history_section_model": {
+    "message": "Modello AI"
+  },
+  "history_filter_all_models": {
+    "message": "Tutti i modelli"
+  },
+  "history_btn_apply_filters": {
+    "message": "Applica filtri"
+  },
+  "history_btn_reset": {
+    "message": "Reimposta"
+  },
+  "history_empty_no_history": {
+    "message": "Nessuna risposta in cronologia"
+  },
+  "history_page_info_default": {
+    "message": "Pagina 1 di 1"
+  },
+  "history_empty_select_response": {
+    "message": "Seleziona una risposta per vederne i dettagli"
+  },
+  "history_tpl_search_placeholder": {
+    "message": "Cerca nei modelli..."
+  },
+  "history_btn_new_template": {
+    "message": "Nuovo modello"
+  },
+  "history_empty_no_templates": {
+    "message": "Nessun modello trovato"
+  },
+  "history_empty_select_template": {
+    "message": "Seleziona un modello da visualizzare oppure creane uno nuovo"
+  },
+  "history_modal_new_template": {
+    "message": "Crea nuovo modello"
+  },
+  "history_label_template_name": {
+    "message": "Nome del modello"
+  },
+  "history_ph_template_name": {
+    "message": "Inserisci un nome per questo modello"
+  },
+  "history_label_category": {
+    "message": "Categoria"
+  },
+  "history_label_template_content": {
+    "message": "Contenuto del modello"
+  },
+  "history_tpl_help_vars_before": {
+    "message": "Usa le variabili nel formato"
+  },
+  "history_tpl_help_vars_after": {
+    "message": "per i contenuti dinamici."
+  },
+  "history_tpl_help_example": {
+    "message": "Esempio:"
+  },
+  "history_ph_template_content": {
+    "message": "Scrivi qui il contenuto del modello..."
+  },
+  "history_label_template_variables": {
+    "message": "Variabili del modello"
+  },
+  "history_no_variables_detected": {
+    "message": "Nessuna variabile rilevata. Aggiungi le variabili al modello usando il formato {{variable_name}}."
+  },
+  "history_btn_save_template": {
+    "message": "Salva modello"
+  },
+  "history_btn_cancel": {
+    "message": "Annulla"
+  },
+  "history_confirm_clear": {
+    "message": "Vuoi davvero cancellare tutta la cronologia delle risposte? L'operazione non può essere annullata."
+  },
+  "history_alert_name_required": {
+    "message": "Inserisci un nome per il modello."
+  },
+  "history_alert_content_required": {
+    "message": "Inserisci il contenuto del modello."
+  },
+  "history_no_subject": {
+    "message": "Nessun oggetto"
+  },
+  "history_no_recipient": {
+    "message": "Nessun destinatario"
+  },
+  "history_page": {
+    "message": "Pagina"
+  },
+  "history_page_of": {
+    "message": "di"
+  },
+  "history_error_loading_history": {
+    "message": "Errore nel caricamento della cronologia"
+  },
+  "history_error_loading_templates": {
+    "message": "Errore nel caricamento dei modelli"
+  },
+  "history_field_date": {
+    "message": "Data:"
+  },
+  "history_field_recipient": {
+    "message": "Destinatario:"
+  },
+  "history_field_category": {
+    "message": "Categoria:"
+  },
+  "history_field_model": {
+    "message": "Modello:"
+  },
+  "history_field_variant": {
+    "message": "Variante:"
+  },
+  "history_field_style_length": {
+    "message": "Stile e lunghezza:"
+  },
+  "history_field_tags": {
+    "message": "Tag:"
+  },
+  "history_not_specified": {
+    "message": "Non specificato"
+  },
+  "history_no_tags": {
+    "message": "Nessun tag"
+  },
+  "history_btn_template": {
+    "message": "Modello"
+  },
+  "history_title_save_as_template": {
+    "message": "Salva come modello per riutilizzarlo"
+  },
+  "history_btn_delete": {
+    "message": "Elimina"
+  },
+  "history_title_delete_response": {
+    "message": "Elimina questa risposta"
+  },
+  "history_response_content": {
+    "message": "Contenuto della risposta"
+  },
+  "history_confirm_delete_response": {
+    "message": "Vuoi davvero eliminare questa risposta?"
+  },
+  "history_default_template_name": {
+    "message": "Modello di risposta"
+  },
+  "history_more_variables": {
+    "message": "altre"
+  },
+  "history_no_variables_found": {
+    "message": "Nessuna variabile in questo modello."
+  },
+  "history_btn_edit": {
+    "message": "Modifica"
+  },
+  "history_confirm_delete_template": {
+    "message": "Vuoi davvero eliminare il modello"
+  }
+}

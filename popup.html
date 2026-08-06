@@ -14,155 +14,155 @@
         <h1>SmartReply AI</h1>
       </div>
       <div class="header-buttons">
-        <button id="history-btn" class="icon-btn" title="Response History">
+        <button id="history-btn" class="icon-btn" title="Response History" data-i18n-title="popup_history_btn_title">
           <img src="icons/history.svg" alt="History" width="20" height="20">
         </button>
-        <button id="settings-btn" class="icon-btn" title="Settings">
+        <button id="settings-btn" class="icon-btn" title="Settings" data-i18n-title="popup_settings_btn_title">
           <img src="icons/settings.svg" alt="Settings" width="20" height="20">
         </button>
       </div>
     </div>
-    
+
     <!-- Tab Navigation -->
     <div class="tabs-container">
       <div class="tabs">
         <div class="tab active" data-tab="response-tab">
-          <i class="fas fa-reply"></i> Email Response
+          <i class="fas fa-reply"></i> <span data-i18n="popup_tab_response">Email Response</span>
         </div>
         <div class="tab" data-tab="sentiment-tab">
-          <i class="fas fa-chart-pie"></i> Sentiment Analysis
+          <i class="fas fa-chart-pie"></i> <span data-i18n="popup_tab_sentiment">Sentiment Analysis</span>
         </div>
         <div class="tab" data-tab="summary-tab">
-          <i class="fas fa-compress-alt"></i> Summarization
+          <i class="fas fa-compress-alt"></i> <span data-i18n="popup_tab_summary">Summarization</span>
         </div>
         <div class="tab" data-tab="translate-tab">
-          <i class="fas fa-language"></i> Translation
+          <i class="fas fa-language"></i> <span data-i18n="popup_tab_translate">Translation</span>
         </div>
       </div>
     </div>
-    
+
     <div class="content">
       <div id="status" class="hidden"></div>
-      
+
       <!-- Email Response Tab -->
       <div class="tab-content active" id="response-tab">
         <div class="section">
-          <h2>What do you want to reply? <span class="optional">(Optional)</span></h2>
-          <textarea id="context-input" placeholder="Jot down the gist, however roughly: &quot;ok, va bene&quot; &mdash; &quot;no, se ne riparla la settimana prossima&quot; &mdash; &quot;chiedi il preventivo aggiornato&quot;. Write it in Italian even if the email is in English: only the meaning is taken, the reply comes out in the language of the message."></textarea>
+          <h2><span data-i18n="popup_reply_intent_heading">What do you want to reply?</span> <span class="optional" data-i18n="popup_optional">(Optional)</span></h2>
+          <textarea id="context-input" data-i18n-placeholder="popup_context_placeholder" placeholder="Jot down the gist, however roughly: &quot;ok, va bene&quot; &mdash; &quot;no, se ne riparla la settimana prossima&quot; &mdash; &quot;chiedi il preventivo aggiornato&quot;. Write it in Italian even if the email is in English: only the meaning is taken, the reply comes out in the language of the message."></textarea>
           <div class="quick-replies">
             <button type="button" class="quick-reply-btn" id="quick-ok" data-quick="ok">
-              <i class="fas fa-check"></i> OK
+              <i class="fas fa-check"></i> <span data-i18n="popup_quick_ok">OK</span>
             </button>
             <button type="button" class="quick-reply-btn" id="quick-ko" data-quick="ko">
-              <i class="fas fa-times"></i> Non OK
+              <i class="fas fa-times"></i> <span data-i18n="popup_quick_ko">Non OK</span>
             </button>
           </div>
         </div>
 
         <details class="section options-section">
-          <summary><h2>Response Options</h2></summary>
-          
+          <summary><h2 data-i18n="popup_options_heading">Response Options</h2></summary>
+
           <div class="option-row">
             <div class="option-group compact">
-              <label>Style:</label>
+              <label data-i18n="popup_label_style">Style:</label>
               <div class="icon-selector style-selector">
-                <div class="icon-option" data-value="professional" title="Professional and formal">
+                <div class="icon-option" data-value="professional" title="Professional and formal" data-i18n-title="popup_style_professional_title">
                   <img src="icons/style-professional.svg" alt="Professional" width="24" height="24">
                 </div>
-                <div class="icon-option" data-value="friendly" title="Friendly and conversational">
+                <div class="icon-option" data-value="friendly" title="Friendly and conversational" data-i18n-title="popup_style_friendly_title">
                   <img src="icons/style-friendly.svg" alt="Friendly" width="24" height="24">
                 </div>
-                <div class="icon-option" data-value="concise" title="Brief and to-the-point">
+                <div class="icon-option" data-value="concise" title="Brief and to-the-point" data-i18n-title="popup_style_concise_title">
                   <img src="icons/style-concise.svg" alt="Concise" width="24" height="24">
                 </div>
-                <div class="icon-option" data-value="detailed" title="Detailed and comprehensive">
+                <div class="icon-option" data-value="detailed" title="Detailed and comprehensive" data-i18n-title="popup_style_detailed_title">
                   <img src="icons/style-detailed.svg" alt="Detailed" width="24" height="24">
                 </div>
                 <select id="response-style" class="hidden">
-                  <option value="professional">Professional</option>
-                  <option value="friendly">Friendly</option>
-                  <option value="concise">Concise</option>
-                  <option value="detailed">Detailed</option>
+                  <option value="professional" data-i18n="popup_style_professional">Professional</option>
+                  <option value="friendly" data-i18n="popup_style_friendly">Friendly</option>
+                  <option value="concise" data-i18n="popup_style_concise">Concise</option>
+                  <option value="detailed" data-i18n="popup_style_detailed">Detailed</option>
                 </select>
               </div>
             </div>
-            
+
             <div class="option-group compact">
-              <label>Length:</label>
+              <label data-i18n="popup_label_length">Length:</label>
               <div class="icon-selector length-selector">
-                <div class="icon-option" data-value="short" title="Brief, to-the-point (1-2 paragraphs)">
+                <div class="icon-option" data-value="short" title="Brief, to-the-point (1-2 paragraphs)" data-i18n-title="popup_length_short_title">
                   <img src="icons/length-short.svg" alt="Short" width="24" height="24">
                 </div>
-                <div class="icon-option" data-value="medium" title="Standard length (2-3 paragraphs)">
+                <div class="icon-option" data-value="medium" title="Standard length (2-3 paragraphs)" data-i18n-title="popup_length_medium_title">
                   <img src="icons/length-medium.svg" alt="Medium" width="24" height="24">
                 </div>
-                <div class="icon-option" data-value="long" title="Detailed, comprehensive (4+ paragraphs)">
+                <div class="icon-option" data-value="long" title="Detailed, comprehensive (4+ paragraphs)" data-i18n-title="popup_length_long_title">
                   <img src="icons/length-long.svg" alt="Long" width="24" height="24">
                 </div>
                 <select id="response-length" class="hidden">
-                  <option value="medium">Medium</option>
-                  <option value="short">Short</option>
-                  <option value="long">Long</option>
+                  <option value="medium" data-i18n="popup_length_medium">Medium</option>
+                  <option value="short" data-i18n="popup_length_short">Short</option>
+                  <option value="long" data-i18n="popup_length_long">Long</option>
                 </select>
               </div>
             </div>
           </div>
-          
+
           <!-- Style and Length Combination Indicator -->
           <div class="style-length-combination" id="style-length-combo">
             <i class="fas fa-link"></i>
-            <span>You selected: <strong>Professional, Medium</strong> combination</span>
+            <span data-i18n="popup_combo_default">You selected: <strong>Professional, Medium</strong> combination</span>
           </div>
-          
+
           <div class="option-group">
-            <label>Content Controls:</label>
+            <label data-i18n="popup_label_content_controls">Content Controls:</label>
             <div class="content-controls-grid">
               <div class="checkbox-item">
                 <input type="checkbox" id="include-action-items" checked>
-                <label for="include-action-items">Action Items</label>
-                <i class="fas fa-info-circle tooltip-icon" title="Highlight next steps or actions needed"></i>
+                <label for="include-action-items" data-i18n="popup_check_action_items">Action Items</label>
+                <i class="fas fa-info-circle tooltip-icon" title="Highlight next steps or actions needed" data-i18n-title="popup_check_action_items_title"></i>
               </div>
               <div class="checkbox-item">
                 <input type="checkbox" id="address-questions" checked>
-                <label for="address-questions">Address Questions</label>
-                <i class="fas fa-info-circle tooltip-icon" title="Identify and answer questions from the original email"></i>
+                <label for="address-questions" data-i18n="popup_check_address_questions">Address Questions</label>
+                <i class="fas fa-info-circle tooltip-icon" title="Identify and answer questions from the original email" data-i18n-title="popup_check_address_questions_title"></i>
               </div>
               <div class="checkbox-item">
                 <input type="checkbox" id="use-bullet-points">
-                <label for="use-bullet-points">Bullet Points</label>
-                <i class="fas fa-info-circle tooltip-icon" title="Format response with bullet points where appropriate"></i>
+                <label for="use-bullet-points" data-i18n="popup_check_bullet_points">Bullet Points</label>
+                <i class="fas fa-info-circle tooltip-icon" title="Format response with bullet points where appropriate" data-i18n-title="popup_check_bullet_points_title"></i>
               </div>
               <div class="checkbox-item">
                 <input type="checkbox" id="include-sentiment">
-                <label for="include-sentiment">Sentiment Analysis</label>
-                <i class="fas fa-info-circle tooltip-icon" title="Analyze and respond to the emotional tone of the original email"></i>
+                <label for="include-sentiment" data-i18n="popup_check_sentiment">Sentiment Analysis</label>
+                <i class="fas fa-info-circle tooltip-icon" title="Analyze and respond to the emotional tone of the original email" data-i18n-title="popup_check_sentiment_title"></i>
               </div>
               <div class="checkbox-item">
                 <input type="checkbox" id="suggest-followup">
-                <label for="suggest-followup">Follow-up Schedule</label>
-                <i class="fas fa-info-circle tooltip-icon" title="Include appropriate follow-up timing suggestions based on email content"></i>
+                <label for="suggest-followup" data-i18n="popup_check_followup">Follow-up Schedule</label>
+                <i class="fas fa-info-circle tooltip-icon" title="Include appropriate follow-up timing suggestions based on email content" data-i18n-title="popup_check_followup_title"></i>
               </div>
             </div>
           </div>
-          
+
           <div class="option-group">
-            <label>Tone Adjustments:</label>
+            <label data-i18n="popup_label_tone_adjustments">Tone Adjustments:</label>
             <div class="tone-sliders">
               <div class="slider-row">
                 <div class="slider-item">
-                  <label for="formality-slider">Formality:</label>
+                  <label for="formality-slider" data-i18n="popup_label_formality">Formality:</label>
                   <div class="slider-container">
-                    <span class="slider-label">Casual</span>
+                    <span class="slider-label" data-i18n="popup_formality_min">Casual</span>
                     <input type="range" id="formality-slider" min="1" max="5" value="3">
-                    <span class="slider-label">Formal</span>
+                    <span class="slider-label" data-i18n="popup_formality_max">Formal</span>
                   </div>
                 </div>
                 <div class="slider-item">
-                  <label for="enthusiasm-slider">Enthusiasm:</label>
+                  <label for="enthusiasm-slider" data-i18n="popup_label_enthusiasm">Enthusiasm:</label>
                   <div class="slider-container">
-                    <span class="slider-label">Reserved</span>
+                    <span class="slider-label" data-i18n="popup_enthusiasm_min">Reserved</span>
                     <input type="range" id="enthusiasm-slider" min="1" max="5" value="3">
-                    <span class="slider-label">Enthusiastic</span>
+                    <span class="slider-label" data-i18n="popup_enthusiasm_max">Enthusiastic</span>
                   </div>
                 </div>
               </div>
@@ -171,281 +171,283 @@
         </details>
 
         <div class="section">
-          <h2>Generated Response</h2>
+          <h2 data-i18n="popup_generated_response_heading">Generated Response</h2>
           <div class="response-container">
             <div class="response-variants-header">
               <div class="variants-tabs" id="variants-tabs">
                 <!-- Variant tabs will be added here dynamically -->
-                <div class="variant-tab active" data-variant="1">Variant 1</div>
+                <div class="variant-tab active" data-variant="1" data-i18n="popup_variant_1">Variant 1</div>
               </div>
               <div class="variants-actions">
-                <button id="generate-variants-btn" class="icon-btn" title="Generate Variants">
-                  <i class="fas fa-random"></i> Generate Variants
+                <button id="generate-variants-btn" class="icon-btn" title="Generate Variants" data-i18n-title="popup_generate_variants_btn">
+                  <i class="fas fa-random"></i> <span data-i18n="popup_generate_variants_btn">Generate Variants</span>
                 </button>
               </div>
             </div>
             <div id="response-content" class="response-content">
               <div class="empty-state">
                 <i class="fas fa-robot"></i>
-                <p>Click "Generate Response" to create an email reply</p>
+                <p data-i18n="popup_empty_response">Click "Generate Response" to create an email reply</p>
               </div>
             </div>
           </div>
         </div>
-        
+
         <div class="footer">
           <button id="generate-btn" class="primary-btn">
-            <i class="fas fa-magic"></i> Generate Response
+            <i class="fas fa-magic"></i> <span data-i18n="popup_generate_btn">Generate Response</span>
           </button>
           <div class="action-buttons">
             <button id="copy-btn" class="secondary-btn" disabled>
-              <i class="fas fa-copy"></i> Copy
+              <i class="fas fa-copy"></i> <span data-i18n="popup_copy_btn">Copy</span>
             </button>
             <button id="insert-btn" class="secondary-btn" disabled>
-              <i class="fas fa-reply"></i> Reply
+              <i class="fas fa-reply"></i> <span data-i18n="popup_insert_btn">Reply</span>
             </button>
             <button id="insert-all-btn" class="secondary-btn" disabled>
-              <i class="fas fa-reply-all"></i> Reply All
+              <i class="fas fa-reply-all"></i> <span data-i18n="popup_insert_all_btn">Reply All</span>
             </button>
           </div>
         </div>
       </div>
-      
+
       <!-- Sentiment Analysis Tab -->
       <div class="tab-content" id="sentiment-tab">
         <div class="section">
-          <h2>Email Sentiment Analysis</h2>
-          <p class="description">Analyze the emotional tone and key sentiments in the email to better understand the sender's intent and emotional state.</p>
-          
+          <h2 data-i18n="popup_sentiment_heading">Email Sentiment Analysis</h2>
+          <p class="description" data-i18n="popup_sentiment_description">Analyze the emotional tone and key sentiments in the email to better understand the sender's intent and emotional state.</p>
+
           <div class="sentiment-options">
             <div class="option-group">
-              <label>Analysis Depth:</label>
+              <label data-i18n="popup_label_analysis_depth">Analysis Depth:</label>
               <select id="sentiment-depth">
-                <option value="basic">Basic Analysis</option>
-                <option value="detailed" selected>Detailed Analysis</option>
-                <option value="comprehensive">Comprehensive Analysis</option>
+                <option value="basic" data-i18n="popup_depth_basic">Basic Analysis</option>
+                <option value="detailed" selected data-i18n="popup_depth_detailed">Detailed Analysis</option>
+                <option value="comprehensive" data-i18n="popup_depth_comprehensive">Comprehensive Analysis</option>
               </select>
             </div>
-            
+
             <div class="option-group">
-              <label>Focus Areas:</label>
+              <label data-i18n="popup_sentiment_focus_label">Focus Areas:</label>
               <div class="checkbox-grid">
                 <div class="checkbox-item">
                   <input type="checkbox" id="detect-emotions" checked>
-                  <label for="detect-emotions">Emotional Tone</label>
+                  <label for="detect-emotions" data-i18n="popup_check_emotions">Emotional Tone</label>
                 </div>
                 <div class="checkbox-item">
                   <input type="checkbox" id="detect-urgency" checked>
-                  <label for="detect-urgency">Urgency Level</label>
+                  <label for="detect-urgency" data-i18n="popup_check_urgency">Urgency Level</label>
                 </div>
                 <div class="checkbox-item">
                   <input type="checkbox" id="detect-formality" checked>
-                  <label for="detect-formality">Formality Level</label>
+                  <label for="detect-formality" data-i18n="popup_check_formality_level">Formality Level</label>
                 </div>
                 <div class="checkbox-item">
                   <input type="checkbox" id="detect-subtext" checked>
-                  <label for="detect-subtext">Implied Subtext</label>
+                  <label for="detect-subtext" data-i18n="popup_check_subtext">Implied Subtext</label>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <div class="sentiment-visualization-container">
             <div id="sentiment-visualization" class="sentiment-visualization">
               <div class="empty-state">
                 <i class="fas fa-chart-pie"></i>
-                <p>Click "Analyze Sentiment" to visualize the email's emotional tone</p>
+                <p data-i18n="popup_empty_sentiment">Click "Analyze Sentiment" to visualize the email's emotional tone</p>
               </div>
             </div>
           </div>
-          
+
           <div class="sentiment-details-container">
             <div id="sentiment-details" class="sentiment-details">
               <!-- Sentiment details will be populated here -->
             </div>
           </div>
         </div>
-        
+
         <div class="footer">
           <button id="analyze-sentiment-btn" class="primary-btn">
-            <i class="fas fa-chart-pie"></i> Analyze Sentiment
+            <i class="fas fa-chart-pie"></i> <span data-i18n="popup_analyze_sentiment_btn">Analyze Sentiment</span>
           </button>
           <div class="action-buttons">
             <button id="export-sentiment-btn" class="secondary-btn" disabled>
-              <i class="fas fa-download"></i> Export Analysis
+              <i class="fas fa-download"></i> <span data-i18n="popup_export_sentiment_btn">Export Analysis</span>
             </button>
           </div>
         </div>
       </div>
-      
+
       <!-- Summarization Tab -->
       <div class="tab-content" id="summary-tab">
         <div class="section">
-          <h2>Email Summarization</h2>
-          <p class="description">Generate concise summaries of long email threads or complex messages to quickly understand the key points.</p>
-          
+          <h2 data-i18n="popup_summary_heading">Email Summarization</h2>
+          <p class="description" data-i18n="popup_summary_description">Generate concise summaries of long email threads or complex messages to quickly understand the key points.</p>
+
           <div class="summary-options">
             <div class="option-group">
-              <label>Summary Type:</label>
+              <label data-i18n="popup_label_summary_type">Summary Type:</label>
               <select id="summary-type">
-                <option value="bullet">Bullet Points</option>
-                <option value="paragraph" selected>Paragraph</option>
-                <option value="structured">Structured (Topics & Details)</option>
+                <option value="bullet" data-i18n="popup_summary_type_bullet">Bullet Points</option>
+                <option value="paragraph" selected data-i18n="popup_summary_type_paragraph">Paragraph</option>
+                <option value="structured" data-i18n="popup_summary_type_structured">Structured (Topics &amp; Details)</option>
               </select>
             </div>
-            
+
             <div class="option-group">
-              <label>Summary Length:</label>
+              <label data-i18n="popup_label_summary_length">Summary Length:</label>
               <select id="summary-length">
-                <option value="very-short">Very Short (1-2 sentences)</option>
-                <option value="short">Short (3-4 sentences)</option>
-                <option value="medium" selected>Medium (1 paragraph)</option>
-                <option value="detailed">Detailed (2-3 paragraphs)</option>
+                <option value="very-short" data-i18n="popup_summary_length_very_short">Very Short (1-2 sentences)</option>
+                <option value="short" data-i18n="popup_summary_length_short">Short (3-4 sentences)</option>
+                <option value="medium" selected data-i18n="popup_summary_length_medium">Medium (1 paragraph)</option>
+                <option value="detailed" data-i18n="popup_summary_length_detailed">Detailed (2-3 paragraphs)</option>
               </select>
             </div>
-            
+
             <div class="option-group">
-              <label>Focus Areas:</label>
+              <label data-i18n="popup_summary_focus_label">Focus Areas:</label>
               <div class="checkbox-grid">
                 <div class="checkbox-item">
                   <input type="checkbox" id="extract-key-points" checked>
-                  <label for="extract-key-points">Key Points</label>
+                  <label for="extract-key-points" data-i18n="popup_check_key_points">Key Points</label>
                 </div>
                 <div class="checkbox-item">
                   <input type="checkbox" id="extract-action-items" checked>
-                  <label for="extract-action-items">Action Items</label>
+                  <label for="extract-action-items" data-i18n="popup_check_action_items">Action Items</label>
                 </div>
                 <div class="checkbox-item">
                   <input type="checkbox" id="extract-questions" checked>
-                  <label for="extract-questions">Questions</label>
+                  <label for="extract-questions" data-i18n="popup_check_questions">Questions</label>
                 </div>
                 <div class="checkbox-item">
                   <input type="checkbox" id="extract-deadlines">
-                  <label for="extract-deadlines">Deadlines</label>
+                  <label for="extract-deadlines" data-i18n="popup_check_deadlines">Deadlines</label>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <div class="summary-container">
             <div id="summary-content" class="summary-content">
               <div class="empty-state">
                 <i class="fas fa-compress-alt"></i>
-                <p>Click "Generate Summary" to create a concise summary of the email</p>
+                <p data-i18n="popup_empty_summary">Click "Generate Summary" to create a concise summary of the email</p>
               </div>
             </div>
           </div>
         </div>
-        
+
         <div class="footer">
           <button id="generate-summary-btn" class="primary-btn">
-            <i class="fas fa-compress-alt"></i> Generate Summary
+            <i class="fas fa-compress-alt"></i> <span data-i18n="popup_generate_summary_btn">Generate Summary</span>
           </button>
           <div class="action-buttons">
             <button id="copy-summary-btn" class="secondary-btn" disabled>
-              <i class="fas fa-copy"></i> Copy
+              <i class="fas fa-copy"></i> <span data-i18n="popup_copy_btn">Copy</span>
             </button>
             <button id="insert-summary-btn" class="secondary-btn" disabled>
-              <i class="fas fa-reply"></i> Insert in Reply
+              <i class="fas fa-reply"></i> <span data-i18n="popup_insert_in_reply_btn">Insert in Reply</span>
             </button>
           </div>
         </div>
       </div>
-      
+
       <!-- Translation Tab -->
       <div class="tab-content" id="translate-tab">
         <div class="section">
-          <h2>Email Translation</h2>
-          <p class="description">Translate email content to and from different languages with advanced language detection.</p>
-          
+          <h2 data-i18n="popup_translate_heading">Email Translation</h2>
+          <p class="description" data-i18n="popup_translate_description">Translate email content to and from different languages with advanced language detection.</p>
+
           <div class="translation-options">
             <div class="option-group">
-              <label>Source Language:</label>
+              <label data-i18n="popup_label_source_language">Source Language:</label>
               <select id="source-language">
-                <option value="auto" selected>Auto-detect</option>
-                <option value="en">English</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <option value="it">Italian</option>
-                <option value="pt">Portuguese</option>
-                <option value="ru">Russian</option>
-                <option value="zh">Chinese</option>
-                <option value="ja">Japanese</option>
-                <option value="ko">Korean</option>
-                <option value="ar">Arabic</option>
-                <option value="hi">Hindi</option>
+                <option value="auto" selected data-i18n="popup_lang_auto">Auto-detect</option>
+                <option value="en" data-i18n="popup_lang_en">English</option>
+                <option value="es" data-i18n="popup_lang_es">Spanish</option>
+                <option value="fr" data-i18n="popup_lang_fr">French</option>
+                <option value="de" data-i18n="popup_lang_de">German</option>
+                <option value="it" data-i18n="popup_lang_it">Italian</option>
+                <option value="pt" data-i18n="popup_lang_pt">Portuguese</option>
+                <option value="ru" data-i18n="popup_lang_ru">Russian</option>
+                <option value="zh" data-i18n="popup_lang_zh">Chinese</option>
+                <option value="ja" data-i18n="popup_lang_ja">Japanese</option>
+                <option value="ko" data-i18n="popup_lang_ko">Korean</option>
+                <option value="ar" data-i18n="popup_lang_ar">Arabic</option>
+                <option value="hi" data-i18n="popup_lang_hi">Hindi</option>
               </select>
             </div>
-            
+
             <div class="option-group">
-              <label>Target Language:</label>
+              <label data-i18n="popup_label_target_language">Target Language:</label>
               <select id="target-language">
-                <option value="en" selected>English</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <option value="it">Italian</option>
-                <option value="pt">Portuguese</option>
-                <option value="ru">Russian</option>
-                <option value="zh">Chinese</option>
-                <option value="ja">Japanese</option>
-                <option value="ko">Korean</option>
-                <option value="ar">Arabic</option>
-                <option value="hi">Hindi</option>
+                <option value="en" selected data-i18n="popup_lang_en">English</option>
+                <option value="es" data-i18n="popup_lang_es">Spanish</option>
+                <option value="fr" data-i18n="popup_lang_fr">French</option>
+                <option value="de" data-i18n="popup_lang_de">German</option>
+                <option value="it" data-i18n="popup_lang_it">Italian</option>
+                <option value="pt" data-i18n="popup_lang_pt">Portuguese</option>
+                <option value="ru" data-i18n="popup_lang_ru">Russian</option>
+                <option value="zh" data-i18n="popup_lang_zh">Chinese</option>
+                <option value="ja" data-i18n="popup_lang_ja">Japanese</option>
+                <option value="ko" data-i18n="popup_lang_ko">Korean</option>
+                <option value="ar" data-i18n="popup_lang_ar">Arabic</option>
+                <option value="hi" data-i18n="popup_lang_hi">Hindi</option>
               </select>
             </div>
-            
+
             <div class="option-group">
-              <label>Translation Options:</label>
+              <label data-i18n="popup_label_translation_options">Translation Options:</label>
               <div class="checkbox-grid">
                 <div class="checkbox-item">
                   <input type="checkbox" id="preserve-formatting" checked>
-                  <label for="preserve-formatting">Preserve Formatting</label>
+                  <label for="preserve-formatting" data-i18n="popup_check_preserve_formatting">Preserve Formatting</label>
                 </div>
                 <div class="checkbox-item">
                   <input type="checkbox" id="formal-language" checked>
-                  <label for="formal-language">Formal Language</label>
+                  <label for="formal-language" data-i18n="popup_check_formal_language">Formal Language</label>
                 </div>
                 <div class="checkbox-item">
                   <input type="checkbox" id="include-original">
-                  <label for="include-original">Include Original Text</label>
+                  <label for="include-original" data-i18n="popup_check_include_original">Include Original Text</label>
                 </div>
                 <div class="checkbox-item">
                   <input type="checkbox" id="cultural-adaptation">
-                  <label for="cultural-adaptation">Cultural Adaptation</label>
+                  <label for="cultural-adaptation" data-i18n="popup_check_cultural_adaptation">Cultural Adaptation</label>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <div class="translation-container">
             <div id="translation-content" class="translation-content">
               <div class="empty-state">
                 <i class="fas fa-language"></i>
-                <p>Click "Translate Email" to translate the content</p>
+                <p data-i18n="popup_empty_translation">Click "Translate Email" to translate the content</p>
               </div>
             </div>
           </div>
         </div>
-        
+
         <div class="footer">
           <button id="translate-btn" class="primary-btn">
-            <i class="fas fa-language"></i> Translate Email
+            <i class="fas fa-language"></i> <span data-i18n="popup_translate_btn">Translate Email</span>
           </button>
           <div class="action-buttons">
             <button id="copy-translation-btn" class="secondary-btn" disabled>
-              <i class="fas fa-copy"></i> Copy
+              <i class="fas fa-copy"></i> <span data-i18n="popup_copy_btn">Copy</span>
             </button>
             <button id="insert-translation-btn" class="secondary-btn" disabled>
-              <i class="fas fa-reply"></i> Insert in Reply
+              <i class="fas fa-reply"></i> <span data-i18n="popup_insert_in_reply_btn">Insert in Reply</span>
             </button>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
+
+  <!-- First: it defines the global t(), which the scripts below call while they build the UI. -->
+  <script src="i18n.js"></script>
   <script src="history.js"></script>
   <script src="popup.js"></script>
 </body>

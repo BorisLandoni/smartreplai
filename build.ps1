@@ -54,6 +54,7 @@ $ship = @(
     'background.js', 'popup.js', 'popup.html', 'popup.css',
     'options.js', 'options.html',
     'history.js', 'history-ui.js', 'history.html', 'history.css',
+    'i18n.js',
     'LICENSE'
 )
 
@@ -64,6 +65,18 @@ foreach ($file in $ship) {
 }
 
 Copy-Item (Join-Path $root 'icons') -Destination $staging -Recurse
+
+# Translations. Declaring default_locale without shipping the matching catalogue makes Thunderbird
+# refuse to load the add-on outright, so this is checked rather than assumed.
+$locales = Join-Path $root '_locales'
+if (Test-Path $locales) {
+    Copy-Item $locales -Destination $staging -Recurse
+
+    $default = (Get-Content $manifestPath -Raw | ConvertFrom-Json).default_locale
+    if ($default -and -not (Test-Path (Join-Path $locales "$default/messages.json"))) {
+        throw "manifest declares default_locale '$default' but _locales/$default/messages.json is missing"
+    }
+}
 
 # --- package ---------------------------------------------------------------
 # Versioned filename: each build gets its own artifact, so a previously built file being held open

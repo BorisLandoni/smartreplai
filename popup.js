@@ -41,6 +41,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   const DEFAULT_MODEL = 'deepseek';
   const DEEPSEEK_DEFAULT_MODEL = 'deepseek-v4-flash';
 
+  // The selects store a technical id ('professional', 'medium'); the indicator shows a label.
+  const STYLE_LABEL_KEYS = {
+    professional: 'popup_style_professional',
+    friendly: 'popup_style_friendly',
+    concise: 'popup_style_concise',
+    detailed: 'popup_style_detailed'
+  };
+
+  const LENGTH_LABEL_KEYS = {
+    short: 'popup_length_short',
+    medium: 'popup_length_medium',
+    long: 'popup_length_long'
+  };
+
   let currentMessage = null;
   let generatedResponse = '';
   let generatedSummary = '';
@@ -165,11 +179,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         // If we have a saved response for this email, load it
         loadSavedResponseForCurrentEmail(message.id);
       } else {
-        showStatus('No email selected. Please select an email and try again.', 'error');
+        showStatus(t('err_no_email_selected'), 'error');
       }
     })
     .catch(error => {
-      showStatus('Error loading email information. Please try again.', 'error');
+      showStatus(t('err_loading_email_info'), 'error');
     });
   
   // The two answers that come up constantly. The wording is plain on purpose: the prompt treats
@@ -193,7 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Generate response button handler
   generateBtn.addEventListener('click', async () => {
     if (!currentMessage) {
-      showStatus('No email selected. Please select an email and try again.', 'error');
+      showStatus(t('err_no_email_selected'), 'error');
       return;
     }
     
@@ -219,7 +233,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const prompt = createPrompt(currentMessage, style, length, context, userSignature, contentControls);
       
       // Show loading indicator in response area
-      responseContent.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Generating response...</div>';
+      responseContent.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> ${t('popup_generating_response')}</div>`;
       
       try {
         // Call AI API based on selected model from settings
@@ -259,16 +273,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         copyBtn.disabled = false;
         generateVariantsBtn.disabled = false;
         
-        showStatus('Response generated successfully!', 'success');
+        showStatus(t('popup_response_generated'), 'success');
       } catch (error) {
         responseContent.textContent = '';
-        showStatus(`Error generating response: ${error.message || 'Unknown error'}`, 'error');
+        showStatus(`${t('err_generating_response')}: ${error.message || t('err_unknown')}`, 'error');
       } finally {
         generateBtn.disabled = false;
       }
     } catch (error) {
       generateBtn.disabled = false;
-      showStatus(`Error: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_generic')}: ${error.message || t('err_unknown')}`, 'error');
     }
   });
   
@@ -282,7 +296,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const tab = document.createElement('div');
       tab.className = 'variant-tab';
       tab.dataset.variant = index + 1;
-      tab.textContent = `Variant ${index + 1}`;
+      tab.textContent = `${t('popup_variant')} ${index + 1}`;
       
       if (index === currentVariantIndex) {
         tab.classList.add('active');
@@ -324,7 +338,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Generate variants button handler
   generateVariantsBtn.addEventListener('click', async () => {
     if (!currentMessage || responseVariants.length === 0) {
-      showStatus('Generate a response first before creating variants.', 'error');
+      showStatus(t('err_generate_response_first'), 'error');
       return;
     }
     
@@ -353,7 +367,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const variantPrompt = `${basePrompt}\n\nPlease generate a different variation of the response with the same information but expressed differently. Make it feel fresh and distinct from previous versions while maintaining the same tone, style, and content requirements.`;
       
       // Show loading indicator in response area
-      responseContent.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Generating variant...</div>';
+      responseContent.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> ${t('popup_generating_variant')}</div>`;
       
       try {
         // Call AI API to generate a variant
@@ -384,32 +398,32 @@ document.addEventListener('DOMContentLoaded', async () => {
           });
         }
         
-        showStatus('Response variant generated successfully!', 'success');
+        showStatus(t('popup_variant_generated'), 'success');
       } catch (error) {
         responseContent.textContent = responseVariants[currentVariantIndex] || '';
-        showStatus(`Error generating variant: ${error.message || 'Unknown error'}`, 'error');
+        showStatus(`${t('err_generating_variant')}: ${error.message || t('err_unknown')}`, 'error');
       } finally {
         generateVariantsBtn.disabled = false;
       }
     } catch (error) {
       generateVariantsBtn.disabled = false;
-      showStatus(`Error: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_generic')}: ${error.message || t('err_unknown')}`, 'error');
     }
   });
   
   // Copy button handler
   copyBtn.addEventListener('click', () => {
     if (!generatedResponse) {
-      showStatus('No response generated yet.', 'error');
+      showStatus(t('err_no_response_yet'), 'error');
       return;
     }
     
     navigator.clipboard.writeText(generatedResponse)
       .then(() => {
-        showStatus('Response copied to clipboard!', 'success');
+        showStatus(t('popup_response_copied'), 'success');
       })
       .catch(error => {
-        showStatus('Error copying to clipboard: ' + error.message, 'error');
+        showStatus(t('err_copy_clipboard') + ': ' + error.message, 'error');
       });
   });
   
@@ -422,12 +436,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Function to handle inserting a response (either reply or reply all)
   async function handleInsertResponse(replyAll) {
     if (!generatedResponse) {
-      showStatus('No response generated yet.', 'error');
+      showStatus(t('err_no_response_yet'), 'error');
       return;
     }
     
     try {
-      showStatus(`Inserting response into ${replyAll ? 'reply all' : 'reply'}...`, 'info');
+      showStatus(replyAll ? t('popup_inserting_reply_all') : t('popup_inserting_reply'), 'info');
       insertBtn.disabled = true;
       insertAllBtn.disabled = true;
       
@@ -439,7 +453,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       
       if (result.success) {
-        showStatus(`Response inserted into ${replyAll ? 'reply all' : 'reply'}!`, 'success');
+        showStatus(replyAll ? t('popup_inserted_reply_all') : t('popup_inserted_reply'), 'success');
         
         // Wait a bit before closing to ensure the user sees the success message
         setTimeout(() => {
@@ -448,12 +462,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         insertBtn.disabled = false;
         insertAllBtn.disabled = false;
-        showStatus('Error inserting response: ' + (result.error || 'Unknown error'), 'error');
+        showStatus(t('err_inserting_response') + ': ' + (result.error || t('err_unknown')), 'error');
       }
     } catch (error) {
       insertBtn.disabled = false;
       insertAllBtn.disabled = false;
-      showStatus('Error inserting response: ' + (error.message || 'Unknown error'), 'error');
+      showStatus(t('err_inserting_response') + ': ' + (error.message || t('err_unknown')), 'error');
     }
   }
   
@@ -475,7 +489,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       await browser.storage.local.set({ popupState });
     } catch (error) {
-      showStatus(`Error saving popup state: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_saving_popup_state')}: ${error.message || t('err_unknown')}`, 'error');
     }
   }
   
@@ -543,7 +557,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
     } catch (error) {
-      showStatus(`Error loading popup state: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_loading_popup_state')}: ${error.message || t('err_unknown')}`, 'error');
     }
   }
   
@@ -577,7 +591,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Save back to storage
       await browser.storage.local.set({ savedResponses });
     } catch (error) {
-      showStatus(`Error saving response for email: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_saving_response')}: ${error.message || t('err_unknown')}`, 'error');
     }
   }
   
@@ -596,10 +610,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         copyBtn.disabled = false;
         
         // Show a notification that we loaded a saved response
-        showStatus('Loaded previously generated response', 'info');
+        showStatus(t('popup_loaded_saved_response'), 'info');
       }
     } catch (error) {
-      showStatus(`Error loading saved response for email: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_loading_saved_response')}: ${error.message || t('err_unknown')}`, 'error');
     }
   }
   
@@ -771,7 +785,7 @@ ${message.body}
         }
         
         // If we get here, all models failed
-        throw new Error(`Primary model failed: ${primaryError.message}. All fallback models also failed.`);
+        throw new Error(`${t('err_primary_model_failed')}: ${primaryError.message}. ${t('err_all_fallbacks_failed')}`);
       }
     } catch (error) {
       throw error;
@@ -793,7 +807,7 @@ ${message.body}
         }
 
         if (!apiKey) {
-          throw new Error('DeepSeek API key is not set');
+          throw new Error(t('err_deepseek_key_missing'));
         }
 
         return await callDeepSeekApi(prompt, apiKey, deepseekModel || DEEPSEEK_DEFAULT_MODEL);
@@ -801,44 +815,44 @@ ${message.body}
 
       case 'gemini':
         if (!settings.geminiApiKey) {
-          throw new Error('Gemini API key is not set');
+          throw new Error(t('err_gemini_key_missing'));
         }
         return await callGeminiApi(prompt, settings.geminiApiKey);
         
       case 'openai':
         if (!settings.openaiApiKey) {
-          throw new Error('OpenAI API key is not set');
+          throw new Error(t('err_openai_key_missing'));
         }
         return await callOpenAIApi(prompt, settings.openaiApiKey, settings.reasoningEffort, 'o3-mini');
         
       case 'gpt4o':
         if (!settings.openaiApiKey) {
-          throw new Error('OpenAI API key is not set for GPT-4o');
+          throw new Error(t('err_openai_key_missing_gpt4o'));
         }
         return await callOpenAIApi(prompt, settings.openaiApiKey, settings.reasoningEffort, 'gpt-4o');
         
       case 'mistral':
         if (!settings.mistralApiKey) {
-          throw new Error('Mistral API key is not set');
+          throw new Error(t('err_mistral_key_missing'));
         }
         return await callMistralApi(prompt, settings.mistralApiKey);
         
       case 'ollama':
         if (!settings.ollamaHost) {
-          throw new Error('Ollama host is not set');
+          throw new Error(t('err_ollama_host_missing'));
         }
         
         const modelName = settings.ollamaModel === 'custom' ? 
           settings.ollamaCustomModel : settings.ollamaModel;
           
         if (!modelName) {
-          throw new Error('Ollama model is not set');
+          throw new Error(t('err_ollama_model_missing'));
         }
         
         return await callOllamaApi(prompt, settings.ollamaHost, modelName);
         
       default:
-        throw new Error(`Unknown model: ${model}`);
+        throw new Error(`${t('err_unknown_model')}: ${model}`);
     }
   }
   
@@ -869,14 +883,14 @@ ${message.body}
     });
 
     if (!response.ok) {
-      throw new Error(`DeepSeek API error: ${await describeDeepSeekError(response)}`);
+      throw new Error(`${t('err_deepseek_api')}: ${await describeDeepSeekError(response)}`);
     }
 
     const data = await response.json();
     const content = data.choices && data.choices[0] && data.choices[0].message.content;
 
     if (!content) {
-      throw new Error('DeepSeek returned an empty response. Please try again.');
+      throw new Error(t('err_deepseek_empty_response'));
     }
 
     return content;
@@ -895,13 +909,13 @@ ${message.body}
     }
 
     if (response.status === 401) {
-      return `invalid API key (${detail})`;
+      return `${t('err_deepseek_invalid_key')} (${detail})`;
     }
     if (response.status === 402) {
-      return `insufficient balance, top up at platform.deepseek.com (${detail})`;
+      return `${t('err_deepseek_insufficient_balance')} (${detail})`;
     }
     if (response.status === 429) {
-      return `too many concurrent requests, try again shortly (${detail})`;
+      return `${t('err_deepseek_rate_limited')} (${detail})`;
     }
 
     return detail;
@@ -954,7 +968,7 @@ ${message.body}
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`OpenAI API error: ${errorData.error?.message || response.statusText}`);
+        throw new Error(`${t('err_openai_api')}: ${errorData.error?.message || response.statusText}`);
       }
       
       const data = await response.json();
@@ -992,13 +1006,13 @@ ${message.body}
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`Gemini API error: ${errorData.error?.message || response.statusText}`);
+        throw new Error(`${t('err_gemini_api')}: ${errorData.error?.message || response.statusText}`);
       }
       
       const data = await response.json();
       
       if (!data.candidates || data.candidates.length === 0) {
-        throw new Error('No response from Gemini API');
+        throw new Error(t('err_gemini_no_response'));
       }
       
       const textResponse = data.candidates[0].content.parts[0].text;
@@ -1031,12 +1045,12 @@ ${message.body}
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`Mistral API error: ${errorData.error || response.statusText}`);
+        throw new Error(`${t('err_mistral_api')}: ${errorData.error || response.statusText}`);
       }
       
       const data = await response.json();
       if (!data.choices || data.choices.length === 0) {
-        throw new Error('No response generated from Mistral API');
+        throw new Error(t('err_mistral_no_response'));
       }
       
       return data.choices[0].message.content;
@@ -1086,12 +1100,12 @@ ${message.body}
           } catch (e) {
             errorMessage = errorText || response.statusText;
           }
-          throw new Error(`Ollama API error: ${errorMessage}`);
+          throw new Error(`${t('err_ollama_api')}: ${errorMessage}`);
         }
         
         const data = await response.json();
         if (!data.response) {
-          throw new Error('No response from Ollama API');
+          throw new Error(t('err_ollama_no_response'));
         }
         
         // Clean up any thinking patterns from the response
@@ -1124,12 +1138,12 @@ ${message.body}
           
           if (!chatResponse.ok) {
             const errorData = await chatResponse.json();
-            throw new Error(`Ollama chat API error: ${errorData.error || chatResponse.statusText}`);
+            throw new Error(`${t('err_ollama_chat_api')}: ${errorData.error || chatResponse.statusText}`);
           }
           
           const chatData = await chatResponse.json();
           if (!chatData.message || !chatData.message.content) {
-            throw new Error('No response from Ollama chat API');
+            throw new Error(t('err_ollama_chat_no_response'));
           }
           
           // Clean up any thinking patterns from the response
@@ -1209,12 +1223,12 @@ ${message.body}
   // Analyze Sentiment button handler
   analyzeSentimentBtn.addEventListener('click', async () => {
     if (!currentMessage) {
-      showStatus('No email selected. Please select an email and try again.', 'error');
+      showStatus(t('err_no_email_selected'), 'error');
       return;
     }
     
     try {
-      showStatus('Analyzing sentiment...', 'info');
+      showStatus(t('popup_analyzing_sentiment'), 'info');
       analyzeSentimentBtn.disabled = true;
       
       const settings = await browser.storage.local.get([
@@ -1232,23 +1246,23 @@ ${message.body}
       
       // Check for required API keys based on selected model
       if (selectedModel === 'deepseek' && !settings.deepseekApiKey) {
-        showStatus('DeepSeek API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_deepseek_key_not_found'), 'error');
         analyzeSentimentBtn.disabled = false;
         return;
       } else if (selectedModel === 'gemini' && !settings.geminiApiKey) {
-        showStatus('Gemini API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_gemini_key_not_found'), 'error');
         analyzeSentimentBtn.disabled = false;
         return;
       } else if ((selectedModel === 'openai' || selectedModel === 'gpt4o') && !settings.openaiApiKey) {
-        showStatus('OpenAI API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_openai_key_not_found'), 'error');
         analyzeSentimentBtn.disabled = false;
         return;
       } else if (selectedModel === 'mistral' && !settings.mistralApiKey) {
-        showStatus('Mistral API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_mistral_key_not_found'), 'error');
         analyzeSentimentBtn.disabled = false;
         return;
       } else if (selectedModel === 'ollama' && !settings.ollamaHost) {
-        showStatus('Ollama host not configured. Please set it in the settings.', 'error');
+        showStatus(t('err_ollama_host_not_found'), 'error');
         analyzeSentimentBtn.disabled = false;
         return;
       }
@@ -1268,10 +1282,10 @@ ${message.body}
         detectSubtext
       );
       
-      document.getElementById('sentiment-visualization').innerHTML = 
-        '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Analyzing sentiment...</div>';
-      document.getElementById('sentiment-details').innerHTML = 
-        '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Generating detailed analysis...</div>';
+      document.getElementById('sentiment-visualization').innerHTML =
+        `<div class="loading"><i class="fas fa-spinner fa-spin"></i> ${t('popup_analyzing_sentiment')}</div>`;
+      document.getElementById('sentiment-details').innerHTML =
+        `<div class="loading"><i class="fas fa-spinner fa-spin"></i> ${t('popup_generating_detailed_analysis')}</div>`;
       
       try {
         const response = await callAIApi(
@@ -1290,24 +1304,24 @@ ${message.body}
         
         exportSentimentBtn.disabled = false;
         
-        showStatus('Sentiment analysis completed!', 'success');
+        showStatus(t('popup_sentiment_completed'), 'success');
       } catch (error) {
         document.getElementById('sentiment-visualization').innerHTML = '';
         document.getElementById('sentiment-details').innerHTML = '';
-        showStatus(`Error analyzing sentiment: ${error.message || 'Unknown error'}`, 'error');
+        showStatus(`${t('err_analyzing_sentiment')}: ${error.message || t('err_unknown')}`, 'error');
       } finally {
         analyzeSentimentBtn.disabled = false;
       }
     } catch (error) {
       analyzeSentimentBtn.disabled = false;
-      showStatus(`Error: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_generic')}: ${error.message || t('err_unknown')}`, 'error');
     }
   });
   
   // Export sentiment analysis button handler
   exportSentimentBtn.addEventListener('click', () => {
     if (!sentimentAnalysis) {
-      showStatus('No sentiment analysis to export.', 'error');
+      showStatus(t('err_no_sentiment_to_export'), 'error');
       return;
     }
     
@@ -1316,13 +1330,13 @@ ${message.body}
       
       navigator.clipboard.writeText(exportText)
         .then(() => {
-          showStatus('Sentiment analysis copied to clipboard!', 'success');
+          showStatus(t('popup_sentiment_copied'), 'success');
         })
         .catch(err => {
-          showStatus('Failed to copy sentiment analysis to clipboard.', 'error');
+          showStatus(t('err_copy_sentiment_failed'), 'error');
         });
     } catch (error) {
-      showStatus(`Error exporting sentiment analysis: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_exporting_sentiment')}: ${error.message || t('err_unknown')}`, 'error');
     }
   });
   
@@ -1422,7 +1436,7 @@ ${message.body}
       
       return JSON.parse(jsonStr);
     } catch (error) {
-      throw new Error('Failed to parse sentiment analysis response. The AI response format was unexpected.');
+      throw new Error(t('err_parse_sentiment'));
     }
   }
   
@@ -1438,22 +1452,22 @@ ${message.body}
     
     html += `
       <div class="sentiment-overview">
-        <h3>Overall Sentiment: ${analysis.overallSentiment.label}</h3>
+        <h3>${t('popup_overall_sentiment')}: ${analysis.overallSentiment.label}</h3>
         <div class="sentiment-gauge">
           <div class="sentiment-gauge-bar">
             <div class="sentiment-gauge-fill" style="width: ${sentimentPercentage}%; background-color: ${sentimentColor};"></div>
             <div class="sentiment-gauge-marker" style="left: 50%;"></div>
           </div>
           <div class="sentiment-gauge-labels">
-            <span>Negative</span>
-            <span>Neutral</span>
-            <span>Positive</span>
+            <span>${t('popup_sentiment_negative')}</span>
+            <span>${t('popup_sentiment_neutral')}</span>
+            <span>${t('popup_sentiment_positive')}</span>
           </div>
         </div>
       </div>
       
       <div class="emotion-chart">
-        <h3>Primary Emotion: ${analysis.emotions.primary.emotion}</h3>
+        <h3>${t('popup_primary_emotion')}: ${analysis.emotions.primary.emotion}</h3>
         <div class="emotion-tags">
           <div class="emotion-tag primary">${analysis.emotions.primary.emotion} (${(analysis.emotions.primary.intensity * 100).toFixed(0)}%)</div>
           ${analysis.emotions.secondary.map(emotion => 
@@ -1475,11 +1489,11 @@ ${message.body}
     
     html += `
       <div class="communication-metrics">
-        <h3>Communication Style</h3>
+        <h3>${t('popup_communication_style')}</h3>
         <div class="metrics-grid">
           <div class="metric">
             <div class="sentiment-score">
-              <div class="sentiment-score-label">Formality</div>
+              <div class="sentiment-score-label">${t('popup_formality')}</div>
               <div class="sentiment-score-bar">
                 <div class="sentiment-score-fill" style="width: ${analysis.communication.formality.score * 100}%; background-color: #4285f4;"></div>
               </div>
@@ -1488,7 +1502,7 @@ ${message.body}
           </div>
           <div class="metric">
             <div class="sentiment-score">
-              <div class="sentiment-score-label">Urgency</div>
+              <div class="sentiment-score-label">${t('popup_urgency')}</div>
               <div class="sentiment-score-bar">
                 <div class="sentiment-score-fill" style="width: ${analysis.communication.urgency.score * 100}%; background-color: #ea4335;"></div>
               </div>
@@ -1497,7 +1511,7 @@ ${message.body}
           </div>
           <div class="metric">
             <div class="sentiment-score">
-              <div class="sentiment-score-label">Clarity</div>
+              <div class="sentiment-score-label">${t('popup_clarity')}</div>
               <div class="sentiment-score-bar">
                 <div class="sentiment-score-fill" style="width: ${analysis.communication.clarity.score * 100}%; background-color: #34a853;"></div>
               </div>
@@ -1511,7 +1525,7 @@ ${message.body}
     if (analysis.keyPhrases && analysis.keyPhrases.length > 0) {
       html += `
         <div class="key-phrases">
-          <h3>Key Phrases</h3>
+          <h3>${t('popup_key_phrases')}</h3>
           <ul class="key-phrases-list">
             ${analysis.keyPhrases.map(phrase => {
               const phraseColor = getSentimentColor(phrase.sentiment);
@@ -1525,11 +1539,11 @@ ${message.body}
     if (analysis.subtext) {
       html += `
         <div class="subtext-analysis">
-          <h3>Implied Subtext</h3>
+          <h3>${t('popup_implied_subtext')}</h3>
           <p>${analysis.subtext.implied}</p>
-          
+
           ${analysis.subtext.possibleIntentions && analysis.subtext.possibleIntentions.length > 0 ? `
-            <h4>Possible Intentions</h4>
+            <h4>${t('popup_possible_intentions')}</h4>
             <ul>
               ${analysis.subtext.possibleIntentions.map(intention => `<li>${intention}</li>`).join('')}
             </ul>
@@ -1540,7 +1554,7 @@ ${message.body}
     
     html += `
       <div class="sentiment-summary">
-        <h3>Summary</h3>
+        <h3>${t('popup_summary_heading')}</h3>
         <p>${analysis.summary}</p>
       </div>
     `;
@@ -1573,51 +1587,53 @@ ${message.body}
   
   // Function to format sentiment analysis for export
   function formatSentimentAnalysisForExport(analysis) {
-    let exportText = `SENTIMENT ANALYSIS REPORT\n`;
+    let exportText = `${t('popup_export_report_title')}\n`;
     exportText += `=======================\n\n`;
-    
-    exportText += `OVERALL SENTIMENT: ${analysis.overallSentiment.label} (Score: ${analysis.overallSentiment.score.toFixed(2)})\n\n`;
-    
-    exportText += `EMOTIONS:\n`;
-    exportText += `- Primary: ${analysis.emotions.primary.emotion} (Intensity: ${(analysis.emotions.primary.intensity * 100).toFixed(0)}%)\n`;
+
+    exportText += `${t('popup_export_overall_sentiment')}: ${analysis.overallSentiment.label} (${t('popup_export_score')}: ${analysis.overallSentiment.score.toFixed(2)})\n\n`;
+
+    exportText += `${t('popup_export_emotions')}:\n`;
+    exportText += `- ${t('popup_export_primary')}: ${analysis.emotions.primary.emotion} (${t('popup_export_intensity')}: ${(analysis.emotions.primary.intensity * 100).toFixed(0)}%)\n`;
     if (analysis.emotions.secondary && analysis.emotions.secondary.length > 0) {
-      exportText += `- Secondary:\n`;
+      exportText += `- ${t('popup_export_secondary')}:\n`;
       analysis.emotions.secondary.forEach(emotion => {
-        exportText += `  * ${emotion.emotion} (Intensity: ${(emotion.intensity * 100).toFixed(0)}%)\n`;
+        exportText += `  * ${emotion.emotion} (${t('popup_export_intensity')}: ${(emotion.intensity * 100).toFixed(0)}%)\n`;
       });
     }
     exportText += `\n`;
-    
-    exportText += `COMMUNICATION STYLE:\n`;
-    exportText += `- Formality: ${analysis.communication.formality.label} (${(analysis.communication.formality.score * 100).toFixed(0)}%)\n`;
-    exportText += `- Urgency: ${analysis.communication.urgency.label} (${(analysis.communication.urgency.score * 100).toFixed(0)}%)\n`;
-    exportText += `- Clarity: ${analysis.communication.clarity.label} (${(analysis.communication.clarity.score * 100).toFixed(0)}%)\n\n`;
-    
+
+    exportText += `${t('popup_export_communication_style')}:\n`;
+    exportText += `- ${t('popup_formality')}: ${analysis.communication.formality.label} (${(analysis.communication.formality.score * 100).toFixed(0)}%)\n`;
+    exportText += `- ${t('popup_urgency')}: ${analysis.communication.urgency.label} (${(analysis.communication.urgency.score * 100).toFixed(0)}%)\n`;
+    exportText += `- ${t('popup_clarity')}: ${analysis.communication.clarity.label} (${(analysis.communication.clarity.score * 100).toFixed(0)}%)\n\n`;
+
     if (analysis.keyPhrases && analysis.keyPhrases.length > 0) {
-      exportText += `KEY PHRASES:\n`;
+      exportText += `${t('popup_export_key_phrases')}:\n`;
       analysis.keyPhrases.forEach(phrase => {
-        const sentimentLabel = phrase.sentiment > 0.3 ? 'Positive' : (phrase.sentiment < -0.3 ? 'Negative' : 'Neutral');
+        const sentimentLabel = phrase.sentiment > 0.3 ?
+          t('popup_sentiment_positive') :
+          (phrase.sentiment < -0.3 ? t('popup_sentiment_negative') : t('popup_sentiment_neutral'));
         exportText += `- "${phrase.phrase}" (${sentimentLabel})\n`;
       });
       exportText += `\n`;
     }
-    
+
     if (analysis.subtext) {
-      exportText += `IMPLIED SUBTEXT:\n${analysis.subtext.implied}\n\n`;
-      
+      exportText += `${t('popup_export_implied_subtext')}:\n${analysis.subtext.implied}\n\n`;
+
       if (analysis.subtext.possibleIntentions && analysis.subtext.possibleIntentions.length > 0) {
-        exportText += `POSSIBLE INTENTIONS:\n`;
+        exportText += `${t('popup_export_possible_intentions')}:\n`;
         analysis.subtext.possibleIntentions.forEach(intention => {
           exportText += `- ${intention}\n`;
         });
         exportText += `\n`;
       }
     }
-    
-    exportText += `SUMMARY:\n${analysis.summary}\n\n`;
-    
+
+    exportText += `${t('popup_export_summary')}:\n${analysis.summary}\n\n`;
+
     const now = new Date();
-    exportText += `Generated on: ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}\n`;
+    exportText += `${t('popup_export_generated_on')}: ${now.toLocaleDateString()} ${t('popup_export_at')} ${now.toLocaleTimeString()}\n`;
     
     return exportText;
   }
@@ -1681,12 +1697,12 @@ ${message.body}
   // Generate Summary button handler
   generateSummaryBtn.addEventListener('click', async () => {
     if (!currentMessage) {
-      showStatus('No email selected. Please select an email and try again.', 'error');
+      showStatus(t('err_no_email_selected'), 'error');
       return;
     }
     
     try {
-      showStatus('Generating summary...', 'info');
+      showStatus(t('popup_generating_summary'), 'info');
       generateSummaryBtn.disabled = true;
       
       const settings = await browser.storage.local.get([
@@ -1704,23 +1720,23 @@ ${message.body}
       
       // Check for required API keys based on selected model
       if (selectedModel === 'deepseek' && !settings.deepseekApiKey) {
-        showStatus('DeepSeek API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_deepseek_key_not_found'), 'error');
         generateSummaryBtn.disabled = false;
         return;
       } else if (selectedModel === 'gemini' && !settings.geminiApiKey) {
-        showStatus('Gemini API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_gemini_key_not_found'), 'error');
         generateSummaryBtn.disabled = false;
         return;
       } else if ((selectedModel === 'openai' || selectedModel === 'gpt4o') && !settings.openaiApiKey) {
-        showStatus('OpenAI API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_openai_key_not_found'), 'error');
         generateSummaryBtn.disabled = false;
         return;
       } else if (selectedModel === 'mistral' && !settings.mistralApiKey) {
-        showStatus('Mistral API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_mistral_key_not_found'), 'error');
         generateSummaryBtn.disabled = false;
         return;
       } else if (selectedModel === 'ollama' && !settings.ollamaHost) {
-        showStatus('Ollama host not configured. Please set it in the settings.', 'error');
+        showStatus(t('err_ollama_host_not_found'), 'error');
         generateSummaryBtn.disabled = false;
         return;
       }
@@ -1742,8 +1758,8 @@ ${message.body}
         extractDeadlines
       );
       
-      document.getElementById('summary-content').innerHTML = 
-        '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Generating summary...</div>';
+      document.getElementById('summary-content').innerHTML =
+        `<div class="loading"><i class="fas fa-spinner fa-spin"></i> ${t('popup_generating_summary')}</div>`;
       
       try {
         const response = await callAIApi(
@@ -1762,47 +1778,47 @@ ${message.body}
         copySummaryBtn.disabled = false;
         insertSummaryBtn.disabled = false;
         
-        showStatus('Summary generated successfully!', 'success');
+        showStatus(t('popup_summary_generated'), 'success');
       } catch (error) {
         document.getElementById('summary-content').innerHTML = '';
-        showStatus(`Error generating summary: ${error.message || 'Unknown error'}`, 'error');
+        showStatus(`${t('err_generating_summary')}: ${error.message || t('err_unknown')}`, 'error');
       } finally {
         generateSummaryBtn.disabled = false;
       }
     } catch (error) {
       generateSummaryBtn.disabled = false;
-      showStatus(`Error: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_generic')}: ${error.message || t('err_unknown')}`, 'error');
     }
   });
   
   // Copy Summary button handler
   copySummaryBtn.addEventListener('click', () => {
     if (!generatedSummary) {
-      showStatus('No summary to copy.', 'error');
+      showStatus(t('err_no_summary_to_copy'), 'error');
       return;
     }
     
     navigator.clipboard.writeText(generatedSummary)
       .then(() => {
-        showStatus('Summary copied to clipboard!', 'success');
+        showStatus(t('popup_summary_copied'), 'success');
       })
       .catch(err => {
-        showStatus('Failed to copy summary to clipboard.', 'error');
+        showStatus(t('err_copy_summary_failed'), 'error');
       });
   });
   
   // Insert Summary button handler
   insertSummaryBtn.addEventListener('click', async () => {
     if (!generatedSummary || !currentMessage) {
-      showStatus('No summary to insert.', 'error');
+      showStatus(t('err_no_summary_to_insert'), 'error');
       return;
     }
-    
+
     try {
-      showStatus('Inserting summary into reply...', 'info');
+      showStatus(t('popup_inserting_summary'), 'info');
       insertSummaryBtn.disabled = true;
-      
-      const formattedSummary = `Summary of original email:\n${generatedSummary}\n\n`;
+
+      const formattedSummary = `${t('popup_summary_insert_label')}\n${generatedSummary}\n\n`;
       
       const result = await browser.runtime.sendMessage({
         action: 'insertResponse',
@@ -1812,12 +1828,12 @@ ${message.body}
       });
       
       if (result.success) {
-        showStatus('Summary inserted successfully!', 'success');
+        showStatus(t('popup_summary_inserted'), 'success');
       } else {
-        showStatus(`Error inserting summary: ${result.error || 'Unknown error'}`, 'error');
+        showStatus(`${t('err_inserting_summary')}: ${result.error || t('err_unknown')}`, 'error');
       }
     } catch (error) {
-      showStatus(`Error inserting summary: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_inserting_summary')}: ${error.message || t('err_unknown')}`, 'error');
     } finally {
       insertSummaryBtn.disabled = false;
     }
@@ -1882,12 +1898,12 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
   // Translate button handler
   translateBtn.addEventListener('click', async () => {
     if (!currentMessage) {
-      showStatus('No email selected. Please select an email and try again.', 'error');
+      showStatus(t('err_no_email_selected'), 'error');
       return;
     }
     
     try {
-      showStatus('Translating email...', 'info');
+      showStatus(t('popup_translating_email'), 'info');
       translateBtn.disabled = true;
       
       const settings = await browser.storage.local.get([
@@ -1905,23 +1921,23 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
       
       // Check for required API keys based on selected model
       if (selectedModel === 'deepseek' && !settings.deepseekApiKey) {
-        showStatus('DeepSeek API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_deepseek_key_not_found'), 'error');
         translateBtn.disabled = false;
         return;
       } else if (selectedModel === 'gemini' && !settings.geminiApiKey) {
-        showStatus('Gemini API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_gemini_key_not_found'), 'error');
         translateBtn.disabled = false;
         return;
       } else if ((selectedModel === 'openai' || selectedModel === 'gpt4o') && !settings.openaiApiKey) {
-        showStatus('OpenAI API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_openai_key_not_found'), 'error');
         translateBtn.disabled = false;
         return;
       } else if (selectedModel === 'mistral' && !settings.mistralApiKey) {
-        showStatus('Mistral API key not found. Please set it in the settings.', 'error');
+        showStatus(t('err_mistral_key_not_found'), 'error');
         translateBtn.disabled = false;
         return;
       } else if (selectedModel === 'ollama' && !settings.ollamaHost) {
-        showStatus('Ollama host not configured. Please set it in the settings.', 'error');
+        showStatus(t('err_ollama_host_not_found'), 'error');
         translateBtn.disabled = false;
         return;
       }
@@ -1942,8 +1958,8 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
         culturalAdaptation
       );
       
-      document.getElementById('translation-content').innerHTML = 
-        '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Translating email...</div>';
+      document.getElementById('translation-content').innerHTML =
+        `<div class="loading"><i class="fas fa-spinner fa-spin"></i> ${t('popup_translating_email')}</div>`;
       
       try {
         const response = await callAIApi(
@@ -1972,44 +1988,44 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
         copyTranslationBtn.disabled = false;
         insertTranslationBtn.disabled = false;
         
-        showStatus('Translation completed successfully!', 'success');
+        showStatus(t('popup_translation_completed'), 'success');
       } catch (error) {
         document.getElementById('translation-content').innerHTML = '';
-        showStatus(`Error translating email: ${error.message || 'Unknown error'}`, 'error');
+        showStatus(`${t('err_translating_email')}: ${error.message || t('err_unknown')}`, 'error');
       } finally {
         translateBtn.disabled = false;
       }
     } catch (error) {
       translateBtn.disabled = false;
-      showStatus(`Error: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_generic')}: ${error.message || t('err_unknown')}`, 'error');
     }
   });
   
   // Copy Translation button handler
   copyTranslationBtn.addEventListener('click', () => {
     if (!generatedTranslation) {
-      showStatus('No translation to copy.', 'error');
+      showStatus(t('err_no_translation_to_copy'), 'error');
       return;
     }
     
     navigator.clipboard.writeText(generatedTranslation)
       .then(() => {
-        showStatus('Translation copied to clipboard!', 'success');
+        showStatus(t('popup_translation_copied'), 'success');
       })
       .catch(err => {
-        showStatus('Failed to copy translation to clipboard.', 'error');
+        showStatus(t('err_copy_translation_failed'), 'error');
       });
   });
   
   // Insert Translation button handler
   insertTranslationBtn.addEventListener('click', async () => {
     if (!generatedTranslation || !currentMessage) {
-      showStatus('No translation to insert.', 'error');
+      showStatus(t('err_no_translation_to_insert'), 'error');
       return;
     }
-    
+
     try {
-      showStatus('Inserting translation into reply...', 'info');
+      showStatus(t('popup_inserting_translation'), 'info');
       insertTranslationBtn.disabled = true;
       
       const sourceLanguage = document.getElementById('source-language').value;
@@ -2018,9 +2034,9 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
       
       let formattedTranslation = '';
       if (includeOriginal) {
-        formattedTranslation = `Original (${getLanguageName(sourceLanguage)}):\n${currentMessage.body}\n\nTranslation (${getLanguageName(targetLanguage)}):\n${generatedTranslation}\n\n`;
+        formattedTranslation = `${t('popup_original_label')} (${getLanguageLabel(sourceLanguage)}):\n${currentMessage.body}\n\n${t('popup_translation_label')} (${getLanguageLabel(targetLanguage)}):\n${generatedTranslation}\n\n`;
       } else {
-        formattedTranslation = `Translation (${getLanguageName(sourceLanguage)} → ${getLanguageName(targetLanguage)}):\n${generatedTranslation}\n\n`;
+        formattedTranslation = `${t('popup_translation_label')} (${getLanguageLabel(sourceLanguage)} → ${getLanguageLabel(targetLanguage)}):\n${generatedTranslation}\n\n`;
       }
       
       const result = await browser.runtime.sendMessage({
@@ -2031,12 +2047,12 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
       });
       
       if (result.success) {
-        showStatus('Translation inserted successfully!', 'success');
+        showStatus(t('popup_translation_inserted'), 'success');
       } else {
-        showStatus(`Error inserting translation: ${result.error || 'Unknown error'}`, 'error');
+        showStatus(`${t('err_inserting_translation')}: ${result.error || t('err_unknown')}`, 'error');
       }
     } catch (error) {
-      showStatus(`Error inserting translation: ${error.message || 'Unknown error'}`, 'error');
+      showStatus(`${t('err_inserting_translation')}: ${error.message || t('err_unknown')}`, 'error');
     } finally {
       insertTranslationBtn.disabled = false;
     }
@@ -2089,10 +2105,33 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
     const sourceLanguage = document.getElementById('source-language').value;
     const targetLanguage = document.getElementById('target-language').value;
     
-    return `Original (${getLanguageName(sourceLanguage)}):\n${message.body}\n\nTranslation (${getLanguageName(targetLanguage)}):\n${translation}`;
+    return `${t('popup_original_label')} (${getLanguageLabel(sourceLanguage)}):\n${message.body}\n\n${t('popup_translation_label')} (${getLanguageLabel(targetLanguage)}):\n${translation}`;
   }
-  
-  // Helper function to get language name from code
+
+  // Language names shown to the user. Kept separate from getLanguageName(), whose output goes
+  // into the prompt and therefore has to stay in English.
+  const LANGUAGE_LABEL_KEYS = {
+    'auto': 'popup_lang_auto',
+    'en': 'popup_lang_en',
+    'es': 'popup_lang_es',
+    'fr': 'popup_lang_fr',
+    'de': 'popup_lang_de',
+    'it': 'popup_lang_it',
+    'pt': 'popup_lang_pt',
+    'ru': 'popup_lang_ru',
+    'zh': 'popup_lang_zh',
+    'ja': 'popup_lang_ja',
+    'ko': 'popup_lang_ko',
+    'ar': 'popup_lang_ar',
+    'hi': 'popup_lang_hi'
+  };
+
+  function getLanguageLabel(languageCode) {
+    const key = LANGUAGE_LABEL_KEYS[languageCode];
+    return key ? t(key) : languageCode;
+  }
+
+  // Helper function to get language name from code (English, for the prompt)
   function getLanguageName(languageCode) {
     const languages = {
       'auto': 'Auto-detected',
@@ -2159,7 +2198,7 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
         updateStyleLengthCombo();
       }
       
-      showStatus('Response loaded from history', 'info');
+      showStatus(t('popup_response_from_history'), 'info');
       
       // Return success response
       sendResponse({ success: true });
@@ -2169,12 +2208,14 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
   
   // Function to update the style-length combination indicator
   function updateStyleLengthCombo() {
-    const styleText = responseStyle.value.charAt(0).toUpperCase() + responseStyle.value.slice(1);
-    const lengthText = responseLength.value.charAt(0).toUpperCase() + responseLength.value.slice(1);
-    
+    const styleKey = STYLE_LABEL_KEYS[responseStyle.value];
+    const lengthKey = LENGTH_LABEL_KEYS[responseLength.value];
+    const styleText = styleKey ? t(styleKey) : responseStyle.value;
+    const lengthText = lengthKey ? t(lengthKey) : responseLength.value;
+
     const comboElement = document.getElementById('style-length-combo');
     if (comboElement) {
-      comboElement.querySelector('span').innerHTML = `You selected: <strong>${styleText}, ${lengthText}</strong> combination`;
+      comboElement.querySelector('span').innerHTML = `${t('popup_combo_selected')} <strong>${styleText}, ${lengthText}</strong>`;
     }
   }
   
