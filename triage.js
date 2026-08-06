@@ -91,10 +91,16 @@ let triageFlushTimer = null;
 let triageChain = Promise.resolve();
 
 function enqueueTriage(work) {
-  triageChain = triageChain.then(work).catch(error => {
+  const run = triageChain.then(work);
+
+  // Two different promises on purpose. The chain must swallow the failure so the next run still
+  // starts, but the caller has to see it: swallowing it for both meant the options page received
+  // undefined and reported a confusing error about its own code instead of the real cause.
+  triageChain = run.catch(error => {
     console.error('Triage: run failed', error);
   });
-  return triageChain;
+
+  return run;
 }
 
 // Distinguishes "this message is odd" from "the service is unreachable". Only the first deserves

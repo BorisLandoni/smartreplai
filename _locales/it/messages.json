@@ -1339,5 +1339,8 @@
   },
   "options_triage_stopped": {
     "message": "Interrotto senza etichettare niente, quindi non si perde nulla: ritenterà da solo. Motivo:"
+  },
+  "err_settings_not_loaded": {
+    "message": "Impostazioni non caricate, quindi non ho salvato niente: i valori memorizzati sono intatti. Chiudi e riapri questa pagina."
   }
 }

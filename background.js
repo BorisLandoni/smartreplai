@@ -1,60 +1,72 @@
 // Background script for the Thunderbird extension
-browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+// NOT an async function, deliberately. An async listener returns a Promise for every message it
+// sees, including the ones meant for triage.js — and a listener that answers claims the message,
+// so those calls came back as undefined. That single mistake produced two very different-looking
+// bugs: the triage reporting "summary is undefined", and the options page appearing to have
+// forgotten every setting.
+//
+// So: a promise is returned only for the actions handled here, and false for everything else,
+// which lets the other listener answer.
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (!message || !message.action) return false;
+
   // Only the action: the payload carries API keys (testConnection) and email text (insertResponse).
-  console.log("Background script received message:", message && message.action);
-  
+  console.log("Background script received message:", message.action);
+
   if (message.action === 'getCurrentMessage') {
     return getCurrentMessage(message.messageId);
-  } else if (message.action === 'insertResponse') {
-    try {
-      await insertResponse(message.messageId, message.response, message.replyAll);
-      return { success: true };
-    } catch (error) {
-      console.error("Error in insertResponse:", error);
-      return { 
-        success: false, 
-        error: error.message || "Unknown error" 
-      };
-    }
-  } else if (message.action === 'checkModelConnection') {
-    try {
-      const { model, apiKey } = message;
-      const result = await checkModelConnection(model, apiKey);
-      
-      return { success: true, result };
-    } catch (error) {
-      console.error('Error checking model connection:', error);
-      return { success: false, error: error.message };
-    }
-  } else if (message.action === 'testConnection') {
-    try {
-      let result;
-      
-      if (message.model === 'deepseek') {
-        result = await testDeepSeekConnection(message.apiKey, message.modelName);
-      } else if (message.model === 'gemini') {
-        result = await testGeminiConnection(message.apiKey);
-      } else if (message.model === 'openai') {
-        result = await testOpenAIConnection(message.apiKey, 'o3-mini');
-      } else if (message.model === 'gpt4o') {
-        result = await testOpenAIConnection(message.apiKey, 'gpt-4o');
-      } else if (message.model === 'mistral') {
-        result = await testMistralConnection(message.apiKey);
-      } else if (message.model === 'ollama') {
-        result = await testOllamaConnection(message.host, message.modelName);
-      } else {
-        throw new Error('Unknown model type');
-      }
-      
-      return result;
-    } catch (error) {
+  }
+
+  if (message.action === 'insertResponse') {
+    return insertResponse(message.messageId, message.response, message.replyAll)
+      .then(() => ({ success: true }))
+      .catch(error => {
+        console.error("Error in insertResponse:", error);
+        return { success: false, error: error.message || "Unknown error" };
+      });
+  }
+
+  if (message.action === 'checkModelConnection') {
+    return checkModelConnection(message.model, message.apiKey)
+      .then(result => ({ success: true, result }))
+      .catch(error => {
+        console.error('Error checking model connection:', error);
+        return { success: false, error: error.message };
+      });
+  }
+
+  if (message.action === 'testConnection') {
+    return testProviderConnection(message).catch(error => {
       console.error('Error testing connection:', error);
       return { connected: false, message: error.message };
-    }
+    });
   }
-  
-  // Other message handlers can be added here
+
+  return false;
 });
+
+async function testProviderConnection(message) {
+  if (message.model === 'deepseek') {
+    return testDeepSeekConnection(message.apiKey, message.modelName);
+  }
+  if (message.model === 'gemini') {
+    return testGeminiConnection(message.apiKey);
+  }
+  if (message.model === 'openai') {
+    return testOpenAIConnection(message.apiKey, 'o3-mini');
+  }
+  if (message.model === 'gpt4o') {
+    return testOpenAIConnection(message.apiKey, 'gpt-4o');
+  }
+  if (message.model === 'mistral') {
+    return testMistralConnection(message.apiKey);
+  }
+  if (message.model === 'ollama') {
+    return testOllamaConnection(message.host, message.modelName);
+  }
+
+  throw new Error('Unknown model type');
+}
 
 // Register options page
 browser.runtime.onInstalled.addListener(() => {

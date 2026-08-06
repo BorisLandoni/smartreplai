@@ -120,6 +120,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     fallbackModelsContainer.style.display = enableFallbackCheckbox.checked ? 'block' : 'none';
   });
   
+  // Saving writes the whole form back, so a form that never got filled in would erase everything
+  // it was supposed to preserve. Nothing is written until the load is known to have succeeded.
+  let settingsLoaded = false;
+
   // Load saved settings
   try {
     const settings = await browser.storage.local.get([
@@ -141,14 +145,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Deliberately not logging the settings object: it carries every API key in clear text.
 
     // Set input values from storage
-    // Asked of the background rather than duplicated here, so what the user reads is exactly what
-    // classifies their mail.
-    const triage = await browser.runtime.sendMessage({ action: 'getTriageConfig' });
+    // Isolated on purpose. This block used to sit in the middle of the main load, so when it threw
+    // everything after it was skipped — including filling in the API keys. The page then looked
+    // like it had forgotten every setting, and pressing Save wrote those blanks over real values.
+    // Nothing about the triage is worth that.
+    try {
+      const triage = await browser.runtime.sendMessage({ action: 'getTriageConfig' });
 
-    triageEnabledInput.checked = triage.enabled;
-    triageCcInput.checked = triage.ccOnlyNeverUrgent;
-    triageUrgentInput.value = triage.urgentDefinition;
-    triageBudgetInput.value = triage.dailyCallBudget;
+      if (triage) {
+        triageEnabledInput.checked = Boolean(triage.enabled);
+        triageCcInput.checked = triage.ccOnlyNeverUrgent !== false;
+        triageUrgentInput.value = triage.urgentDefinition || '';
+        triageBudgetInput.value = triage.dailyCallBudget || 200;
+      }
+    } catch (error) {
+      console.error('Could not load the triage settings:', error);
+    }
 
     if (settings.deepseekApiKey) deepseekApiKeyInput.value = settings.deepseekApiKey;
     if (settings.deepseekModel) deepseekModelSelect.value = settings.deepseekModel;
@@ -181,6 +193,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       ollamaCustomModelContainer.style.display = 'none';
     }
+
+    // Last statement of the block on purpose: reached only if every field above was filled in.
+    settingsLoaded = true;
   } catch (error) {
     console.error('Error loading settings:', error);
     showMainStatus(t('err_loading_settings') + error.message, 'error');
@@ -460,6 +475,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Save button click handler
   saveBtn.addEventListener('click', async () => {
     try {
+      // Refusing to save is the only safe answer here: the form would otherwise write its empty
+      // fields over settings that are still perfectly good in storage.
+      if (!settingsLoaded) {
+        showMainStatus(t('err_settings_not_loaded'), 'error');
+        return;
+      }
+
       // Get values from inputs
       const deepseekApiKey = deepseekApiKeyInput.value.trim();
       const deepseekModel = deepseekModelSelect.value;

@@ -1339,5 +1339,8 @@
   },
   "options_triage_stopped": {
     "message": "Stopped without labelling anything, so nothing is lost — it will retry by itself. Reason:"
+  },
+  "err_settings_not_loaded": {
+    "message": "Settings could not be loaded, so nothing was saved: your stored values are untouched. Close and reopen this page."
   }
 }
