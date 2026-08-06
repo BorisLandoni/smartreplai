@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title data-i18n="options_page_title">SmartReply AI - Settings</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="icons.css">
   <style>
     :root {
       --primary-color: #4285f4;
@@ -551,6 +551,50 @@
             <p class="setting-description" data-i18n="options_signature_desc">
               This signature will be automatically added to all generated responses
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <i class="fas fa-inbox icon"></i>
+          <h2 data-i18n="options_triage_section_title">Triage mattutino</h2>
+        </div>
+        <div class="card-body">
+          <div class="setting-group">
+            <div class="checkbox-container">
+              <input type="checkbox" id="triage-enabled">
+              <label for="triage-enabled" data-i18n="options_triage_enable_label">Attiva il triage automatico</label>
+            </div>
+            <p class="setting-description" data-i18n="options_triage_enable_desc">
+              Etichetta le email in arrivo con 1 Urgente, 2 Da gestire, 3 Info o 4 Da controllare. Non sposta e non cancella mai niente: al massimo sbaglia un colore.
+            </p>
+          </div>
+
+          <div class="setting-group">
+            <label for="triage-urgent-definition" data-i18n="options_triage_urgent_label">Cosa significa &laquo;urgente&raquo; per te:</label>
+            <textarea id="triage-urgent-definition" class="text-area"></textarea>
+            <p class="setting-description" data-i18n="options_triage_urgent_desc">
+              È la frase che decide la classificazione, quindi vale la pena scriverla con le tue parole. Se dopo qualche giorno trovi troppe email rosse, restringila.
+            </p>
+          </div>
+
+          <div class="setting-group">
+            <label for="triage-budget" data-i18n="options_triage_budget_label">Massimo di richieste al modello al giorno:</label>
+            <input type="text" id="triage-budget" class="text-input" inputmode="numeric">
+            <p class="setting-description" data-i18n="options_triage_budget_desc">
+              Freno di emergenza, non un limite di spesa: il triage costa qualche centesimo al mese. Serve a fermare un errore che manda tutto in circolo.
+            </p>
+          </div>
+
+          <div class="setting-group">
+            <p class="setting-description" data-i18n="options_triage_spam_note">
+              Lo spam non passa dall&rsquo;AI: se ne occupa il filtro indesiderata di Thunderbird, che gira sul tuo computer e impara da come marchi i messaggi. Attivalo in Impostazioni account &rarr; Posta indesiderata, spuntando anche &laquo;Sposta i nuovi messaggi indesiderati in&raquo;.
+            </p>
+            <button id="triage-refresh-senders" class="action-button small-button">
+              <i class="fas fa-random"></i> <span data-i18n="options_triage_refresh_btn">Rileggi i mittenti noti dalla cartella Inviata</span>
+            </button>
+            <div id="triage-status" class="status-message"></div>
           </div>
         </div>
       </section>

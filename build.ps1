@@ -51,9 +51,10 @@ New-Item -ItemType Directory -Path $staging -Force | Out-Null
 
 $ship = @(
     'manifest.json',
-    'background.js', 'popup.js', 'popup.html', 'popup.css',
+    'background.js', 'triage.js', 'popup.js', 'popup.html', 'popup.css',
     'options.js', 'options.html',
     'history.js', 'history-ui.js', 'history.html', 'history.css',
+    'icons.css',
     'i18n.js',
     'LICENSE'
 )
@@ -62,6 +63,15 @@ foreach ($file in $ship) {
     $source = Join-Path $root $file
     if (-not (Test-Path $source)) { throw "Missing file listed in the ship list: $file" }
     Copy-Item $source -Destination $staging
+}
+
+# The reverse check, which is the one that actually bites: a script named in the manifest but
+# forgotten here produces a package that installs and then does nothing, with no error anywhere.
+$declared = (Get-Content $manifestPath -Raw | ConvertFrom-Json).background.scripts
+foreach ($script in $declared) {
+    if ($ship -notcontains $script) {
+        throw "manifest declares background script '$script' but it is not in the ship list"
+    }
 }
 
 Copy-Item (Join-Path $root 'icons') -Destination $staging -Recurse

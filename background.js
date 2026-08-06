@@ -631,24 +631,28 @@ async function insertResponse(messageId, response, replyAll = false) {
           }
         }
         
-        // Clean up any leading empty paragraphs or breaks
+        // Thunderbird leaves an empty block at the top for the cursor, and depending on the
+        // account it can be <br>, <p></p>, <div><br></div> or a stack of them. Matching only the
+        // first two shapes left the reply pushed down by blank lines.
         let cleanedContent = existingContent;
         if (insertionPoint !== -1) {
-          // Check for empty paragraphs at the beginning
           const beforeSeparator = existingContent.substring(0, insertionPoint);
-          const cleanedBefore = beforeSeparator.replace(/^(\s*<p>\s*<\/p>\s*)+/, '').replace(/^(\s*<br>\s*)+/, '');
+          const cleanedBefore = stripLeadingEmptyBlocks(beforeSeparator);
           cleanedContent = cleanedBefore + existingContent.substring(insertionPoint);
           insertionPoint = cleanedBefore.length;
         }
-        
+
+        // A blank line after the closing, so the signature does not sit glued to "Cordiali saluti".
+        const spacedResponse = formattedResponse + '<br><br>';
+
         if (insertionPoint !== -1) {
           // Insert before the separator
-          newContent = cleanedContent.substring(0, insertionPoint) + 
-                      formattedResponse + 
+          newContent = cleanedContent.substring(0, insertionPoint) +
+                      spacedResponse +
                       cleanedContent.substring(insertionPoint);
         } else {
           // No separator found, just prepend
-          newContent = formattedResponse + cleanedContent;
+          newContent = spacedResponse + cleanedContent;
         }
         
         await browser.compose.setComposeDetails(replyTab.id, {
@@ -688,14 +692,16 @@ async function insertResponse(messageId, response, replyAll = false) {
           insertionPoint = cleanedBefore.length;
         }
         
+        // Same blank line as in the HTML branch, so the signature keeps its distance.
+        const spacedResponse = response + '\n\n';
+
         if (insertionPoint !== -1) {
-          // Insert before the separator with a single newline
-          newContent = cleanedContent.substring(0, insertionPoint) + 
-                      response + 
+          newContent = cleanedContent.substring(0, insertionPoint) +
+                      spacedResponse +
                       cleanedContent.substring(insertionPoint);
         } else {
           // No separator found, just prepend
-          newContent = response + cleanedContent;
+          newContent = spacedResponse + cleanedContent;
         }
         
         await browser.compose.setComposeDetails(replyTab.id, {
@@ -870,6 +876,23 @@ async function insertResponse(messageId, response, replyAll = false) {
     console.error("Error inserting response:", error);
     throw error;
   }
+}
+
+// Removes the empty blocks Thunderbird puts at the top of a reply for the cursor. Applied
+// repeatedly because they nest and stack: a <div> holding a <br> inside another <div> is one
+// visible blank line but three matches.
+function stripLeadingEmptyBlocks(html) {
+  const emptyBlock = /^(?:\s|&nbsp;|<br\s*\/?>|<(p|div|span)[^>]*>\s*(?:&nbsp;|<br\s*\/?>|\s)*<\/\1>)+/i;
+
+  let previous;
+  let result = html;
+
+  do {
+    previous = result;
+    result = result.replace(emptyBlock, '');
+  } while (result !== previous);
+
+  return result;
 }
 
 // Helper function to format plain text as HTML

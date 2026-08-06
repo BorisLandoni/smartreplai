@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "SmartReply AI",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "AI-powered email response generator with intelligent categorization and templates",
   "author": "Boris Landoni",
   "default_locale": "it",
@@ -14,12 +14,17 @@
   },
   "background": {
     "scripts": [
-      "background.js"
+      "background.js",
+      "triage.js"
     ]
   },
   "permissions": [
+    "messagesUpdate",
+    "messagesTags",
+    "messagesTagsList",
+    "alarms",
+    "accountsRead",
     "messagesRead",
-    "messagesModify",
     "storage",
     "compose",
     "https://api.deepseek.com/*",

@@ -1264,5 +1264,38 @@
   },
   "history_confirm_delete_template": {
     "message": "Vuoi davvero eliminare il modello"
+  },
+  "options_triage_section_title": {
+    "message": "Triage mattutino"
+  },
+  "options_triage_enable_label": {
+    "message": "Attiva il triage automatico"
+  },
+  "options_triage_enable_desc": {
+    "message": "Etichetta le email in arrivo con 1 Urgente, 2 Da gestire, 3 Info o 4 Da controllare. Non sposta e non cancella mai niente: al massimo sbaglia un colore."
+  },
+  "options_triage_urgent_label": {
+    "message": "Cosa significa «urgente» per te:"
+  },
+  "options_triage_urgent_desc": {
+    "message": "È la frase che decide la classificazione, quindi vale la pena scriverla con le tue parole. Se dopo qualche giorno trovi troppe email rosse, restringila."
+  },
+  "options_triage_budget_label": {
+    "message": "Massimo di richieste al modello al giorno:"
+  },
+  "options_triage_budget_desc": {
+    "message": "Freno di emergenza, non un limite di spesa: il triage costa qualche centesimo al mese. Serve a fermare un errore che manda tutto in circolo."
+  },
+  "options_triage_spam_note": {
+    "message": "Lo spam non passa dall’AI: se ne occupa il filtro indesiderata di Thunderbird, che gira sul tuo computer e impara da come marchi i messaggi. Attivalo in Impostazioni account → Posta indesiderata, spuntando anche «Sposta i nuovi messaggi indesiderati in»."
+  },
+  "options_triage_refresh_btn": {
+    "message": "Rileggi i mittenti noti dalla cartella Inviata"
+  },
+  "options_triage_refreshing": {
+    "message": "Lettura della cartella Inviata in corso…"
+  },
+  "options_triage_refreshed": {
+    "message": "Mittenti noti aggiornati."
   }
 }

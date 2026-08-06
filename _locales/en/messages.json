@@ -1264,5 +1264,38 @@
   },
   "history_confirm_delete_template": {
     "message": "Are you sure you want to delete the template \"${template.name}\"?"
+  },
+  "options_triage_section_title": {
+    "message": "Morning triage"
+  },
+  "options_triage_enable_label": {
+    "message": "Turn on automatic triage"
+  },
+  "options_triage_enable_desc": {
+    "message": "Labels incoming email as 1 Urgente, 2 Da gestire, 3 Info or 4 Da controllare. It never moves or deletes anything: the worst it can do is pick the wrong colour."
+  },
+  "options_triage_urgent_label": {
+    "message": "What \"urgent\" means to you:"
+  },
+  "options_triage_urgent_desc": {
+    "message": "This sentence is what drives the classification, so it is worth writing in your own words. If after a few days you find too much red, narrow it down."
+  },
+  "options_triage_budget_label": {
+    "message": "Maximum model requests per day:"
+  },
+  "options_triage_budget_desc": {
+    "message": "An emergency brake, not a spending limit: triage costs a few cents a month. It is there to stop a bug from looping."
+  },
+  "options_triage_spam_note": {
+    "message": "Spam does not go through the AI: Thunderbird's own junk filter handles it, running on your computer and learning from how you mark messages. Turn it on under Account Settings → Junk Settings, ticking \"Move new junk messages to\" as well."
+  },
+  "options_triage_refresh_btn": {
+    "message": "Re-read known senders from the Sent folder"
+  },
+  "options_triage_refreshing": {
+    "message": "Reading the Sent folder…"
+  },
+  "options_triage_refreshed": {
+    "message": "Known senders updated."
   }
 }

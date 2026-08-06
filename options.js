@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', async () => {
   // Get DOM elements
+  const triageEnabledInput = document.getElementById('triage-enabled');
+  const triageUrgentInput = document.getElementById('triage-urgent-definition');
+  const triageBudgetInput = document.getElementById('triage-budget');
+  const triageRefreshBtn = document.getElementById('triage-refresh-senders');
+  const triageStatus = document.getElementById('triage-status');
   const deepseekApiKeyInput = document.getElementById('deepseek-api-key');
   const deepseekModelSelect = document.getElementById('deepseek-model');
   const geminiApiKeyInput = document.getElementById('gemini-api-key');
@@ -134,6 +139,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Deliberately not logging the settings object: it carries every API key in clear text.
 
     // Set input values from storage
+    // Triage settings live under their own key, with the defaults declared in triage.js so the two
+    // cannot drift apart.
+    const { triageConfig } = await browser.storage.local.get('triageConfig');
+    const triage = Object.assign({
+      enabled: false,
+      urgentDefinition: 'Un collaboratore o un fornitore chiede una decisione, una conferma o un dato entro oggi o domani, oppure segnala un problema che blocca il lavoro.',
+      dailyCallBudget: 200
+    }, triageConfig || {});
+
+    triageEnabledInput.checked = triage.enabled;
+    triageUrgentInput.value = triage.urgentDefinition;
+    triageBudgetInput.value = triage.dailyCallBudget;
+
     if (settings.deepseekApiKey) deepseekApiKeyInput.value = settings.deepseekApiKey;
     if (settings.deepseekModel) deepseekModelSelect.value = settings.deepseekModel;
     if (settings.geminiApiKey) geminiApiKeyInput.value = settings.geminiApiKey;
@@ -239,6 +257,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   
   // Test Mistral connection button click handler
+  triageRefreshBtn.addEventListener('click', async () => {
+    try {
+      showStatus(triageStatus, t('options_triage_refreshing'), 'info');
+      await browser.runtime.sendMessage({ action: 'refreshKnownSenders' });
+      showStatus(triageStatus, t('options_triage_refreshed'), 'success');
+    } catch (error) {
+      console.error('Error refreshing known senders:', error);
+      showStatus(triageStatus, `${t('err_generic_prefix')}${error.message}`, 'error');
+    }
+  });
+
   testDeepseekBtn.addEventListener('click', async () => {
     try {
       deepseekStatus.textContent = t('options_testing_deepseek');
@@ -396,6 +425,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Get values from inputs
       const deepseekApiKey = deepseekApiKeyInput.value.trim();
       const deepseekModel = deepseekModelSelect.value;
+
+      const parsedBudget = parseInt(triageBudgetInput.value, 10);
+      const triageConfig = {
+        enabled: triageEnabledInput.checked,
+        urgentDefinition: triageUrgentInput.value.trim(),
+        // A blank or nonsensical budget must not disable the brake altogether.
+        dailyCallBudget: Number.isFinite(parsedBudget) && parsedBudget > 0 ? parsedBudget : 200
+      };
       const geminiApiKey = geminiApiKeyInput.value.trim();
       const openaiApiKey = openaiApiKeyInput.value.trim();
       const mistralApiKey = mistralApiKeyInput.value.trim();
@@ -499,6 +536,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       // Save settings to storage
       await browser.storage.local.set({
+        triageConfig,
         deepseekApiKey,
         deepseekModel,
         geminiApiKey,
