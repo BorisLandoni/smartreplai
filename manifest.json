@@ -1,13 +1,14 @@
 {
   "manifest_version": 2,
   "name": "SmartReply AI",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "AI-powered email response generator with intelligent categorization and templates",
-  "author": "Hesham Salama",
+  "author": "Boris Landoni",
   "applications": {
     "gecko": {
-      "id": "smartreply-ai@hesham.salama",
-      "strict_min_version": "78.0"
+      "id": "smartreply-ai@borislandoni.github.io",
+      "strict_min_version": "128.0",
+      "update_url": "https://raw.githubusercontent.com/BorisLandoni/smartreplai/main/updates.json"
     }
   },
   "background": {
