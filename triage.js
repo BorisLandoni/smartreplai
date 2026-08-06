@@ -566,19 +566,24 @@ function isUrgentVerdict(verdict) {
 // The cascade
 // ---------------------------------------------------------------------------
 
-async function prepareMessage(messageId, config, known, activeExchanges, mine) {
+async function prepareMessage(messageId, config, known, activeExchanges, mine, summary) {
   const header = await browser.messages.get(messageId);
 
   // Already judged, or judged then corrected by hand: either way, leave it alone.
   if (!header || hasTriageTag(header)) return null;
 
   // Gate 0 — spam. Thunderbird has already decided, and moved it if configured to.
-  if (header.junk) return null;
+  if (header.junk) {
+    summary.spam++;
+    return null;
+  }
 
+  summary.esaminate++;
   const full = await browser.messages.getFull(messageId);
 
   // Gate 1 — bulk mail, recognised from its own headers. No model, no cost.
   if (isBulkMail(full.headers)) {
+    summary.massive++;
     return { header, tag: 'ai-info' };
   }
 
@@ -587,21 +592,29 @@ async function prepareMessage(messageId, config, known, activeExchanges, mine) {
   const carbonCopyOnly = isCarbonCopyOnly(header, mine);
 
   if (carbonCopyOnly && config.ccOnlyNeverUrgent) {
+    summary.soloInCopia++;
     return { header, tag: 'ai-normale' };
   }
 
   // Gate 3 — an unknown sender is never urgent by this user's own rules, so the model's answer
   // could not change the outcome. Skipping the call here is most of the saving.
   if (!isKnownSender(header, known)) {
+    summary.sconosciuti++;
     return { header, tag: 'ai-normale' };
   }
 
   // Body still on the server. Judging on an empty body and then tagging would freeze that verdict
   // for good, so it is left for a later sweep instead.
-  if (header.headersOnly) return null;
+  if (header.headersOnly) {
+    summary.nonPronte++;
+    return null;
+  }
 
   const rawBody = await readBody(messageId);
-  if (rawBody === null) return null;
+  if (rawBody === null) {
+    summary.nonPronte++;
+    return null;
+  }
 
   let attachments = [];
   try {
@@ -626,9 +639,26 @@ async function prepareMessage(messageId, config, known, activeExchanges, mine) {
   };
 }
 
-async function triageMessages(messageIds) {
+// Counts what happened, so "is it working?" has an answer with numbers in it rather than a shrug.
+function emptyTriageSummary() {
+  return {
+    esaminate: 0,
+    spam: 0,
+    massive: 0,
+    soloInCopia: 0,
+    sconosciuti: 0,
+    nonPronte: 0,
+    urgenti: 0,
+    daGestire: 0,
+    daControllare: 0,
+    chiamateAlModello: 0,
+    interrotto: null
+  };
+}
+
+async function triageMessages(messageIds, summary = emptyTriageSummary()) {
   const config = await getTriageConfig();
-  if (!config.enabled) return;
+  if (!config.enabled) return summary;
 
   // Anything failing here is about the environment, not about a message: it must abort the run
   // rather than tag a batch of mail with a verdict nobody reached.
@@ -640,11 +670,12 @@ async function triageMessages(messageIds) {
 
   for (const messageId of messageIds) {
     try {
-      const prepared = await prepareMessage(messageId, config, known, activeExchanges, mine);
+      const prepared = await prepareMessage(messageId, config, known, activeExchanges, mine, summary);
       if (!prepared) continue;
 
       if (prepared.tag) {
         await applyTriageTag(prepared.header, prepared.tag);
+        if (prepared.tag === 'ai-normale') summary.daGestire++;
       } else {
         needModel.push(prepared);
       }
@@ -663,17 +694,21 @@ async function triageMessages(messageIds) {
     let verdicts;
 
     try {
+      summary.chiamateAlModello++;
       verdicts = await classifyBatch(config, batch);
     } catch (error) {
       if (error instanceof TransientTriageError) {
         // No key, no credit, no network, no budget. Nothing is tagged and the run stops: these
         // messages stay uncovered and the next sweep will find them again.
         console.warn(`Triage: stopping this run, ${needModel.length - start} messages postponed — ${error.message}`);
-        return;
+        summary.interrotto = error.message;
+        summary.rimandate = needModel.length - start;
+        return summary;
       }
       // A malformed answer is about these messages, so they are marked as needing a human look.
       console.error('Triage: unusable answer for a batch', error);
       for (const item of batch) {
+        summary.daControllare++;
         await applyTriageTag(item.header, 'ai-verificare')
           .catch(tagError => console.error('Triage: could not tag message', tagError));
       }
@@ -684,10 +719,16 @@ async function triageMessages(messageIds) {
       const verdict = verdictFor(verdicts, index, batch.length);
       const tag = !verdict ? 'ai-verificare' : (isUrgentVerdict(verdict) ? 'ai-urgente' : 'ai-normale');
 
+      if (tag === 'ai-urgente') summary.urgenti++;
+      else if (tag === 'ai-normale') summary.daGestire++;
+      else summary.daControllare++;
+
       await applyTriageTag(batch[index].header, tag)
         .catch(error => console.error('Triage: could not tag message', error));
     }
   }
+
+  return summary;
 }
 
 // ---------------------------------------------------------------------------
@@ -709,8 +750,13 @@ function scheduleFlush() {
 // the case that matters most here — messages already read on a phone. That is why this looks for
 // missing tags rather than for unread mail.
 async function triageSweep() {
+  const summary = emptyTriageSummary();
   const config = await getTriageConfig();
-  if (!config.enabled) return;
+
+  if (!config.enabled) {
+    summary.interrotto = 'disattivato';
+    return summary;
+  }
 
   const since = new Date(Date.now() - config.lookbackDays * 24 * 60 * 60 * 1000);
   const accounts = await browser.accounts.list(false);
@@ -733,10 +779,10 @@ async function triageSweep() {
     }
   }
 
-  if (!candidates.length) return;
+  if (!candidates.length) return summary;
 
   console.log(`Triage: sweep found ${candidates.length} messages without a tag`);
-  await triageMessages(candidates);
+  return triageMessages(candidates, summary);
 }
 
 async function startTriage() {
@@ -783,7 +829,9 @@ browser.runtime.onMessage.addListener(message => {
   }
 
   if (message.action === 'runTriageSweep') {
-    return enqueueTriage(triageSweep).then(() => ({ success: true }));
+    // The queue returns whatever the work returned, so the options page can report real numbers
+    // instead of an unqualified "done".
+    return enqueueTriage(triageSweep);
   }
 
   return false;

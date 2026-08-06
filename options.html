@@ -601,9 +601,17 @@
             <p class="setting-description" data-i18n="options_triage_spam_note">
               Lo spam non passa dall&rsquo;AI: se ne occupa il filtro indesiderata di Thunderbird, che gira sul tuo computer e impara da come marchi i messaggi. Attivalo in Impostazioni account &rarr; Posta indesiderata, spuntando anche &laquo;Sposta i nuovi messaggi indesiderati in&raquo;.
             </p>
-            <button id="triage-refresh-senders" class="action-button small-button">
-              <i class="fas fa-random"></i> <span data-i18n="options_triage_refresh_btn">Rileggi i mittenti noti dalla cartella Inviata</span>
-            </button>
+            <div class="test-buttons-row">
+              <button id="triage-run-now" class="action-button small-button">
+                <i class="fas fa-magic"></i> <span data-i18n="options_triage_run_btn">Fai il triage adesso</span>
+              </button>
+              <button id="triage-refresh-senders" class="action-button small-button">
+                <i class="fas fa-random"></i> <span data-i18n="options_triage_refresh_btn">Rileggi i mittenti noti</span>
+              </button>
+            </div>
+            <p class="setting-description" data-i18n="options_triage_run_desc">
+              Esamina subito la posta in arrivo degli ultimi giorni e ti dice cosa ha fatto, senza aspettare il controllo automatico.
+            </p>
             <div id="triage-status" class="status-message"></div>
           </div>
         </div>

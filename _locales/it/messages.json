@@ -1290,7 +1290,7 @@
     "message": "Lo spam non passa dall’AI: se ne occupa il filtro indesiderata di Thunderbird, che gira sul tuo computer e impara da come marchi i messaggi. Attivalo in Impostazioni account → Posta indesiderata, spuntando anche «Sposta i nuovi messaggi indesiderati in»."
   },
   "options_triage_refresh_btn": {
-    "message": "Rileggi i mittenti noti dalla cartella Inviata"
+    "message": "Rileggi i mittenti noti"
   },
   "options_triage_refreshing": {
     "message": "Lettura della cartella Inviata in corso…"
@@ -1303,5 +1303,41 @@
   },
   "options_triage_cc_desc": {
     "message": "Attivo, decide da solo e non costa niente: se sei in Cc e non tra i destinatari diretti, l’email diventa «2 Da gestire» senza passare dal modello. Disattivandolo, l’informazione arriva comunque al modello, che la valuta insieme al resto invece di applicarla come regola."
+  },
+  "options_triage_run_btn": {
+    "message": "Fai il triage adesso"
+  },
+  "options_triage_run_desc": {
+    "message": "Esamina subito la posta in arrivo degli ultimi giorni e ti dice cosa ha fatto, senza aspettare il controllo automatico."
+  },
+  "options_triage_running": {
+    "message": "Sto esaminando la posta in arrivo…"
+  },
+  "options_triage_examined": {
+    "message": "email esaminate:"
+  },
+  "options_triage_count_urgent": {
+    "message": "urgenti"
+  },
+  "options_triage_count_normal": {
+    "message": "da gestire"
+  },
+  "options_triage_count_info": {
+    "message": "massive"
+  },
+  "options_triage_count_check": {
+    "message": "da controllare"
+  },
+  "options_triage_count_pending": {
+    "message": "non ancora scaricate, rimandate"
+  },
+  "options_triage_count_calls": {
+    "message": "richieste al modello."
+  },
+  "options_triage_nothing": {
+    "message": "Niente da esaminare: le email recenti hanno già tutte un’etichetta."
+  },
+  "options_triage_stopped": {
+    "message": "Interrotto senza etichettare niente, quindi non si perde nulla: ritenterà da solo. Motivo:"
   }
 }

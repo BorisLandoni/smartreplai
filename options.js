@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const triageUrgentInput = document.getElementById('triage-urgent-definition');
   const triageBudgetInput = document.getElementById('triage-budget');
   const triageRefreshBtn = document.getElementById('triage-refresh-senders');
+  const triageRunBtn = document.getElementById('triage-run-now');
   const triageStatus = document.getElementById('triage-status');
   const deepseekApiKeyInput = document.getElementById('deepseek-api-key');
   const deepseekModelSelect = document.getElementById('deepseek-model');
@@ -254,6 +255,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   
   // Test Mistral connection button click handler
+  // Reports what actually happened, category by category. "Done" would leave the user with no way
+  // of telling a working triage from one that silently classified nothing.
+  function describeTriageRun(summary) {
+    if (summary.interrotto) {
+      return `${t('options_triage_stopped')} ${summary.interrotto}`;
+    }
+
+    if (!summary.esaminate) {
+      return t('options_triage_nothing');
+    }
+
+    const parts = [
+      `${summary.urgenti} ${t('options_triage_count_urgent')}`,
+      `${summary.daGestire} ${t('options_triage_count_normal')}`,
+      `${summary.massive} ${t('options_triage_count_info')}`
+    ];
+
+    if (summary.daControllare) parts.push(`${summary.daControllare} ${t('options_triage_count_check')}`);
+    if (summary.nonPronte) parts.push(`${summary.nonPronte} ${t('options_triage_count_pending')}`);
+
+    return `${summary.esaminate} ${t('options_triage_examined')} ${parts.join(', ')}. ` +
+           `${summary.chiamateAlModello} ${t('options_triage_count_calls')}`;
+  }
+
+  triageRunBtn.addEventListener('click', async () => {
+    try {
+      triageRunBtn.disabled = true;
+      showStatus(triageStatus, t('options_triage_running'), 'info');
+
+      const summary = await browser.runtime.sendMessage({ action: 'runTriageSweep' });
+
+      showStatus(triageStatus, describeTriageRun(summary), summary.interrotto ? 'warning' : 'success');
+    } catch (error) {
+      console.error('Error running triage:', error);
+      showStatus(triageStatus, `${t('err_generic_prefix')}${error.message}`, 'error');
+    } finally {
+      triageRunBtn.disabled = false;
+    }
+  });
+
   triageRefreshBtn.addEventListener('click', async () => {
     try {
       showStatus(triageStatus, t('options_triage_refreshing'), 'info');

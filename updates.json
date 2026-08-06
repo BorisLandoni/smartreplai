@@ -3,8 +3,8 @@
     "smartreply-ai@borislandoni.github.io": {
       "updates": [
         {
-          "version": "1.5.2",
-          "update_link": "https://github.com/BorisLandoni/smartreplai/releases/download/v1.5.2/smartreply-ai-1.5.2.xpi",
+          "version": "1.5.3",
+          "update_link": "https://github.com/BorisLandoni/smartreplai/releases/download/v1.5.3/smartreply-ai-1.5.3.xpi",
           "applications": {
             "gecko": {
               "strict_min_version": "128.0"

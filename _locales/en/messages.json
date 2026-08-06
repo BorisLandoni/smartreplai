@@ -1290,7 +1290,7 @@
     "message": "Spam does not go through the AI: Thunderbird's own junk filter handles it, running on your computer and learning from how you mark messages. Turn it on under Account Settings → Junk Settings, ticking \"Move new junk messages to\" as well."
   },
   "options_triage_refresh_btn": {
-    "message": "Re-read known senders from the Sent folder"
+    "message": "Re-read known senders"
   },
   "options_triage_refreshing": {
     "message": "Reading the Sent folder…"
@@ -1303,5 +1303,41 @@
   },
   "options_triage_cc_desc": {
     "message": "On, it decides on its own and costs nothing: if you are in Cc and not among the direct recipients, the message becomes \"2 Da gestire\" without reaching the model. Off, the model is still told, and weighs it along with everything else instead of applying it as a rule."
+  },
+  "options_triage_run_btn": {
+    "message": "Run triage now"
+  },
+  "options_triage_run_desc": {
+    "message": "Looks at the last few days of incoming mail right away and tells you what it did, without waiting for the automatic check."
+  },
+  "options_triage_running": {
+    "message": "Working through the inbox…"
+  },
+  "options_triage_examined": {
+    "message": "messages examined:"
+  },
+  "options_triage_count_urgent": {
+    "message": "urgent"
+  },
+  "options_triage_count_normal": {
+    "message": "to handle later"
+  },
+  "options_triage_count_info": {
+    "message": "bulk mail"
+  },
+  "options_triage_count_check": {
+    "message": "to check by hand"
+  },
+  "options_triage_count_pending": {
+    "message": "not downloaded yet, postponed"
+  },
+  "options_triage_count_calls": {
+    "message": "model requests used."
+  },
+  "options_triage_nothing": {
+    "message": "Nothing left to look at: every recent message already carries a label."
+  },
+  "options_triage_stopped": {
+    "message": "Stopped without labelling anything, so nothing is lost — it will retry by itself. Reason:"
   }
 }
