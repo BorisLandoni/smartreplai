@@ -893,3 +893,60 @@ select {
 .tab-content .section {
   margin-bottom: 20px;
 }
+/* Quick replies: the two answers that come up constantly. They fill the note and generate in one
+   click, so the common case costs no typing at all. */
+.quick-replies {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.quick-reply-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background-color: white;
+  color: var(--text-color);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.quick-reply-btn:hover {
+  background-color: var(--secondary-color);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* The options collapse by default: the window should be mostly the reply, not the configuration
+   for it. <details> is used so the open/closed state costs no JavaScript. */
+.options-section > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.options-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.options-section > summary::before {
+  content: "\25B8";
+  color: var(--primary-color);
+  font-size: 12px;
+  transition: transform 0.15s;
+}
+
+.options-section[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.options-section > summary h2 {
+  display: inline;
+  margin: 0;
+}

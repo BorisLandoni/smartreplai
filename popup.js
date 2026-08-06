@@ -172,6 +172,24 @@ document.addEventListener('DOMContentLoaded', async () => {
       showStatus('Error loading email information. Please try again.', 'error');
     });
   
+  // The two answers that come up constantly. The wording is plain on purpose: the prompt treats
+  // the note as intent rather than text to copy, so "ok, va bene" comes out as a complete reply
+  // in whatever register the incoming message used.
+  const QUICK_REPLIES = {
+    ok: 'ok, va bene, confermo',
+    ko: 'no, non va bene: non confermo'
+  };
+
+  document.querySelectorAll('.quick-reply-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const text = QUICK_REPLIES[button.dataset.quick];
+      if (!text) return;
+
+      contextInput.value = text;
+      generateBtn.click();
+    });
+  });
+
   // Generate response button handler
   generateBtn.addEventListener('click', async () => {
     if (!currentMessage) {

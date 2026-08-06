@@ -607,21 +607,27 @@ async function insertResponse(messageId, response, replyAll = false) {
         // Format our response as HTML
         const formattedResponse = formatPlainTextAsHtml(response);
         
-        // Find a good insertion point - look for a common reply separator
+        // Everything that must stay BELOW the reply, earliest match wins. The signature is first
+        // for a reason: matching only the quote markers put the reply underneath the signature,
+        // because in a Thunderbird reply the signature comes before the quoted original.
+        // Matched with regexes rather than literal strings so attribute order and extra classes
+        // do not make a marker invisible.
         let newContent;
         const separators = [
-          '<div id="divRplyFwdMsg"', 
-          '<div class="moz-cite-prefix"',
-          '<blockquote type="cite"',
-          '<hr id="stopSpelling"',
-          '<div class="gmail_quote"'
+          /<div[^>]*class="[^"]*moz-signature[^"]*"/i,
+          /<pre[^>]*class="[^"]*moz-signature[^"]*"/i,
+          /<div[^>]*id="divRplyFwdMsg"/i,
+          /<div[^>]*class="[^"]*moz-cite-prefix[^"]*"/i,
+          /<blockquote[^>]*type="cite"/i,
+          /<hr[^>]*id="stopSpelling"/i,
+          /<div[^>]*class="[^"]*gmail_quote[^"]*"/i
         ];
-        
+
         let insertionPoint = -1;
         for (const separator of separators) {
-          const pos = existingContent.indexOf(separator);
-          if (pos !== -1 && (insertionPoint === -1 || pos < insertionPoint)) {
-            insertionPoint = pos;
+          const match = existingContent.match(separator);
+          if (match && (insertionPoint === -1 || match.index < insertionPoint)) {
+            insertionPoint = match.index;
           }
         }
         
@@ -652,20 +658,23 @@ async function insertResponse(messageId, response, replyAll = false) {
         // For plain text mode, get the existing content and prepend our response
         const existingContent = details.plainTextBody || "";
         
-        // Find a good insertion point - look for a common reply separator
+        // Same rule as the HTML branch: the signature marker comes first, so the reply lands
+        // above it. In plain text a signature is introduced by a line containing exactly "-- ".
         let newContent;
         const separators = [
-          '\nOn ', 
-          '\n----',
-          '\n-----Original Message-----',
-          '\n>'
+          /\n-- \r?\n/,
+          /\nOn .*wrote:/,
+          /\nIl .*ha scritto:/,
+          /\n-----Original Message-----/,
+          /\n----/,
+          /\n>/
         ];
-        
+
         let insertionPoint = -1;
         for (const separator of separators) {
-          const pos = existingContent.indexOf(separator);
-          if (pos !== -1 && (insertionPoint === -1 || pos < insertionPoint)) {
-            insertionPoint = pos;
+          const match = existingContent.match(separator);
+          if (match && (insertionPoint === -1 || match.index < insertionPoint)) {
+            insertionPoint = match.index;
           }
         }
         
