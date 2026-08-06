@@ -1297,5 +1297,11 @@
   },
   "options_triage_refreshed": {
     "message": "Known senders updated."
+  },
+  "options_triage_cc_label": {
+    "message": "Email where I am only in copy are never urgent"
+  },
+  "options_triage_cc_desc": {
+    "message": "On, it decides on its own and costs nothing: if you are in Cc and not among the direct recipients, the message becomes \"2 Da gestire\" without reaching the model. Off, the model is still told, and weighs it along with everything else instead of applying it as a rule."
   }
 }

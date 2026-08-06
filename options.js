@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   // Get DOM elements
   const triageEnabledInput = document.getElementById('triage-enabled');
+  const triageCcInput = document.getElementById('triage-cc-never-urgent');
   const triageUrgentInput = document.getElementById('triage-urgent-definition');
   const triageBudgetInput = document.getElementById('triage-budget');
   const triageRefreshBtn = document.getElementById('triage-refresh-senders');
@@ -144,6 +145,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const triage = await browser.runtime.sendMessage({ action: 'getTriageConfig' });
 
     triageEnabledInput.checked = triage.enabled;
+    triageCcInput.checked = triage.ccOnlyNeverUrgent;
     triageUrgentInput.value = triage.urgentDefinition;
     triageBudgetInput.value = triage.dailyCallBudget;
 
@@ -424,6 +426,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const parsedBudget = parseInt(triageBudgetInput.value, 10);
       const triageConfig = {
         enabled: triageEnabledInput.checked,
+        ccOnlyNeverUrgent: triageCcInput.checked,
         urgentDefinition: triageUrgentInput.value.trim(),
         // A blank or nonsensical budget must not disable the brake altogether.
         dailyCallBudget: Number.isFinite(parsedBudget) && parsedBudget > 0 ? parsedBudget : 200

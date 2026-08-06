@@ -1297,5 +1297,11 @@
   },
   "options_triage_refreshed": {
     "message": "Mittenti noti aggiornati."
+  },
+  "options_triage_cc_label": {
+    "message": "Le email in cui sono solo in copia non sono mai urgenti"
+  },
+  "options_triage_cc_desc": {
+    "message": "Attivo, decide da solo e non costa niente: se sei in Cc e non tra i destinatari diretti, l’email diventa «2 Da gestire» senza passare dal modello. Disattivandolo, l’informazione arriva comunque al modello, che la valuta insieme al resto invece di applicarla come regola."
   }
 }
