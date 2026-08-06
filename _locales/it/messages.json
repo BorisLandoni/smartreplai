@@ -1342,5 +1342,20 @@
   },
   "err_settings_not_loaded": {
     "message": "Impostazioni non caricate, quindi non ho salvato niente: i valori memorizzati sono intatti. Chiudi e riapri questa pagina."
+  },
+  "options_triage_learned_label": {
+    "message": "Cosa ho imparato dalle tue correzioni:"
+  },
+  "options_triage_learned_desc": {
+    "message": "Ogni volta che cambi a mano un’etichetta fra «1 Urgente» e «2 Da gestire», la correzione finisce qui e viaggia con le classificazioni successive. Restano le ultime 12, per novanta giorni."
+  },
+  "options_triage_learned_empty": {
+    "message": "Ancora niente. Correggi un’etichetta nella lista messaggi e comparirà qui."
+  },
+  "options_triage_forget_btn": {
+    "message": "Dimentica le correzioni"
+  },
+  "options_triage_forgotten": {
+    "message": "Correzioni cancellate."
   }
 }

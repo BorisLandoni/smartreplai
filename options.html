@@ -296,6 +296,29 @@
       margin-top: 10px;
     }
     
+    .corrections-list {
+      margin: 8px 0;
+      max-height: 180px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 8px;
+      background-color: var(--background-color);
+    }
+
+    .correction-row {
+      font-size: 12px;
+      padding: 3px 0;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .correction-row:last-child {
+      border-bottom: none;
+    }
+
     .test-buttons-row {
       display: flex;
       gap: 10px;
@@ -613,6 +636,17 @@
               Esamina subito la posta in arrivo degli ultimi giorni e ti dice cosa ha fatto, senza aspettare il controllo automatico.
             </p>
             <div id="triage-status" class="status-message"></div>
+          </div>
+
+          <div class="setting-group">
+            <label data-i18n="options_triage_learned_label">Cosa ho imparato dalle tue correzioni:</label>
+            <div id="triage-corrections" class="corrections-list"></div>
+            <p class="setting-description" data-i18n="options_triage_learned_desc">
+              Ogni volta che cambi a mano un&rsquo;etichetta fra &laquo;1 Urgente&raquo; e &laquo;2 Da gestire&raquo;, la correzione finisce qui e viaggia con le classificazioni successive. Restano le ultime 12, per novanta giorni.
+            </p>
+            <button id="triage-forget" class="action-button small-button">
+              <i class="fas fa-times"></i> <span data-i18n="options_triage_forget_btn">Dimentica le correzioni</span>
+            </button>
           </div>
         </div>
       </section>

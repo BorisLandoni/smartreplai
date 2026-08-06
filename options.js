@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const triageBudgetInput = document.getElementById('triage-budget');
   const triageRefreshBtn = document.getElementById('triage-refresh-senders');
   const triageRunBtn = document.getElementById('triage-run-now');
+  const triageCorrectionsBox = document.getElementById('triage-corrections');
+  const triageForgetBtn = document.getElementById('triage-forget');
   const triageStatus = document.getElementById('triage-status');
   const deepseekApiKeyInput = document.getElementById('deepseek-api-key');
   const deepseekModelSelect = document.getElementById('deepseek-model');
@@ -293,6 +295,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     return `${summary.esaminate} ${t('options_triage_examined')} ${parts.join(', ')}. ` +
            `${summary.chiamateAlModello} ${t('options_triage_count_calls')}`;
   }
+
+  // Built node by node with textContent rather than assembled as HTML: these lines carry the
+  // subject of a real email, which is text a stranger wrote.
+  async function renderCorrections() {
+    triageCorrectionsBox.textContent = '';
+
+    let corrections = [];
+    try {
+      corrections = await browser.runtime.sendMessage({ action: 'getTriageCorrections' }) || [];
+    } catch (error) {
+      console.error('Could not load the corrections:', error);
+    }
+
+    if (!corrections.length) {
+      const empty = document.createElement('p');
+      empty.className = 'setting-description';
+      empty.textContent = t('options_triage_learned_empty');
+      triageCorrectionsBox.appendChild(empty);
+      return;
+    }
+
+    for (const entry of corrections) {
+      const row = document.createElement('div');
+      row.className = 'correction-row';
+
+      const verdict = document.createElement('strong');
+      verdict.textContent = `${entry.da} → ${entry.a}`;
+
+      const detail = document.createElement('span');
+      detail.textContent = ` — ${entry.dominio}: ${entry.oggetto}`;
+
+      row.appendChild(verdict);
+      row.appendChild(detail);
+      triageCorrectionsBox.appendChild(row);
+    }
+  }
+
+  renderCorrections();
+
+  triageForgetBtn.addEventListener('click', async () => {
+    try {
+      await browser.runtime.sendMessage({ action: 'forgetTriageCorrections' });
+      await renderCorrections();
+      showStatus(triageStatus, t('options_triage_forgotten'), 'success');
+    } catch (error) {
+      console.error('Error clearing corrections:', error);
+      showStatus(triageStatus, `${t('err_generic_prefix')}${error.message}`, 'error');
+    }
+  });
 
   triageRunBtn.addEventListener('click', async () => {
     try {

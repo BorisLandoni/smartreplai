@@ -1020,6 +1020,20 @@ browser.runtime.onMessage.addListener(message => {
     return getTriageConfig();
   }
 
+  if (message.action === 'getTriageCorrections') {
+    return getCorrections().then(list => list.map(entry => ({
+      quando: entry.quando,
+      dominio: entry.dominio,
+      oggetto: entry.oggetto,
+      da: tagLabel(entry.da),
+      a: tagLabel(entry.a)
+    })));
+  }
+
+  if (message.action === 'forgetTriageCorrections') {
+    return browser.storage.local.set({ triageCorrections: [] }).then(() => ({ success: true }));
+  }
+
   if (message.action === 'refreshKnownSenders') {
     return getTriageConfig()
       .then(refreshKnownSenders)

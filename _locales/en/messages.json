@@ -1342,5 +1342,20 @@
   },
   "err_settings_not_loaded": {
     "message": "Settings could not be loaded, so nothing was saved: your stored values are untouched. Close and reopen this page."
+  },
+  "options_triage_learned_label": {
+    "message": "What I have learned from your corrections:"
+  },
+  "options_triage_learned_desc": {
+    "message": "Every time you change a label by hand between \"1 Urgente\" and \"2 Da gestire\", the correction lands here and travels with later classifications. The last 12 are kept, for ninety days."
+  },
+  "options_triage_learned_empty": {
+    "message": "Nothing yet. Correct a label in the message list and it will show up here."
+  },
+  "options_triage_forget_btn": {
+    "message": "Forget the corrections"
+  },
+  "options_triage_forgotten": {
+    "message": "Corrections cleared."
   }
 }
