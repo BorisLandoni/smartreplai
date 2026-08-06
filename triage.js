@@ -34,9 +34,22 @@ const TRIAGE_TAGS = [
 
 const TRIAGE_DEFAULTS = {
   enabled: false,
-  urgentDefinition:
-    'Un collaboratore o un fornitore chiede una decisione, una conferma o un dato entro oggi o domani, ' +
-    'oppure segnala un problema che blocca il lavoro.',
+  // Written from the user's own answers. The last line is the calibration dial: without a stated
+  // target the model drifts towards marking far too much red, and a red that means everything
+  // means nothing.
+  urgentDefinition: [
+    'È urgente una mail per cui vale almeno una di queste:',
+    '- qualcuno è fermo e aspetta una mia risposta per poter andare avanti: una decisione, un\'approvazione, un dato che ho solo io;',
+    '- chiede qualcosa con una scadenza dichiarata entro oggi o domani;',
+    '- è un sollecito perché non ho ancora risposto, oppure segnala un problema o un disservizio.',
+    '',
+    'NON è urgente:',
+    '- una conferma o una notifica generata automaticamente da un sistema;',
+    '- un messaggio che si limita a confermare, ringraziare o chiudere uno scambio senza chiedere niente;',
+    '- una richiesta senza scadenza, o con scadenza oltre domani.',
+    '',
+    'Nel dubbio non è urgente: preferisco trovare 8-10 mail rosse al mattino e potermi fidare di quelle.'
+  ].join('\n'),
   knownSenderMonths: 12,
   dailyCallBudget: 200,
   sweepMinutes: 15,
@@ -133,6 +146,30 @@ async function walkMessageList(firstPage, visit) {
     }
     throw error;
   }
+}
+
+// Every address the user sends from, so "am I actually the one being written to?" can be answered
+// without asking the model.
+async function ownAddresses() {
+  const addresses = new Set();
+
+  for (const account of await browser.accounts.list(false)) {
+    for (const identity of account.identities || []) {
+      if (identity.email) addresses.add(identity.email.trim().toLowerCase());
+    }
+  }
+
+  return addresses;
+}
+
+// Being in Cc means the message is for information: someone else is expected to act. The user
+// called this out explicitly, and it is decidable from the headers, so it never reaches the model.
+// Only the unambiguous case counts — present in Cc AND absent from To — because a message
+// addressed to a group alias appears in neither list and must not be quietly downgraded.
+function isCarbonCopyOnly(header, mine) {
+  const inTo = (header.recipients || []).some(entry => mine.has(addressOf(entry)));
+  const inCc = (header.ccList || []).some(entry => mine.has(addressOf(entry)));
+  return inCc && !inTo;
 }
 
 async function sentFoldersOfAllAccounts() {
@@ -522,7 +559,7 @@ function isUrgentVerdict(verdict) {
 // The cascade
 // ---------------------------------------------------------------------------
 
-async function prepareMessage(messageId, known, activeExchanges) {
+async function prepareMessage(messageId, known, activeExchanges, mine) {
   const header = await browser.messages.get(messageId);
 
   // Already judged, or judged then corrected by hand: either way, leave it alone.
@@ -538,7 +575,12 @@ async function prepareMessage(messageId, known, activeExchanges) {
     return { header, tag: 'ai-info' };
   }
 
-  // Gate 2 — an unknown sender is never urgent by this user's own rules, so the model's answer
+  // Gate 2 — in copy only: someone else is expected to act. Decidable from the headers alone.
+  if (isCarbonCopyOnly(header, mine)) {
+    return { header, tag: 'ai-normale' };
+  }
+
+  // Gate 3 — an unknown sender is never urgent by this user's own rules, so the model's answer
   // could not change the outcome. Skipping the call here is most of the saving.
   if (!isKnownSender(header, known)) {
     return { header, tag: 'ai-normale' };
@@ -581,12 +623,13 @@ async function triageMessages(messageIds) {
   // rather than tag a batch of mail with a verdict nobody reached.
   const known = await getKnownSenders(config);
   const activeExchanges = await addressesRepliedToToday();
+  const mine = await ownAddresses();
 
   const needModel = [];
 
   for (const messageId of messageIds) {
     try {
-      const prepared = await prepareMessage(messageId, known, activeExchanges);
+      const prepared = await prepareMessage(messageId, known, activeExchanges, mine);
       if (!prepared) continue;
 
       if (prepared.tag) {
@@ -715,6 +758,13 @@ browser.storage.onChanged.addListener((changes, area) => {
 });
 
 browser.runtime.onMessage.addListener(message => {
+  // The options page reads the defaults from here rather than keeping its own copy: two
+  // declarations of the same constant drift, and the one the user sees would stop matching the one
+  // that actually classifies.
+  if (message.action === 'getTriageConfig') {
+    return getTriageConfig();
+  }
+
   if (message.action === 'refreshKnownSenders') {
     return getTriageConfig()
       .then(refreshKnownSenders)

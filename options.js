@@ -139,14 +139,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Deliberately not logging the settings object: it carries every API key in clear text.
 
     // Set input values from storage
-    // Triage settings live under their own key, with the defaults declared in triage.js so the two
-    // cannot drift apart.
-    const { triageConfig } = await browser.storage.local.get('triageConfig');
-    const triage = Object.assign({
-      enabled: false,
-      urgentDefinition: 'Un collaboratore o un fornitore chiede una decisione, una conferma o un dato entro oggi o domani, oppure segnala un problema che blocca il lavoro.',
-      dailyCallBudget: 200
-    }, triageConfig || {});
+    // Asked of the background rather than duplicated here, so what the user reads is exactly what
+    // classifies their mail.
+    const triage = await browser.runtime.sendMessage({ action: 'getTriageConfig' });
 
     triageEnabledInput.checked = triage.enabled;
     triageUrgentInput.value = triage.urgentDefinition;
