@@ -28,14 +28,18 @@ body {
   line-height: 1.5;
 }
 
-/* A bounded height is what makes the layout work at all. Left unbounded, the container grew with
-   its content and the whole panel scrolled, which pushed the footer — and with it the Generate
-   button — past the height Thunderbird is willing to give a popup. With a fixed height only
-   .content scrolls, and the footer stays put. 580px sits just under the ceiling Thunderbird
-   imposes on action popups. */
+/* The UI runs in a real window now, so it fills whatever the user sizes it to instead of carrying
+   its own fixed dimensions. A hardcoded height was the previous bug in both directions: too tall
+   and the footer fell outside the viewport, too short and it was clipped away entirely. */
+html,
+body {
+  height: 100%;
+}
+
 .container {
-  width: 600px;
-  height: 580px;
+  width: 100%;
+  height: 100%;
+  min-width: 420px;
   display: flex;
   flex-direction: column;
   background-color: white;
@@ -95,7 +99,10 @@ body {
 }
 
 .content {
-  flex: 1;
+  flex: 1 1 auto;
+  /* Without this a flex item refuses to shrink below its content height, so the area never
+     scrolls and pushes everything below it out of the window instead. */
+  min-height: 0;
   padding: 16px;
   overflow-y: auto;
   display: flex;

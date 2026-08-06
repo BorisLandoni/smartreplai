@@ -34,8 +34,11 @@ if ($Bump -ne 'none') {
     $new = "$major.$minor.$patch"
     # Rewriting the single line rather than re-serialising the whole file: ConvertTo-Json would
     # reorder keys and reformat everything, turning every build into a noisy diff.
-    (Get-Content $manifestPath -Raw) -replace '("version"\s*:\s*)"[^"]+"', "`$1`"$new`"" |
-        Set-Content $manifestPath -Encoding utf8 -NoNewline
+    $updated = (Get-Content $manifestPath -Raw) -replace '("version"\s*:\s*)"[^"]+"', "`$1`"$new`""
+
+    # Written through .NET with an explicit BOM-less encoder: Set-Content -Encoding utf8 emits a
+    # BOM on Windows PowerShell, which makes manifest.json invalid JSON for every strict parser.
+    [System.IO.File]::WriteAllText($manifestPath, $updated, (New-Object System.Text.UTF8Encoding($false)))
     Write-Host "Version bumped to $new" -ForegroundColor Cyan
 }
 

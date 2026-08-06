@@ -149,8 +149,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load saved popup state
   await loadPopupState();
   
-  // Fetch current selected email from Thunderbird
-  browser.runtime.sendMessage({ action: 'getCurrentMessage' })
+  // Running in its own window, so which message this is for arrives in the URL: asking for
+  // "the displayed message" here would resolve to this window, where none is displayed.
+  const requestedMessageId = new URLSearchParams(window.location.search).get('messageId');
+
+  browser.runtime.sendMessage({
+    action: 'getCurrentMessage',
+    messageId: requestedMessageId ? Number(requestedMessageId) : undefined
+  })
     .then(message => {
       if (message) {
         currentMessage = message;

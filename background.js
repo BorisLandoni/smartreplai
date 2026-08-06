@@ -4,7 +4,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.log("Background script received message:", message && message.action);
   
   if (message.action === 'getCurrentMessage') {
-    return getCurrentMessage();
+    return getCurrentMessage(message.messageId);
   } else if (message.action === 'insertResponse') {
     try {
       await insertResponse(message.messageId, message.response, message.replyAll);
@@ -60,6 +60,68 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 browser.runtime.onInstalled.addListener(() => {
   if (browser.runtime.openOptionsPage) {
     console.log("Options page registered");
+  }
+});
+
+// The UI lives in a real window rather than in an action popup. A popup is a transient panel:
+// Thunderbird closes it the moment focus moves elsewhere, taking any in-flight generation with it,
+// and it cannot be resized or moved. A window stays open until it is closed on purpose.
+//
+// One window is reused across messages: clicking the toolbar button again points the existing
+// window at the newly selected message instead of piling up windows.
+let assistantWindowId = null;
+
+async function openAssistant(messageId) {
+  const url = messageId ? `popup.html?messageId=${messageId}` : 'popup.html';
+
+  if (assistantWindowId !== null) {
+    try {
+      const existing = await browser.windows.get(assistantWindowId, { populate: true });
+      const tab = existing.tabs && existing.tabs[0];
+
+      if (tab) {
+        await browser.tabs.update(tab.id, { url });
+        await browser.windows.update(assistantWindowId, { focused: true, drawAttention: true });
+        return;
+      }
+    } catch (error) {
+      // The window was closed since we last saw it; fall through and open a new one.
+      assistantWindowId = null;
+    }
+  }
+
+  const created = await browser.windows.create({
+    url,
+    type: 'popup',
+    width: 640,
+    height: 760
+  });
+
+  assistantWindowId = created.id;
+}
+
+browser.windows.onRemoved.addListener(windowId => {
+  if (windowId === assistantWindowId) {
+    assistantWindowId = null;
+  }
+});
+
+browser.messageDisplayAction.onClicked.addListener(async (tab) => {
+  try {
+    // Resolved here, while the click still tells us which tab was showing the message: once the
+    // assistant window has focus, "the active tab" is the assistant itself.
+    const displayed = await browser.messageDisplay.getDisplayedMessage(tab.id);
+    await openAssistant(displayed ? displayed.id : null);
+  } catch (error) {
+    console.error("Could not open the assistant window:", error);
+  }
+});
+
+browser.composeAction.onClicked.addListener(async () => {
+  try {
+    await openAssistant(null);
+  } catch (error) {
+    console.error("Could not open the assistant window:", error);
   }
 });
 
@@ -453,28 +515,39 @@ async function testOllamaConnection(host, modelName) {
 }
 
 // Function to get the currently selected message
-async function getCurrentMessage() {
+async function getCurrentMessage(requestedMessageId) {
   try {
-    // Get current tab
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-    if (!tabs || !tabs.length) {
-      console.error("No active tab found");
-      return null;
+    let message;
+
+    // The assistant window is told which message it was opened for, because by the time it asks,
+    // the active tab is the assistant itself and no message is on display there.
+    if (requestedMessageId !== undefined && requestedMessageId !== null) {
+      message = await browser.messages.get(requestedMessageId);
+    } else {
+      const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+      if (!tabs || !tabs.length) {
+        console.error("No active tab found");
+        return null;
+      }
+
+      const tabId = tabs[0].id;
+      const displayed = await browser.messageDisplay.getDisplayedMessages(tabId);
+
+      // TB 96+ returns a MessageList object ({id, messages}); older builds returned a bare array.
+      const messageList = Array.isArray(displayed) ? displayed : (displayed && displayed.messages) || [];
+
+      if (!messageList.length) {
+        console.error("No message currently displayed");
+        return null;
+      }
+
+      message = messageList[0];
     }
-    
-    // Get current message displayed in the tab
-    const tabId = tabs[0].id;
-    const displayed = await browser.messageDisplay.getDisplayedMessages(tabId);
 
-    // TB 96+ returns a MessageList object ({id, messages}); older builds returned a bare array.
-    const messageList = Array.isArray(displayed) ? displayed : (displayed && displayed.messages) || [];
-
-    if (!messageList.length) {
+    if (!message) {
       console.error("No message currently displayed");
       return null;
     }
-
-    const message = messageList[0];
     
     // Get full message details
     const fullMessage = await browser.messages.get(message.id);

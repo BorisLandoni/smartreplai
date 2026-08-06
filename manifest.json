@@ -1,7 +1,7 @@
-﻿{
+{
   "manifest_version": 2,
   "name": "SmartReply AI",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "AI-powered email response generator with intelligent categorization and templates",
   "author": "Boris Landoni",
   "applications": {
@@ -40,12 +40,10 @@
     "icons/*.png"
   ],
   "message_display_action": {
-    "default_popup": "popup.html",
     "default_title": "SmartReply AI",
     "default_icon": "icons/sparkle-stars-icon.svg"
   },
   "compose_action": {
-    "default_popup": "popup.html",
     "default_title": "SmartReply AI",
     "default_icon": "icons/sparkle-stars-icon.svg"
   },
