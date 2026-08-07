@@ -244,7 +244,12 @@ class ResponseHistoryManager {
           if (filters.length && item.metadata.length !== filters.length) {
             return false;
           }
-          
+
+          // Filter by AI model
+          if (filters.model && item.metadata.model !== filters.model) {
+            return false;
+          }
+
           // Filter by date range
           if (filters.startDate && item.timestamp < filters.startDate) {
             return false;
@@ -368,15 +373,37 @@ class TemplateManager {
     }
   }
   
-  // Get all templates
-  async getTemplates(category = null) {
+  // Get all templates, optionally filtered (mirrors ResponseHistoryManager.getHistory's filter object shape)
+  async getTemplates(filters = {}) {
     try {
       const { emailTemplates = [] } = await browser.storage.local.get(this.storageKey);
-      
-      if (category) {
-        return emailTemplates.filter(template => template.category === category);
+
+      if (Object.keys(filters).length > 0) {
+        return emailTemplates.filter(template => {
+          // Filter by category
+          if (filters.category && template.category !== filters.category) {
+            return false;
+          }
+
+          // Filter by search term (across name, content and category)
+          if (filters.searchTerm) {
+            const searchTerm = filters.searchTerm.toLowerCase();
+            const searchableText = [
+              template.name,
+              template.content,
+              template.category,
+              ...(template.variables || [])
+            ].join(' ').toLowerCase();
+
+            if (!searchableText.includes(searchTerm)) {
+              return false;
+            }
+          }
+
+          return true;
+        });
       }
-      
+
       return emailTemplates;
     } catch (error) {
       console.error('Error getting templates:', error);

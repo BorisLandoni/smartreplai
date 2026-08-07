@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const deepseekApiKeyInput = document.getElementById('deepseek-api-key');
   const deepseekModelSelect = document.getElementById('deepseek-model');
   const geminiApiKeyInput = document.getElementById('gemini-api-key');
+  const geminiModelInput = document.getElementById('gemini-model');
   const openaiApiKeyInput = document.getElementById('openai-api-key');
   const mistralApiKeyInput = document.getElementById('mistral-api-key');
   const ollamaHostInput = document.getElementById('ollama-host');
@@ -133,6 +134,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       'deepseekApiKey',
       'deepseekModel',
       'geminiApiKey',
+      'geminiModel',
       'openaiApiKey',
       'mistralApiKey',
       'ollamaHost',
@@ -173,6 +175,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (settings.deepseekApiKey) deepseekApiKeyInput.value = settings.deepseekApiKey;
     if (settings.deepseekModel) deepseekModelSelect.value = settings.deepseekModel;
     if (settings.geminiApiKey) geminiApiKeyInput.value = settings.geminiApiKey;
+    if (settings.geminiModel) geminiModelInput.value = settings.geminiModel;
     if (settings.openaiApiKey) openaiApiKeyInput.value = settings.openaiApiKey;
     if (settings.mistralApiKey) mistralApiKeyInput.value = settings.mistralApiKey;
     if (settings.ollamaHost) ollamaHostInput.value = settings.ollamaHost;
@@ -227,7 +230,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         apiKey
       });
 
-      showStatus(geminiStatus, result.connected ? t('options_gemini_test_ok') : result.message,
+      showStatus(geminiStatus, result.connected ? t('options_gemini_test_ok') : describeConnectionFailure(result),
                  result.connected ? 'success' : 'error');
     } catch (error) {
       console.error('Error testing Gemini connection:', error);
@@ -265,11 +268,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (o3Result.connected && gpt4oResult.connected) {
         showStatus(openaiStatus, t('options_openai_test_ok_both'), 'success');
       } else if (o3Result.connected) {
-        showStatus(openaiStatus, t('options_openai_test_o3_only') + gpt4oResult.message, 'warning');
+        showStatus(openaiStatus, t('options_openai_test_o3_only') + describeConnectionFailure(gpt4oResult), 'warning');
       } else if (gpt4oResult.connected) {
-        showStatus(openaiStatus, t('options_openai_test_gpt4o_only') + o3Result.message, 'warning');
+        showStatus(openaiStatus, t('options_openai_test_gpt4o_only') + describeConnectionFailure(o3Result), 'warning');
       } else {
-        showStatus(openaiStatus, `${t('err_openai_test_failed')}${o3Result.message}`, 'error');
+        showStatus(openaiStatus, `${t('err_openai_test_failed')}${describeConnectionFailure(o3Result)}`, 'error');
       }
     } catch (error) {
       console.error('Error testing OpenAI connection:', error);
@@ -278,6 +281,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   
   // Test Mistral connection button click handler
+  // The connection tests answer with a stable code rather than an English sentence, so the message
+  // can be written here — in the user's language, and saying what to actually do about it. The raw
+  // detail from the provider is appended in brackets: useless to most people, decisive when the
+  // failure is one nobody anticipated.
+  function describeConnectionFailure(result) {
+    const codes = {
+      invalid_key: 'err_conn_invalid_key',
+      insufficient_balance: 'err_conn_insufficient_balance',
+      rate_limited: 'err_conn_rate_limited',
+      server_error: 'err_conn_server_error',
+      network: 'err_conn_network',
+      model_not_found: 'err_conn_model_not_found',
+      unexpected_response: 'err_conn_unexpected'
+    };
+
+    const message = t(codes[result && result.errorCode] || 'err_conn_unexpected');
+    const detail = result && result.rawDetail ? ` (${result.rawDetail})` : '';
+    return message + detail;
+  }
+
   // Reports what actually happened, category by category. "Done" would leave the user with no way
   // of telling a working triage from one that silently classified nothing.
   function describeTriageRun(summary) {
@@ -396,7 +419,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         modelName: deepseekModelSelect.value
       });
 
-      showStatus(deepseekStatus, result.connected ? t('options_deepseek_test_ok') : result.message,
+      showStatus(deepseekStatus, result.connected ? t('options_deepseek_test_ok') : describeConnectionFailure(result),
                  result.connected ? 'success' : 'error');
     } catch (error) {
       console.error('Error testing DeepSeek connection:', error);
@@ -421,7 +444,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         apiKey
       });
 
-      showStatus(mistralStatus, result.connected ? t('options_mistral_test_ok') : result.message,
+      showStatus(mistralStatus, result.connected ? t('options_mistral_test_ok') : describeConnectionFailure(result),
                  result.connected ? 'success' : 'error');
     } catch (error) {
       console.error('Error testing Mistral connection:', error);
@@ -471,7 +494,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <ul class="models-list">
                 ${result.availableModels.map(model => `<li>${model}</li>`).join('')}
               </ul>
-              <p>${result.modelExists ? t('options_ollama_model_available') : result.modelMessage}</p>
+              <p>${result.modelExists ? t('options_ollama_model_available') : t('options_ollama_model_missing')}</p>
             </div>
           `;
           
@@ -480,11 +503,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           ollamaStatus.className = 'status-message status-success with-list';
         } else {
           // Just show a simple success message
-          showStatus(ollamaStatus, result.message, 'success');
+          showStatus(ollamaStatus, t('options_ollama_test_ok'), 'success');
         }
       } else {
         // Show error message
-        showStatus(ollamaStatus, result.message, 'error');
+        showStatus(ollamaStatus, describeConnectionFailure(result), 'error');
       }
     } catch (error) {
       console.error('Error testing Ollama connection:', error);
@@ -555,6 +578,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         dailyCallBudget: Number.isFinite(parsedBudget) && parsedBudget > 0 ? parsedBudget : 200
       } : null;
       const geminiApiKey = geminiApiKeyInput.value.trim();
+      const geminiModel = geminiModelInput.value.trim();
       const openaiApiKey = openaiApiKeyInput.value.trim();
       const mistralApiKey = mistralApiKeyInput.value.trim();
       const ollamaHost = ollamaHostInput.value.trim();

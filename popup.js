@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // were retired on 2026-07-24 and now fail — the live ids are deepseek-v4-flash / deepseek-v4-pro.
   const DEFAULT_MODEL = 'deepseek';
   const DEEPSEEK_DEFAULT_MODEL = 'deepseek-v4-flash';
+  // Kept in step with the same default in background.js: the previous id was a retired
+  // experimental preview, so the Gemini provider simply did not work.
+  const GEMINI_DEFAULT_MODEL = 'gemini-3.6-flash';
 
   // The selects store a technical id ('professional', 'medium'); the indicator shows a label.
   const STYLE_LABEL_KEYS = {
@@ -246,14 +249,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Create prompt for AI. `context` was captured before the await above, on purpose.
       const style = responseStyle.value;
       const length = document.getElementById('response-length').value;
-      const prompt = createPrompt(currentMessage, style, length, context, userSignature, contentControls);
-      
+      const masking = maskingSession();
+      const prompt = createPrompt(masking.maskMessage(currentMessage), style, length,
+                                  masking.mask(context), masking.mask(userSignature), contentControls);
+
       // Show loading indicator in response area
       responseContent.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> ${t('popup_generating_response')}</div>`;
-      
+
       try {
         // Call AI API based on selected model from settings
-        const response = await generateResponse(prompt);
+        const response = masking.restore(await generateResponse(prompt));
         
         // Reset variants and set the first response
         responseVariants = [response];
@@ -381,17 +386,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Create prompt for AI with instruction to generate a variant
       const style = responseStyle.value;
       const length = document.getElementById('response-length').value;
-      const basePrompt = createPrompt(currentMessage, style, length, context, userSignature, contentControls);
-      
-      // Add instruction to create a different variant
-      const variantPrompt = `${basePrompt}\n\nPlease generate a different variation of the response with the same information but expressed differently. Make it feel fresh and distinct from previous versions while maintaining the same tone, style, and content requirements.`;
-      
+      const masking = maskingSession();
+      const basePrompt = createPrompt(masking.maskMessage(currentMessage), style, length,
+                                      masking.mask(context), masking.mask(userSignature), contentControls);
+
+      // The versions to differ FROM are shown to the model. Asking it to be different from
+      // something it cannot see was an instruction with no referent, which is why the variants
+      // came back looking so much like each other.
+      const alreadyWritten = responseVariants
+        .map((variant, index) => `--- VERSIONE ${index + 1} ---\n${masking.mask(variant)}`)
+        .join('\n\n');
+
+      const variantPrompt = `${basePrompt}
+
+You have already written the versions below. Write a different one: same meaning and same register, different wording and different structure. Do not repeat their opening or their closing.
+
+${alreadyWritten}`;
+
       // Show loading indicator in response area
       responseContent.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> ${t('popup_generating_variant')}</div>`;
-      
+
       try {
         // Call AI API to generate a variant
-        const variantResponse = await generateResponse(variantPrompt);
+        const variantResponse = masking.restore(await generateResponse(variantPrompt));
         
         // Add the new variant to the array
         responseVariants.push(variantResponse);
@@ -624,7 +641,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       if (savedResponses[emailId]) {
         generatedResponse = savedResponses[emailId].response;
-        
+
+        // The variant list has to be seeded too, not just the text. Without it, reopening the
+        // window on a saved reply and pressing "Generate Variants" answered that there was no
+        // response to vary — with the response sitting right there on screen.
+        responseVariants = [generatedResponse];
+        currentVariantIndex = 0;
+
         // Display the saved response
         responseContent.textContent = generatedResponse;
         insertBtn.disabled = false;
@@ -653,6 +676,92 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
   
+  // Email addresses never leave the machine. The user allowed the subject and the body out, not
+  // the contact details of the people writing — and that includes every address quoted inside a
+  // body, which belongs to a third party who agreed to nothing.
+  //
+  // Reversible, unlike the triage's one-way version: a summary or a translation handed back full
+  // of "[indirizzo-1]" would be useless. Each distinct address gets a stable placeholder for the
+  // whole exchange, so the model can still tell two people apart, and the real addresses are put
+  // back on the way home.
+  function maskingSession() {
+    const forward = new Map();
+    const backward = new Map();
+    const address = /[^\s<>()[\],;:"]+@[^\s<>()[\],;:"]+\.[^\s<>()[\],;:".]{2,}/gu;
+
+    // A per-session token in the placeholder. Restoring works by replacing literal strings, so a
+    // fixed shape like "[indirizzo-1]" appearing in an email for its own reasons would be rewritten
+    // into somebody's address. Four random characters make that collision not worth thinking about.
+    const nonce = Math.random().toString(36).slice(2, 6);
+
+    function mask(text) {
+      return String(text == null ? '' : text).replace(address, match => {
+        const key = match.toLowerCase();
+
+        if (!forward.has(key)) {
+          const placeholder = `[indirizzo-${nonce}-${forward.size + 1}]`;
+          forward.set(key, placeholder);
+          backward.set(placeholder, match);
+        }
+
+        return forward.get(key);
+      });
+    }
+
+    return {
+      mask,
+      // A shallow copy: the original message object is shared with the rest of the popup and must
+      // keep its real values.
+      maskMessage(message) {
+        return Object.assign({}, message, {
+          subject: mask(message.subject),
+          author: mask(message.author),
+          body: mask(message.body)
+        });
+      },
+      restore(text) {
+        let output = String(text == null ? '' : text);
+        for (const [placeholder, real] of backward) {
+          output = output.split(placeholder).join(real);
+        }
+        return output;
+      }
+    };
+  }
+
+  // Every request to a model goes through here. fetch has no timeout of its own: a connection that
+  // hangs — a captive portal, a proxy that swallows the request, a provider having a bad day —
+  // leaves the spinner turning and the button disabled with no way back except closing the window.
+  // Ninety seconds is generous for a long reply and still finite.
+  const MODEL_REQUEST_TIMEOUT_MS = 90000;
+
+  async function fetchWithTimeout(url, options) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), MODEL_REQUEST_TIMEOUT_MS);
+
+    try {
+      return await fetch(url, Object.assign({}, options, { signal: controller.signal }));
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        throw new Error(t('err_request_timeout'));
+      }
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  // Which key the chosen provider needs, or null if it has what it needs. One table instead of the
+  // same twenty-line if/else repeated in three handlers.
+  function missingProviderKey(model, settings) {
+    if (model === 'deepseek' && !settings.deepseekApiKey) return 'err_deepseek_key_not_found';
+    if (model === 'gemini' && !settings.geminiApiKey) return 'err_gemini_key_not_found';
+    if ((model === 'openai' || model === 'gpt4o') && !settings.openaiApiKey) return 'err_openai_key_not_found';
+    if (model === 'mistral' && !settings.mistralApiKey) return 'err_mistral_key_not_found';
+    if (model === 'ollama' && !settings.ollamaHost) return 'err_ollama_host_not_found';
+    return null;
+  }
+
   // Neutralise text before it goes anywhere near innerHTML.
   function escapeHtml(text) {
     return String(text)
@@ -774,6 +883,7 @@ ${message.body}
         'mistralApiKey',
         'deepseekApiKey',
         'deepseekModel',
+        'geminiModel',
         'ollamaHost',
         'ollamaModel',
         'ollamaCustomModel',
@@ -839,7 +949,7 @@ ${message.body}
         if (!settings.geminiApiKey) {
           throw new Error(t('err_gemini_key_missing'));
         }
-        return await callGeminiApi(prompt, settings.geminiApiKey);
+        return await callGeminiApi(prompt, settings.geminiApiKey, settings.geminiModel);
         
       case 'openai':
         if (!settings.openaiApiKey) {
@@ -879,7 +989,7 @@ ${message.body}
   }
   
   async function callDeepSeekApi(prompt, apiKey, model) {
-    const response = await fetch('https://api.deepseek.com/chat/completions', {
+    const response = await fetchWithTimeout('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -979,7 +1089,7 @@ ${message.body}
         };
       }
       
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetchWithTimeout('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1000,12 +1110,18 @@ ${message.body}
     }
   }
   
-  async function callGeminiApi(prompt, apiKey) {
+  async function callGeminiApi(prompt, apiKey, modelName) {
     try {
-      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-exp-03-25:generateContent?key=' + apiKey, {
+      // The key travels in a header, not in the query string: a URL ends up in error messages, in
+      // network panels and in anything that logs a request, and this one carried the secret.
+      // The model id is configurable and no longer the retired experimental preview.
+      const model = modelName || GEMINI_DEFAULT_MODEL;
+
+      const response = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey
         },
         body: JSON.stringify({
           contents: [
@@ -1046,7 +1162,7 @@ ${message.body}
   
   async function callMistralApi(prompt, apiKey) {
     try {
-      const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+      const response = await fetchWithTimeout('https://api.mistral.ai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1097,7 +1213,7 @@ ${message.body}
       const { userSignature } = await browser.storage.local.get(['userSignature']);
       
       try {
-        const response = await fetch(`${host}/api/generate`, {
+        const response = await fetchWithTimeout(`${host}/api/generate`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -1138,7 +1254,7 @@ ${message.body}
       } catch (generateError) {
         // Fallback to /api/chat endpoint if /api/generate fails
         try {
-          const chatResponse = await fetch(`${host}/api/chat`, {
+          const chatResponse = await fetchWithTimeout(`${host}/api/chat`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -1258,8 +1374,10 @@ ${message.body}
         'geminiApiKey', 
         'openaiApiKey',
         'mistralApiKey',
+        'enableFallback',
         'deepseekApiKey',
         'deepseekModel',
+        'geminiModel',
         'ollamaHost',
         'ollamaModel'
       ]);
@@ -1267,24 +1385,11 @@ ${message.body}
       const selectedModel = settings.selectedModel || DEFAULT_MODEL;
       
       // Check for required API keys based on selected model
-      if (selectedModel === 'deepseek' && !settings.deepseekApiKey) {
-        showStatus(t('err_deepseek_key_not_found'), 'error');
-        analyzeSentimentBtn.disabled = false;
-        return;
-      } else if (selectedModel === 'gemini' && !settings.geminiApiKey) {
-        showStatus(t('err_gemini_key_not_found'), 'error');
-        analyzeSentimentBtn.disabled = false;
-        return;
-      } else if ((selectedModel === 'openai' || selectedModel === 'gpt4o') && !settings.openaiApiKey) {
-        showStatus(t('err_openai_key_not_found'), 'error');
-        analyzeSentimentBtn.disabled = false;
-        return;
-      } else if (selectedModel === 'mistral' && !settings.mistralApiKey) {
-        showStatus(t('err_mistral_key_not_found'), 'error');
-        analyzeSentimentBtn.disabled = false;
-        return;
-      } else if (selectedModel === 'ollama' && !settings.ollamaHost) {
-        showStatus(t('err_ollama_host_not_found'), 'error');
+      // Only refused outright when there is no fallback to try. Before, a missing key on the
+      // primary provider stopped the operation even with a fallback chain configured.
+      const missingKey = missingProviderKey(selectedModel, settings);
+      if (missingKey && !settings.enableFallback) {
+        showStatus(t(missingKey), 'error');
         analyzeSentimentBtn.disabled = false;
         return;
       }
@@ -1295,8 +1400,9 @@ ${message.body}
       const detectFormality = document.getElementById('detect-formality').checked;
       const detectSubtext = document.getElementById('detect-subtext').checked;
       
-      const prompt = createSentimentAnalysisPrompt(
-        currentMessage, 
+      const masking = maskingSession();
+        const prompt = createSentimentAnalysisPrompt(
+        masking.maskMessage(currentMessage), 
         sentimentDepth,
         detectEmotions,
         detectUrgency,
@@ -1318,7 +1424,7 @@ ${message.body}
           'high' 
         );
         
-        sentimentAnalysis = parseSentimentAnalysis(response);
+        sentimentAnalysis = parseSentimentAnalysis(masking.restore(response));
         
         visualizeSentimentAnalysis(sentimentAnalysis);
         
@@ -1669,6 +1775,7 @@ ${message.body}
         'mistralApiKey',
         'deepseekApiKey',
         'deepseekModel',
+        'geminiModel',
         'ollamaHost',
         'ollamaModel',
         'ollamaCustomModel',
@@ -1683,6 +1790,7 @@ ${message.body}
         mistralApiKey: settings.mistralApiKey,
         deepseekApiKey: settings.deepseekApiKey,
         deepseekModel: settings.deepseekModel,
+        geminiModel: settings.geminiModel,
         ollamaHost: settings.ollamaHost,
         ollamaModel: settings.ollamaModel,
         ollamaCustomModel: settings.ollamaCustomModel,
@@ -1732,8 +1840,10 @@ ${message.body}
         'geminiApiKey', 
         'openaiApiKey',
         'mistralApiKey',
+        'enableFallback',
         'deepseekApiKey',
         'deepseekModel',
+        'geminiModel',
         'ollamaHost',
         'ollamaModel'
       ]);
@@ -1741,24 +1851,11 @@ ${message.body}
       const selectedModel = settings.selectedModel || DEFAULT_MODEL;
       
       // Check for required API keys based on selected model
-      if (selectedModel === 'deepseek' && !settings.deepseekApiKey) {
-        showStatus(t('err_deepseek_key_not_found'), 'error');
-        generateSummaryBtn.disabled = false;
-        return;
-      } else if (selectedModel === 'gemini' && !settings.geminiApiKey) {
-        showStatus(t('err_gemini_key_not_found'), 'error');
-        generateSummaryBtn.disabled = false;
-        return;
-      } else if ((selectedModel === 'openai' || selectedModel === 'gpt4o') && !settings.openaiApiKey) {
-        showStatus(t('err_openai_key_not_found'), 'error');
-        generateSummaryBtn.disabled = false;
-        return;
-      } else if (selectedModel === 'mistral' && !settings.mistralApiKey) {
-        showStatus(t('err_mistral_key_not_found'), 'error');
-        generateSummaryBtn.disabled = false;
-        return;
-      } else if (selectedModel === 'ollama' && !settings.ollamaHost) {
-        showStatus(t('err_ollama_host_not_found'), 'error');
+      // Only refused outright when there is no fallback to try. Before, a missing key on the
+      // primary provider stopped the operation even with a fallback chain configured.
+      const missingKey = missingProviderKey(selectedModel, settings);
+      if (missingKey && !settings.enableFallback) {
+        showStatus(t(missingKey), 'error');
         generateSummaryBtn.disabled = false;
         return;
       }
@@ -1770,8 +1867,9 @@ ${message.body}
       const extractQuestions = document.getElementById('extract-questions').checked;
       const extractDeadlines = document.getElementById('extract-deadlines').checked;
       
-      const prompt = createSummarizationPrompt(
-        currentMessage,
+      const masking = maskingSession();
+        const prompt = createSummarizationPrompt(
+        masking.maskMessage(currentMessage),
         summaryType,
         summaryLength,
         extractKeyPoints,
@@ -1792,7 +1890,7 @@ ${message.body}
           'high' 
         );
         
-        generatedSummary = response;
+        generatedSummary = masking.restore(response);
         
         const summaryContent = document.getElementById('summary-content');
         summaryContent.innerHTML = formatSummaryOutput(generatedSummary, summaryType);
@@ -1933,8 +2031,10 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
         'geminiApiKey', 
         'openaiApiKey',
         'mistralApiKey',
+        'enableFallback',
         'deepseekApiKey',
         'deepseekModel',
+        'geminiModel',
         'ollamaHost',
         'ollamaModel'
       ]);
@@ -1942,24 +2042,11 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
       const selectedModel = settings.selectedModel || DEFAULT_MODEL;
       
       // Check for required API keys based on selected model
-      if (selectedModel === 'deepseek' && !settings.deepseekApiKey) {
-        showStatus(t('err_deepseek_key_not_found'), 'error');
-        translateBtn.disabled = false;
-        return;
-      } else if (selectedModel === 'gemini' && !settings.geminiApiKey) {
-        showStatus(t('err_gemini_key_not_found'), 'error');
-        translateBtn.disabled = false;
-        return;
-      } else if ((selectedModel === 'openai' || selectedModel === 'gpt4o') && !settings.openaiApiKey) {
-        showStatus(t('err_openai_key_not_found'), 'error');
-        translateBtn.disabled = false;
-        return;
-      } else if (selectedModel === 'mistral' && !settings.mistralApiKey) {
-        showStatus(t('err_mistral_key_not_found'), 'error');
-        translateBtn.disabled = false;
-        return;
-      } else if (selectedModel === 'ollama' && !settings.ollamaHost) {
-        showStatus(t('err_ollama_host_not_found'), 'error');
+      // Only refused outright when there is no fallback to try. Before, a missing key on the
+      // primary provider stopped the operation even with a fallback chain configured.
+      const missingKey = missingProviderKey(selectedModel, settings);
+      if (missingKey && !settings.enableFallback) {
+        showStatus(t(missingKey), 'error');
         translateBtn.disabled = false;
         return;
       }
@@ -1971,8 +2058,9 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
       const includeOriginal = document.getElementById('include-original').checked;
       const culturalAdaptation = document.getElementById('cultural-adaptation').checked;
       
-      const prompt = createTranslationPrompt(
-        currentMessage,
+      const masking = maskingSession();
+        const prompt = createTranslationPrompt(
+        masking.maskMessage(currentMessage),
         sourceLanguage,
         targetLanguage,
         preserveFormatting,
@@ -1992,7 +2080,7 @@ ${extractDeadlines ? '- Deadlines: Important dates or time constraints\n' : ''}
           'high' 
         );
         
-        generatedTranslation = response;
+        generatedTranslation = masking.restore(response);
         
         const translationContent = document.getElementById('translation-content');
         

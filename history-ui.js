@@ -631,7 +631,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               ${variablesHtml}
             </div>
             <div class="template-item-date">
-              ${new Date(template.timestamp).toLocaleDateString()}
+              ${new Date(template.updatedAt || template.createdAt).toLocaleDateString()}
             </div>
           </div>
         `;

@@ -900,7 +900,7 @@
     "message": "Test della connessione a Ollama in corso..."
   },
   "options_ollama_test_ok": {
-    "message": "Connessione a Ollama riuscita."
+    "message": "Connessione a Ollama riuscita"
   },
   "options_ollama_available_models": {
     "message": "Modelli disponibili:"
@@ -1360,5 +1360,41 @@
   },
   "options_saved_without_triage": {
     "message": "Salvato, tranne le impostazioni del triage: non sono riuscito a leggerle, quindi ho lasciato intatte quelle memorizzate. Riapri questa pagina per modificarle."
+  },
+  "err_request_timeout": {
+    "message": "Il modello non ha risposto in tempo. Controlla la connessione e riprova."
+  },
+  "err_conn_invalid_key": {
+    "message": "La chiave è stata rifiutata. Controlla di averla incollata per intero e che sia di questo provider."
+  },
+  "err_conn_insufficient_balance": {
+    "message": "La chiave è valida ma il credito è esaurito. Ricaricalo sul sito del provider."
+  },
+  "err_conn_rate_limited": {
+    "message": "Troppe richieste in questo momento. Aspetta un attimo e riprova."
+  },
+  "err_conn_server_error": {
+    "message": "Il provider ha un problema dalla sua parte. Non c'è niente da correggere qui: riprova più tardi."
+  },
+  "err_conn_network": {
+    "message": "Non sono riuscito a raggiungere il provider. Controlla la connessione ed eventuali proxy o firewall."
+  },
+  "err_conn_model_not_found": {
+    "message": "Il server risponde, ma il modello configurato non è installato."
+  },
+  "err_conn_unexpected": {
+    "message": "Risposta inattesa dal provider."
+  },
+  "options_ollama_model_missing": {
+    "message": "Il modello non è installato su questo server Ollama."
+  },
+  "err_insert_compose_api_failed": {
+    "message": "Impossibile inserire la risposta nella finestra di composizione: l'API di composizione ha rifiutato la richiesta."
+  },
+  "options_gemini_model_label": {
+    "message": "Modello Gemini:"
+  },
+  "options_gemini_model_desc": {
+    "message": "Google ritira i modelli con una certa frequenza: se Gemini smette di rispondere, di solito basta aggiornare questo id. Vuoto significa «usa quello predefinito»."
   }
 }

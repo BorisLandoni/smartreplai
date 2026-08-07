@@ -38,7 +38,9 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'testConnection') {
     return testProviderConnection(message).catch(error => {
       console.error('Error testing connection:', error);
-      return { connected: false, message: error.message };
+      // Same structured shape every test*Connection function returns (see below), so the Options
+      // page never has to special-case "the wrapper itself threw" vs. "the provider reported one".
+      return { connected: false, errorCode: 'unexpected_response', statusCode: 0, rawDetail: error.message };
     });
   }
 
@@ -50,7 +52,10 @@ async function testProviderConnection(message) {
     return testDeepSeekConnection(message.apiKey, message.modelName);
   }
   if (message.model === 'gemini') {
-    return testGeminiConnection(message.apiKey);
+    // Same storage-backed default as checkModelConnection below, so a test run from either entry
+    // point checks whatever model the user actually configured.
+    const { geminiModel } = await browser.storage.local.get('geminiModel');
+    return testGeminiConnection(message.apiKey, geminiModel);
   }
   if (message.model === 'openai') {
     return testOpenAIConnection(message.apiKey, 'o3-mini');
@@ -150,9 +155,11 @@ async function checkModelConnection(model, apiKey) {
         result = await testDeepSeekConnection(apiKey, deepseekModel);
         break;
       }
-      case 'gemini':
-        result = await testGeminiConnection(apiKey);
+      case 'gemini': {
+        const { geminiModel } = await browser.storage.local.get('geminiModel');
+        result = await testGeminiConnection(apiKey, geminiModel);
         break;
+      }
       case 'openai':
         result = await testOpenAIConnection(apiKey, 'o3-mini');
         break;
@@ -180,20 +187,58 @@ async function checkModelConnection(model, apiKey) {
     console.error(`Error checking ${model} connection:`, error);
     return {
       connected: false,
-      message: `Connection failed: ${error.message}`
+      errorCode: 'unexpected_response',
+      statusCode: 0,
+      rawDetail: error.message
     };
   }
 }
 
+// Every test*Connection function below returns this same shape: {connected, errorCode, statusCode,
+// rawDetail}. No English prose is composed here — errorCode is a stable identifier the Options page
+// maps to a translated string, and rawDetail is whatever raw text the API sent back, kept only as a
+// technical detail for troubleshooting.
+
+// A failed response body might be JSON, HTML, plain text, or empty; response.json() throws on
+// anything but the first, and an uncaught throw there used to replace the real HTTP error with a
+// confusing "Unexpected token < in JSON" one. Every read of a response body goes through this.
+async function safeReadJson(response) {
+  try {
+    return await response.json();
+  } catch (error) {
+    return null;
+  }
+}
+
+// Maps an HTTP status to one of the stable errorCode values, so every provider classifies the same
+// status the same way instead of each writing its own ad hoc mapping.
+function classifyHttpError(status) {
+  if (status === 401 || status === 403) return 'invalid_key';
+  if (status === 402) return 'insufficient_balance';
+  if (status === 429) return 'rate_limited';
+  if (status >= 500) return 'server_error';
+  return 'unexpected_response';
+}
+
 // Function to test Gemini API connection
-async function testGeminiConnection(apiKey) {
+async function testGeminiConnection(apiKey, modelName) {
+  // 'gemini-2.5-pro-exp-03-25' was an experimental preview id that Google has since retired, which
+  // made this provider fail outright. gemini-3.6-flash is the current GA text model — checked live
+  // against ai.google.dev/gemini-api/docs/models rather than assumed from memory. Configurable via
+  // storage.local's 'geminiModel', same scheme already used for deepseekModel, so the next model
+  // rotation doesn't need a code change.
+  const model = modelName || 'gemini-3.6-flash';
+
   try {
     console.log('Testing Gemini connection...');
-    
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-exp-03-25:generateContent?key=' + apiKey, {
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        // The key used to travel as a ?key= query parameter, so it ended up in any network log or
+        // error message that captured the request URL. The header keeps it out of both.
+        'x-goog-api-key': apiKey
       },
       body: JSON.stringify({
         contents: [
@@ -210,22 +255,33 @@ async function testGeminiConnection(apiKey) {
         }
       })
     });
-    
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Gemini API error: ${errorData.error?.message || response.statusText}`);
+      const errorData = await safeReadJson(response);
+      return {
+        connected: false,
+        errorCode: classifyHttpError(response.status),
+        statusCode: response.status,
+        rawDetail: (errorData && errorData.error && errorData.error.message) || response.statusText
+      };
     }
-    
-    const data = await response.json();
+
+    const data = await safeReadJson(response);
+    const answered = Boolean(data && Array.isArray(data.candidates) && data.candidates.length > 0);
+
     return {
-      connected: data.candidates && data.candidates.length > 0,
-      message: 'Gemini API connection successful'
+      connected: answered,
+      errorCode: answered ? '' : 'unexpected_response',
+      statusCode: response.status,
+      rawDetail: answered ? '' : 'Gemini returned no candidates'
     };
   } catch (error) {
     console.error('Error testing Gemini connection:', error);
     return {
       connected: false,
-      message: `Gemini API connection failed: ${error.message}`
+      errorCode: 'network',
+      statusCode: 0,
+      rawDetail: error.message
     };
   }
 }
@@ -274,20 +330,31 @@ async function testOpenAIConnection(apiKey, model) {
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`OpenAI API error: ${errorData.error?.message || response.statusText}`);
+      const errorData = await safeReadJson(response);
+      return {
+        connected: false,
+        errorCode: classifyHttpError(response.status),
+        statusCode: response.status,
+        rawDetail: (errorData && errorData.error && errorData.error.message) || response.statusText
+      };
     }
-    
-    const data = await response.json();
+
+    const data = await safeReadJson(response);
+    const answered = Boolean(data && Array.isArray(data.choices) && data.choices.length > 0);
+
     return {
-      connected: data.choices && data.choices.length > 0,
-      message: 'OpenAI API connection successful'
+      connected: answered,
+      errorCode: answered ? '' : 'unexpected_response',
+      statusCode: response.status,
+      rawDetail: answered ? '' : 'OpenAI returned no choices'
     };
   } catch (error) {
     console.error('Error testing OpenAI connection:', error);
     return {
       connected: false,
-      message: `OpenAI API connection failed: ${error.message}`
+      errorCode: 'network',
+      statusCode: 0,
+      rawDetail: error.message
     };
   }
 }
@@ -320,36 +387,31 @@ async function testDeepSeekConnection(apiKey, modelName) {
     });
 
     if (!response.ok) {
-      let detail = response.statusText;
-
-      try {
-        const errorData = await response.json();
-        detail = errorData.error?.message || detail;
-      } catch (parseError) {
-        // Body was not JSON; status text is the best we have.
-      }
-
-      if (response.status === 402) {
-        detail = `insufficient balance, top up at platform.deepseek.com (${detail})`;
-      }
-
-      throw new Error(`DeepSeek API error: ${detail}`);
+      const errorData = await safeReadJson(response);
+      return {
+        connected: false,
+        errorCode: classifyHttpError(response.status),
+        statusCode: response.status,
+        rawDetail: (errorData && errorData.error && errorData.error.message) || response.statusText
+      };
     }
 
-    const data = await response.json();
-    const answered = Array.isArray(data.choices) && data.choices.length > 0;
+    const data = await safeReadJson(response);
+    const answered = Boolean(data && Array.isArray(data.choices) && data.choices.length > 0);
 
     return {
       connected: answered,
-      message: answered
-        ? 'DeepSeek API connection successful'
-        : 'DeepSeek accepted the key but returned no answer: unexpected response'
+      errorCode: answered ? '' : 'unexpected_response',
+      statusCode: response.status,
+      rawDetail: answered ? '' : 'DeepSeek returned no choices'
     };
   } catch (error) {
     console.error('Error testing DeepSeek connection:', error);
     return {
       connected: false,
-      message: `DeepSeek API connection failed: ${error.message}`
+      errorCode: 'network',
+      statusCode: 0,
+      rawDetail: error.message
     };
   }
 }
@@ -377,20 +439,31 @@ async function testMistralConnection(apiKey) {
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Mistral API error: ${errorData.error?.message || response.statusText}`);
+      const errorData = await safeReadJson(response);
+      return {
+        connected: false,
+        errorCode: classifyHttpError(response.status),
+        statusCode: response.status,
+        rawDetail: (errorData && errorData.error && errorData.error.message) || response.statusText
+      };
     }
-    
-    const data = await response.json();
+
+    const data = await safeReadJson(response);
+    const answered = Boolean(data && Array.isArray(data.choices) && data.choices.length > 0);
+
     return {
-      connected: data.choices && data.choices.length > 0,
-      message: 'Mistral API connection successful'
+      connected: answered,
+      errorCode: answered ? '' : 'unexpected_response',
+      statusCode: response.status,
+      rawDetail: answered ? '' : 'Mistral returned no choices'
     };
   } catch (error) {
     console.error('Error testing Mistral connection:', error);
     return {
       connected: false,
-      message: `Mistral API connection failed: ${error.message}`
+      errorCode: 'network',
+      statusCode: 0,
+      rawDetail: error.message
     };
   }
 }
@@ -423,43 +496,42 @@ async function testOllamaConnection(host, modelName) {
         console.error('Ollama server not reachable:', serverCheckResponse.status, serverCheckResponse.statusText);
         return {
           connected: false,
-          message: `Ollama server not reachable: ${serverCheckResponse.statusText}`
+          errorCode: classifyHttpError(serverCheckResponse.status),
+          statusCode: serverCheckResponse.status,
+          rawDetail: serverCheckResponse.statusText
         };
       }
-      
+
       // If the server is reachable, get the list of available models
-      const tagsData = await serverCheckResponse.json();
-      const availableModels = tagsData.models ? tagsData.models.map(m => m.name) : [];
+      const tagsData = await safeReadJson(serverCheckResponse);
+      const availableModels = (tagsData && tagsData.models) ? tagsData.models.map(m => m.name) : [];
       console.log('Available Ollama models:', availableModels.join(', '));
-      
+
       // If a specific model was provided, check if it exists
       let modelExists = false;
-      let modelMessage = '';
-      
-      if (modelName && tagsData.models) {
-        modelExists = tagsData.models.some(m => 
-          m.name === modelName || 
+
+      if (modelName && tagsData && tagsData.models) {
+        modelExists = tagsData.models.some(m =>
+          m.name === modelName ||
           m.name.startsWith(modelName + ':')
         );
-        
+
         if (!modelExists) {
-          modelMessage = `Model ${modelName} not found in available models. It may need to be downloaded first.`;
-          console.warn(modelMessage);
+          console.warn(`Model ${modelName} not found in available models. It may need to be downloaded first.`);
         }
       }
-      
+
       return {
         connected: true,
-        message: modelExists ? 
-          'Ollama connection successful' : 
-          'Ollama connection successful, but specified model not found',
+        errorCode: modelName && !modelExists ? 'model_not_found' : '',
+        statusCode: serverCheckResponse.status,
+        rawDetail: modelName && !modelExists ? `Model not found: ${modelName}` : '',
         availableModels: availableModels,
-        modelExists: modelExists,
-        modelMessage: modelMessage
+        modelExists: modelExists
       };
     } catch (error) {
       console.error('Error connecting to Ollama server:', error);
-      
+
       // Try a simpler approach as fallback
       try {
         // Try a simple model query with minimal parameters
@@ -474,36 +546,37 @@ async function testOllamaConnection(host, modelName) {
             stream: false
           })
         });
-        
+
         if (!modelResponse.ok) {
-          let errorMessage = modelResponse.statusText;
-          try {
-            const errorData = await modelResponse.json();
-            errorMessage = errorData.error || errorMessage;
-          } catch (e) {
-            // Ignore JSON parsing errors
-          }
-          
+          const errorData = await safeReadJson(modelResponse);
+          const rawDetail = (errorData && errorData.error) || modelResponse.statusText;
+
           // If the error mentions that the model doesn't exist, it means the server is working
-          if (errorMessage.includes('model') && errorMessage.includes('not found')) {
+          if (typeof rawDetail === 'string' && rawDetail.includes('model') && rawDetail.includes('not found')) {
             return {
               connected: true,
-              message: 'Ollama server is running, but the specified model may need to be downloaded',
+              errorCode: 'model_not_found',
+              statusCode: modelResponse.status,
+              rawDetail,
               availableModels: [],
               modelExists: false
             };
           }
-          
+
           return {
             connected: false,
-            message: `Ollama API error: ${errorMessage}`,
+            errorCode: classifyHttpError(modelResponse.status),
+            statusCode: modelResponse.status,
+            rawDetail,
             availableModels: []
           };
         }
-        
+
         return {
           connected: true,
-          message: 'Ollama connection successful',
+          errorCode: '',
+          statusCode: modelResponse.status,
+          rawDetail: '',
           availableModels: [],
           modelExists: true
         };
@@ -511,7 +584,9 @@ async function testOllamaConnection(host, modelName) {
         console.error('Fallback connection attempt failed:', fallbackError);
         return {
           connected: false,
-          message: `Ollama connection failed: ${error.message}`,
+          errorCode: 'network',
+          statusCode: 0,
+          rawDetail: fallbackError.message,
           availableModels: []
         };
       }
@@ -520,7 +595,9 @@ async function testOllamaConnection(host, modelName) {
     console.error('Error testing Ollama connection:', error);
     return {
       connected: false,
-      message: `Ollama connection failed: ${error.message}`,
+      errorCode: 'network',
+      statusCode: 0,
+      rawDetail: error.message,
       availableModels: []
     };
   }
@@ -585,6 +662,34 @@ async function getCurrentMessage(requestedMessageId) {
   }
 }
 
+// Thunderbird resolves beginReply() once the compose tab exists, but the compose window's document
+// (and with it getComposeDetails) can still lag a beat behind — a slow HTML editor, a large quoted
+// original. A blind 2s wait paid that cost on every single reply, including the near-instant ones.
+// Trying immediately and retrying a few times close together covers the slow case without taxing
+// the fast one. "Empty" here means the API resolved but neither body field was ever set, which is
+// what an unready compose document looks like.
+async function getComposeDetailsWithRetry(tabId, maxRetries = 3, delayMs = 100) {
+  let lastError;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const details = await browser.compose.getComposeDetails(tabId);
+      if (details && (details.body !== undefined || details.plainTextBody !== undefined)) {
+        return details;
+      }
+      lastError = new Error('Compose details came back empty');
+    } catch (error) {
+      lastError = error;
+    }
+
+    if (attempt < maxRetries) {
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+
+  throw lastError;
+}
+
 // Function to insert a response into a reply
 async function insertResponse(messageId, response, replyAll = false) {
   try {
@@ -598,12 +703,9 @@ async function insertResponse(messageId, response, replyAll = false) {
     const replyTab = await browser.compose.beginReply(messageId, replyType);
     console.log(`Reply window opened with ID: ${replyTab.id} (${replyType})`);
     
-    // Wait for the compose window to fully initialize
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
     try {
       // First, try to get the compose details to determine if we're in HTML or plain text mode
-      const details = await browser.compose.getComposeDetails(replyTab.id);
+      const details = await getComposeDetailsWithRetry(replyTab.id);
       // Shape only: `details` contains the full body of the message being composed.
       console.log("Compose details retrieved:", { isPlainText: details.isPlainText });
       
@@ -724,165 +826,14 @@ async function insertResponse(messageId, response, replyAll = false) {
       console.log("Response inserted successfully using compose API");
       return true;
     } catch (apiError) {
-      console.warn("Error using compose API:", apiError);
-      
-      // Fallback to direct DOM manipulation if the compose API fails
-      try {
-        console.log("Trying direct DOM manipulation as fallback");
-        
-        // Use a script that preserves the original content
-        const fallbackScript = `
-          (function() {
-            try {
-              // Try to find any editable element
-              const editableElements = [
-                document.querySelector('textarea[name="content-plaintext"]'),
-                document.querySelector('html-editor'),
-                document.querySelector('[contenteditable="true"]'),
-                document.querySelector('iframe')?.contentDocument?.body,
-                ...Array.from(document.querySelectorAll('textarea')),
-                ...Array.from(document.querySelectorAll('iframe')).map(f => {
-                  try { return f.contentDocument.body; } catch(e) { return null; }
-                }).filter(el => el)
-              ].filter(el => el);
-              
-              const textToInsert = ${JSON.stringify(response)};
-              
-              // Try each editable element
-              for (const el of editableElements) {
-                try {
-                  if (el.tagName === 'TEXTAREA') {
-                    // For textareas, find a good insertion point
-                    const content = el.value;
-                    
-                    // Look for common reply separators
-                    const separators = [
-                      '\\nOn ', 
-                      '\\n----',
-                      '\\n-----Original Message-----',
-                      '\\n>'
-                    ];
-                    
-                    let insertionPoint = -1;
-                    for (const separator of separators) {
-                      const pos = content.indexOf(separator);
-                      if (pos !== -1 && (insertionPoint === -1 || pos < insertionPoint)) {
-                        insertionPoint = pos;
-                      }
-                    }
-                    
-                    // Clean up any leading empty lines
-                    let cleanedContent = content;
-                    if (insertionPoint !== -1) {
-                      // Check for empty lines at the beginning
-                      const beforeSeparator = content.substring(0, insertionPoint);
-                      const cleanedBefore = beforeSeparator.replace(/^\\s+/, '');
-                      cleanedContent = cleanedBefore + content.substring(insertionPoint);
-                      insertionPoint = cleanedBefore.length;
-                    }
-                    
-                    if (insertionPoint !== -1) {
-                      // Insert before the separator
-                      el.value = cleanedContent.substring(0, insertionPoint) + 
-                                textToInsert + 
-                                cleanedContent.substring(insertionPoint);
-                    } else {
-                      // No separator found, just prepend
-                      el.value = textToInsert + cleanedContent;
-                    }
-                    
-                    // Trigger input event
-                    const event = new Event('input', { bubbles: true });
-                    el.dispatchEvent(event);
-                    
-                    // Also trigger change event
-                    const changeEvent = new Event('change', { bubbles: true });
-                    el.dispatchEvent(changeEvent);
-                    
-                    return { success: true, element: el.tagName };
-                  } else if (el.contentEditable === 'true' || el.tagName === 'BODY') {
-                    // For contentEditable elements or iframe body
-                    const htmlContent = textToInsert
-                      .replace(/&/g, '&amp;')
-                      .replace(/</g, '&lt;')
-                      .replace(/>/g, '&gt;')
-                      .replace(/"/g, '&quot;')
-                      .replace(/'/g, '&#039;')
-                      .replace(/\\n/g, '<br>');
-                    
-                    const content = el.innerHTML;
-                    
-                    // Look for common reply separators
-                    const separators = [
-                      '<div id="divRplyFwdMsg"', 
-                      '<div class="moz-cite-prefix"',
-                      '<blockquote type="cite"',
-                      '<hr id="stopSpelling"',
-                      '<div class="gmail_quote"'
-                    ];
-                    
-                    let insertionPoint = -1;
-                    for (const separator of separators) {
-                      const pos = content.indexOf(separator);
-                      if (pos !== -1 && (insertionPoint === -1 || pos < insertionPoint)) {
-                        insertionPoint = pos;
-                      }
-                    }
-                    
-                    // Clean up any leading empty paragraphs or breaks
-                    let cleanedContent = content;
-                    if (insertionPoint !== -1) {
-                      // Check for empty paragraphs at the beginning
-                      const beforeSeparator = content.substring(0, insertionPoint);
-                      const cleanedBefore = beforeSeparator.replace(/^(\\s*<p>\\s*<\\/p>\\s*)+/, '').replace(/^(\\s*<br>\\s*)+/, '');
-                      cleanedContent = cleanedBefore + content.substring(insertionPoint);
-                      insertionPoint = cleanedBefore.length;
-                    }
-                    
-                    if (insertionPoint !== -1) {
-                      // Insert before the separator
-                      el.innerHTML = cleanedContent.substring(0, insertionPoint) + 
-                                    htmlContent + 
-                                    cleanedContent.substring(insertionPoint);
-                    } else {
-                      // No separator found, just prepend
-                      el.innerHTML = htmlContent + cleanedContent;
-                    }
-                    
-                    return { success: true, element: el.tagName };
-                  }
-                } catch (innerError) {
-                  console.log("Failed with element:", el, innerError);
-                  // Continue to next element
-                }
-              }
-              
-              return { success: false, error: "No suitable editable element found" };
-            } catch (e) {
-              return { success: false, error: e.toString() };
-            }
-          })();
-        `;
-        
-        // Execute the fallback script
-        const results = await browser.tabs.executeScript(replyTab.id, {
-          code: fallbackScript
-        });
-        
-        console.log("Fallback script result:", results[0]);
-        
-        if (results[0] && results[0].success) {
-          console.log("Response inserted successfully via fallback method using", results[0].element);
-          return true;
-        } else {
-          const errorMsg = results[0] && results[0].error ? results[0].error : "Unknown error";
-          console.warn("Fallback insertion failed:", errorMsg);
-          throw new Error("Could not insert response using fallback method: " + errorMsg);
-        }
-      } catch (fallbackError) {
-        console.error("Fallback method failed:", fallbackError);
-        throw new Error("All insertion methods failed");
-      }
+      // Thunderbird registers scripts in a compose window through the dedicated compose_scripts
+      // API; tabs.executeScript's `code` parameter has no effect there (MV2, TB140), so the ~150
+      // lines of DOM-manipulation fallback that used to sit here could never actually run. There is
+      // no working fallback for a compose API failure — only a clear, localized explanation.
+      console.error("Error using compose API:", apiError);
+      const localized = browser.i18n.getMessage('err_insert_compose_api_failed');
+      const detail = apiError && apiError.message ? ` (${apiError.message})` : '';
+      throw new Error((localized || 'Could not insert the reply into the compose window.') + detail);
     }
   } catch (error) {
     console.error("Error inserting response:", error);

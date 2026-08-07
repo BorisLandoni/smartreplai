@@ -415,6 +415,11 @@
               <p class="setting-description">
                 <a href="https://ai.google.dev/" target="_blank" data-i18n="options_gemini_key_link">Get a Gemini API key</a>
               </p>
+              <label for="gemini-model" data-i18n="options_gemini_model_label">Modello Gemini:</label>
+              <input type="text" id="gemini-model" class="text-input" placeholder="gemini-3.6-flash">
+              <p class="setting-description" data-i18n="options_gemini_model_desc">
+                Google ritira i modelli con una certa frequenza: se Gemini smette di rispondere, di solito basta aggiornare questo id. Vuoto significa &laquo;usa quello predefinito&raquo;.
+              </p>
               <button id="test-gemini-btn" class="action-button small-button">
                 <i class="fas fa-plug"></i> <span data-i18n="options_test_gemini_btn">Test Gemini Connection</span>
               </button>

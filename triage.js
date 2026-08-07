@@ -464,6 +464,65 @@ async function handleTagChange(header, newTags, oldTags) {
   await recordCorrection(header, fromTag, toTag);
 }
 
+// The label comes off once the reply is actually sent. Without this the morning list starts lying
+// within the hour: half of it is mail already dealt with, and a red that stays red after you have
+// passed is not a signal, it is decoration.
+//
+// The related message id is captured in onBeforeSend because by the time onAfterSend fires the
+// compose tab may already be gone, and the removal only happens once the send has succeeded — a
+// draft abandoned halfway must keep its label.
+const pendingSendOrigins = new Map();
+
+// Synchronous, and it must stay that way. The event carries the compose details already, so there
+// is nothing to await — and this is a blocking, user-input handler: an async listener here would
+// take on restrictions, and any slowness would be felt as a delay on sending a real message.
+browser.compose.onBeforeSend.addListener((tab, details) => {
+  // The type matters as much as the id. relatedMessageId is set for replies, but also for
+  // forwards, drafts and templates — so without this check, forwarding a message you had not
+  // answered yet cleared its label as though you had.
+  if (details && details.relatedMessageId && details.type === 'reply') {
+    pendingSendOrigins.set(tab.id, details.relatedMessageId);
+  }
+
+  // Nothing is ever cancelled or rewritten here.
+  return {};
+});
+
+browser.compose.onAfterSend.addListener(async (tab, sendInfo) => {
+  const originId = pendingSendOrigins.get(tab.id);
+  pendingSendOrigins.delete(tab.id);
+
+  // A failed send leaves the label alone: the message has not been dealt with.
+  //
+  // "Send later" does clear it, and that is a judgement call rather than an obvious truth. The
+  // message only reaches the Outbox, and Thunderbird fires no event when the Outbox is later
+  // flushed — so waiting for the real departure would mean waiting forever, and the label would
+  // go stale for anyone who works that way. Queuing a reply is a decision to be done with the
+  // message, so it is treated as such.
+  if (!originId || (sendInfo && sendInfo.error)) return;
+
+  try {
+    const header = await browser.messages.get(originId);
+    const label = triageKeysIn(header.tags);
+    if (!label.size) return;
+
+    // Registered as our own write first, otherwise handleTagChange reads the removal as a manual
+    // correction and teaches the triage something the user never said.
+    selfTagWrites.add(header.id);
+    try {
+      await browser.messages.update(header.id, {
+        tags: (header.tags || []).filter(tag => !TRIAGE_KEYS.has(tag))
+      });
+      console.log('Triage: label cleared, the reply was sent');
+    } finally {
+      setTimeout(() => selfTagWrites.delete(header.id), 0);
+    }
+  } catch (error) {
+    // The original may have been moved or deleted in the meantime; nothing to do about it.
+    console.error('Triage: could not clear the label after sending', error);
+  }
+});
+
 browser.messages.onUpdated.addListener((message, changedProperties, oldProperties) => {
   if (!changedProperties || !changedProperties.tags) return;
 
@@ -755,9 +814,15 @@ async function classifyBatch(config, items, corrections) {
     throw new TransientTriageError('Daily triage budget exhausted');
   }
 
+  // fetch has no timeout of its own, and the triage runs unattended: a request that hangs would
+  // stall the queue behind it, so every later message silently stops being classified.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 90000);
+
   let response;
   try {
     response = await fetch('https://api.deepseek.com/chat/completions', {
+      signal: controller.signal,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -774,7 +839,12 @@ async function classifyBatch(config, items, corrections) {
       })
     });
   } catch (error) {
-    throw new TransientTriageError(`Network error: ${error.message}`);
+    // A timeout is a transient failure like any other: nothing gets tagged and the next sweep
+    // tries again, which is exactly the right behaviour here.
+    throw new TransientTriageError(
+      error.name === 'AbortError' ? 'Request timed out' : `Network error: ${error.message}`);
+  } finally {
+    clearTimeout(timer);
   }
 
   if (!response.ok) {

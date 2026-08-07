@@ -900,7 +900,7 @@
     "message": "Testing Ollama connection..."
   },
   "options_ollama_test_ok": {
-    "message": "Ollama connection successful!"
+    "message": "Ollama connection successful"
   },
   "options_ollama_available_models": {
     "message": "Available models:"
@@ -1360,5 +1360,41 @@
   },
   "options_saved_without_triage": {
     "message": "Saved, except the triage settings: those could not be read, so the stored ones were left untouched. Reopen this page to change them."
+  },
+  "err_request_timeout": {
+    "message": "The model did not answer in time. Check the connection and try again."
+  },
+  "err_conn_invalid_key": {
+    "message": "The key was rejected. Check that you pasted it whole and that it belongs to this provider."
+  },
+  "err_conn_insufficient_balance": {
+    "message": "The key is valid but the balance is empty. Top it up on the provider's site."
+  },
+  "err_conn_rate_limited": {
+    "message": "Too many requests right now. Wait a moment and try again."
+  },
+  "err_conn_server_error": {
+    "message": "The provider is having trouble on its side. Nothing to fix here: try again later."
+  },
+  "err_conn_network": {
+    "message": "Could not reach the provider. Check the connection, and any proxy or firewall."
+  },
+  "err_conn_model_not_found": {
+    "message": "The server answered, but the configured model is not installed on it."
+  },
+  "err_conn_unexpected": {
+    "message": "Unexpected answer from the provider."
+  },
+  "options_ollama_model_missing": {
+    "message": "The model is not installed on this Ollama server."
+  },
+  "err_insert_compose_api_failed": {
+    "message": "Could not insert the reply into the compose window: the compose API rejected the request."
+  },
+  "options_gemini_model_label": {
+    "message": "Gemini model:"
+  },
+  "options_gemini_model_desc": {
+    "message": "Google retires models fairly often: if Gemini stops answering, updating this id is usually all it takes. Empty means \"use the default\"."
   }
 }
